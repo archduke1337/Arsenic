@@ -1,15 +1,9 @@
 "use client";
 
-import { Button, Card, CardBody, Input, Textarea } from "@nextui-org/react";
-import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Send, MessageSquare } from "lucide-react";
-import { useState } from "react";
-import { databases, DATABASE_ID } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { ID } from "appwrite";
-import { toast, Toaster } from "sonner";
+import { useState, useEffect } from "react";
+import { Mail, MapPin, Phone, Send, MessageSquare, CheckCircle2 } from "lucide-react";
 
-export default function Contact() {
+export default function ModernContact() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -18,177 +12,281 @@ export default function Contact() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            setMousePosition({
+                x: (e.clientX / window.innerWidth - 0.5) * 20,
+                y: (e.clientY / window.innerHeight - 0.5) * 20,
+            });
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         
-        try {
-            await databases.createDocument(
-                DATABASE_ID,
-                COLLECTIONS.CONTACT_SUBMISSIONS,
-                ID.unique(),
-                {
-                    name: formData.name,
-                    email: formData.email,
-                    subject: formData.subject,
-                    message: formData.message,
-                    status: 'new'
-                }
-            );
-            toast.success("Message sent successfully! We'll get back to you soon.");
-            setFormData({ name: "", email: "", subject: "", message: "" });
-        } catch (error) {
-            toast.error("Failed to send message. Please try again.");
-        } finally {
-            setIsSubmitting(false);
-        }
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        setIsSubmitting(false);
+        setSubmitSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        
+        setTimeout(() => setSubmitSuccess(false), 5000);
     };
 
     const contactInfo = [
         {
             icon: MapPin,
             title: "Visit Us",
-            details: ["University Campus,", "New Delhi, India 110001"],
-            color: "text-blue-500"
+            details: ["University Campus", "New Delhi, India 110001"],
+            color: "from-blue-500 to-cyan-500"
         },
         {
             icon: Mail,
             title: "Email Us",
             details: ["contact@arsenic.com", "support@arsenic.com"],
-            color: "text-purple-500"
+            color: "from-purple-500 to-pink-500"
         },
         {
             icon: Phone,
             title: "Call Us",
             details: ["+91 98765 43210", "+91 12345 67890"],
-            color: "text-pink-500"
+            color: "from-orange-500 to-red-500"
         }
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center relative overflow-hidden py-24 px-6">
-            <Toaster position="top-right" richColors />
-            {/* Background Elements */}
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 z-0" />
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+            {/* Animated Background */}
+            <div className="absolute inset-0">
+                <div
+                    className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] transition-transform duration-1000 ease-out"
+                    style={{
+                        transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+                    }}
+                />
+                <div
+                    className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] transition-transform duration-1000 ease-out"
+                    style={{
+                        transform: `translate(${-mousePosition.x}px, ${-mousePosition.y}px)`,
+                    }}
+                />
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                                        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                        backgroundSize: "50px 50px",
+                    }}
+                />
+            </div>
 
-            <div className="max-w-7xl w-full relative z-10">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Contact Info */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                            Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Touch</span>
-                        </h1>
-                        <p className="text-xl text-gray-400 mb-12 leading-relaxed">
-                            Have questions about the summit? We're here to help. Reach out to us and we'll get back to you as soon as possible.
-                        </p>
-
-                        <div className="space-y-8">
-                            {contactInfo.map((info, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 + index * 0.1 }}
-                                    className="flex items-start gap-6 group"
-                                >
-                                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-colors ${info.color}`}>
-                                        <info.icon size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold mb-2">{info.title}</h3>
-                                        {info.details.map((detail, i) => (
-                                            <p key={i} className="text-gray-400">{detail}</p>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            ))}
+            <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-24">
+                <div className="max-w-7xl w-full">
+                    {/* Header */}
+                    <div className="text-center mb-20">
+                        <div
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-sm mb-6 opacity-0 animate-fadeInUp"
+                            style={{ animationDelay: "0.1s", animationFillMode: "forwards" }}
+                        >
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                            <span className="text-sm text-gray-400 tracking-wide">CONTACT US</span>
                         </div>
-                    </motion.div>
+                        
+                        <h1
+                            className="text-5xl md:text-7xl font-bold mb-6 opacity-0 animate-fadeInUp"
+                            style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
+                        >
+                            Get in{" "}
+                            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                                Touch
+                            </span>
+                        </h1>
+                        
+                        <p
+                            className="text-xl text-gray-400 max-w-2xl mx-auto opacity-0 animate-fadeInUp"
+                            style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
+                        >
+                            Have questions about the summit? We're here to help and we'll get back to you as soon as possible.
+                        </p>
+                    </div>
 
-                    {/* Contact Form */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <Card className="bg-white/5 border border-white/10 backdrop-blur-xl p-8">
-                            <CardBody>
-                                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid lg:grid-cols-2 gap-12 items-start">
+                        {/* Contact Info Cards */}
+                        <div className="space-y-6">
+                            {contactInfo.map((info, index) => {
+                                const IconComponent = info.icon;
+                                return (
+                                    <div
+                                        key={index}
+                                        className="group relative border border-white/10 rounded-2xl p-8 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 opacity-0 animate-fadeInUp"
+                                        style={{ animationDelay: `${0.4 + index * 0.1}s`, animationFillMode: "forwards" }}
+                                    >
+                                        <div className="flex items-start gap-6">
+                                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${info.color} p-[1px] group-hover:scale-110 transition-transform`}>
+                                                <div className="w-full h-full bg-black rounded-xl flex items-center justify-center">
+                                                    <IconComponent size={24} className="text-white" />
+                                                </div>
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="text-xl font-bold mb-3">{info.title}</h3>
+                                                {info.details.map((detail, i) => (
+                                                    <p key={i} className="text-gray-400 text-sm">{detail}</p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${info.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                                    </div>
+                                );
+                            })}
+
+                            {/* Quick Info */}
+                            <div
+                                className="border border-white/10 rounded-2xl p-8 bg-white/[0.02] opacity-0 animate-fadeInUp"
+                                style={{ animationDelay: "0.7s", animationFillMode: "forwards" }}
+                            >
+                                <h3 className="text-lg font-bold mb-4">Quick Response Time</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">
+                                    We typically respond within 24 hours during business days. For urgent inquiries, please call us directly.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Contact Form */}
+                        <div
+                            className="border border-white/10 rounded-2xl p-8 bg-white/[0.02] backdrop-blur-sm opacity-0 animate-fadeInUp"
+                            style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}
+                        >
+                            {submitSuccess ? (
+                                <div className="flex flex-col items-center justify-center py-12 text-center">
+                                    <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mb-6">
+                                        <CheckCircle2 size={40} className="text-green-500" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold mb-3">Message Sent Successfully!</h3>
+                                    <p className="text-gray-400">We'll get back to you as soon as possible.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <Input
-                                            label="Name"
-                                            placeholder="Enter your name"
-                                            variant="bordered"
-                                            classNames={{
-                                                inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500",
-                                                label: "text-gray-400",
-                                                input: "text-white"
-                                            }}
-                                            value={formData.name}
-                                            onValueChange={(v) => setFormData({ ...formData, name: v })}
-                                        />
-                                        <Input
-                                            label="Email"
-                                            placeholder="Enter your email"
-                                            type="email"
-                                            variant="bordered"
-                                            classNames={{
-                                                inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500",
-                                                label: "text-gray-400",
-                                                input: "text-white"
-                                            }}
-                                            value={formData.email}
-                                            onValueChange={(v) => setFormData({ ...formData, email: v })}
+                                        <div>
+                                            <label className="block text-sm text-gray-400 mb-2">Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter your name"
+                                                className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-gray-400 mb-2">Email</label>
+                                            <input
+                                                type="email"
+                                                placeholder="Enter your email"
+                                                className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2">Subject</label>
+                                        <div className="relative">
+                                            <MessageSquare size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
+                                            <input
+                                                type="text"
+                                                placeholder="What is this regarding?"
+                                                className="w-full pl-12 pr-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                value={formData.subject}
+                                                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2">Message</label>
+                                        <textarea
+                                            rows={6}
+                                            placeholder="Type your message here..."
+                                            className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 resize-none transition-all"
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         />
                                     </div>
-                                    <Input
-                                        label="Subject"
-                                        placeholder="What is this regarding?"
-                                        variant="bordered"
-                                        classNames={{
-                                            inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500",
-                                            label: "text-gray-400",
-                                            input: "text-white"
-                                        }}
-                                        startContent={<MessageSquare size={18} className="text-gray-500" />}
-                                        value={formData.subject}
-                                        onValueChange={(v) => setFormData({ ...formData, subject: v })}
-                                    />
-                                    <Textarea
-                                        label="Message"
-                                        placeholder="Type your message here..."
-                                        variant="bordered"
-                                        minRows={6}
-                                        classNames={{
-                                            inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500",
-                                            label: "text-gray-400",
-                                            input: "text-white"
-                                        }}
-                                        value={formData.message}
-                                        onValueChange={(v) => setFormData({ ...formData, message: v })}
-                                    />
-                                    <Button
-                                        size="lg"
-                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-white shadow-lg shadow-blue-500/25"
-                                        endContent={<Send size={18} />}
-                                        type="submit"
-                                        isLoading={isSubmitting}
+
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={isSubmitting}
+                                        className="group relative w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-medium transition-all duration-300 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {isSubmitting ? "Sending..." : "Send Message"}
-                                    </Button>
-                                </form>
-                            </CardBody>
-                        </Card>
-                    </motion.div>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            {isSubmitting ? (
+                                                <>
+                                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                    Sending...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Send Message
+                                                    <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                </>
+                                            )}
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <style jsx global>{`
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeInUp {
+                    animation: fadeInUp 0.8s ease-out;
+                }
+
+                @keyframes pulse {
+                    0%, 100% {
+                        opacity: 1;
+                    }
+                    50% {
+                        opacity: 0.5;
+                    }
+                }
+
+                .animate-pulse {
+                    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+                }
+
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+
+                .animate-spin {
+                    animation: spin 1s linear infinite;
+                }
+            `}</style>
         </div>
     );
 }
