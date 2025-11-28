@@ -81,17 +81,17 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                    Admin Dashboard
+            <div className="space-y-2">
+                <h1 className="text-5xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent">
+                    Dashboard
                 </h1>
-                <p className="text-gray-400">Welcome back, {user?.name || "Admin"}!</p>
+                <p className="text-gray-400 text-lg">Welcome back, <span className="text-yellow-400 font-semibold">{user?.name || "Admin"}</span>! Here's your event overview.</p>
             </div>
 
             {/* Main Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Events */}
-                <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:border-blue-500/40 transition-all">
+                <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/20">
                     <CardBody className="p-6">
                         <div className="flex items-start justify-between">
                             <div>
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* Registrations */}
-                <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 hover:border-green-500/40 transition-all">
+                <Card className="bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/20">
                     <CardBody className="p-6">
                         <div className="flex items-start justify-between">
                             <div>
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* Check-ins */}
-                <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 hover:border-purple-500/40 transition-all">
+                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/20">
                     <CardBody className="p-6">
                         <div className="flex items-start justify-between">
                             <div>
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* Team & Sponsors */}
-                <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 hover:border-orange-500/40 transition-all">
+                <Card className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 hover:border-orange-500/50 transition-all hover:shadow-lg hover:shadow-orange-500/20">
                     <CardBody className="p-6">
                         <div className="flex items-start justify-between">
                             <div>
@@ -188,9 +188,9 @@ export default function AdminDashboard() {
             {/* Quick Actions & Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Quick Actions */}
-                <Card className="lg:col-span-2 bg-zinc-900/50 border border-white/10">
+                <Card className="lg:col-span-2 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-white/10 hover:border-white/20 transition-all">
                     <CardBody className="p-6">
-                        <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+                        <h2 className="text-2xl font-bold mb-6 text-yellow-400">⚡ Quick Actions</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Link href="/admin/events">
                                 <Button
@@ -233,9 +233,9 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* Pending Items */}
-                <Card className="bg-zinc-900/50 border border-white/10">
+                <Card className="bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-white/10 hover:border-white/20 transition-all">
                     <CardBody className="p-6">
-                        <h2 className="text-2xl font-bold mb-6">System Status</h2>
+                        <h2 className="text-2xl font-bold mb-6 text-yellow-400">📊 System Status</h2>
                         <div className="space-y-4">
                             <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                                 <div className="flex items-start gap-3">
@@ -262,9 +262,9 @@ export default function AdminDashboard() {
 
             {/* Recent Registrations */}
             {recentRegistrations.length > 0 && (
-                <Card className="bg-zinc-900/50 border border-white/10">
+                <Card className="bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-white/10 hover:border-white/20 transition-all">
                     <CardBody className="p-6">
-                        <h2 className="text-2xl font-bold mb-6">Recent Registrations</h2>
+                        <h2 className="text-2xl font-bold mb-6 text-yellow-400">🔔 Recent Registrations</h2>
                         <div className="space-y-3">
                             {recentRegistrations.map((reg) => (
                                 <div key={reg.$id} className="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">

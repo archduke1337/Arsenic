@@ -14,7 +14,10 @@ import {
     Award,
     HelpCircle,
     Building2,
-    QrCode
+    QrCode,
+    CheckCircle,
+    TrendingUp,
+    Ticket
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -49,52 +52,75 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         { icon: Building2, label: "Sponsors", href: "/admin/sponsors" },
         { icon: HelpCircle, label: "FAQs", href: "/admin/faqs" },
         { icon: MessageSquare, label: "Contact", href: "/admin/contact" },
+        // New Management Features
+        { icon: TrendingUp, label: "Scores", href: "/admin/scores" },
+        { icon: CheckCircle, label: "Attendance", href: "/admin/attendance" },
+        { icon: Ticket, label: "Coupons", href: "/admin/coupons" },
+        { icon: Users, label: "Alumni", href: "/admin/alumni" },
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-black flex">
+        <div className="min-h-screen bg-black text-white flex">
             {/* Sidebar */}
-            <aside className="w-64 hidden md:flex flex-col border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900 fixed h-full z-50">
-                <div className="p-6 border-b border-gray-200 dark:border-white/10">
-                    <Link href="/admin" className="flex items-center gap-2 font-bold text-xl text-warning">
-                        <Shield className="fill-warning text-warning" />
-                        <span>ADMIN PANEL</span>
+            <aside className="w-72 hidden md:flex flex-col border-r border-yellow-500/10 bg-gradient-to-b from-zinc-900 to-black fixed h-full z-50 overflow-y-auto">
+                {/* Logo Section */}
+                <div className="p-6 border-b border-yellow-500/10 sticky top-0 bg-gradient-to-b from-zinc-900 to-black/80">
+                    <Link href="/admin" className="flex items-center gap-3 font-bold text-xl hover:text-yellow-400 transition-colors group">
+                        <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl group-hover:shadow-lg group-hover:shadow-yellow-500/20 transition-all">
+                            <Shield size={24} className="text-black" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-white">ADMIN</span>
+                            <span className="text-xs text-gray-400 font-normal">Control Panel</span>
+                        </div>
                     </Link>
                 </div>
 
-                <div className="flex-1 py-6 px-4 space-y-1">
+                {/* Navigation */}
+                <div className="flex-1 py-8 px-4 space-y-2">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
-                                    ? "bg-warning/10 text-warning font-semibold"
-                                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5"
-                                    }`}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                    isActive
+                                        ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/10 text-yellow-400 border border-yellow-500/30"
+                                        : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                                }`}
                             >
-                                <item.icon size={20} />
-                                {item.label}
+                                <item.icon size={20} className={isActive ? "text-yellow-400" : "group-hover:text-yellow-400 transition-colors"} />
+                                <span className="font-medium">{item.label}</span>
+                                {isActive && (
+                                    <div className="ml-auto w-2 h-2 rounded-full bg-yellow-400"></div>
+                                )}
                             </Link>
                         );
                     })}
                 </div>
 
-                <div className="p-4 border-t border-gray-200 dark:border-white/10">
-                    <div className="mb-4 px-2">
+                {/* User Section */}
+                <div className="p-4 border-t border-yellow-500/10 space-y-4">
+                    <div className="px-4 py-3 bg-white/5 rounded-xl border border-yellow-500/10">
                         <User
                             name={user?.name || "Admin"}
                             description={user?.email}
                             avatarProps={{
                                 src: `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`,
+                                className: "w-10 h-10"
+                            }}
+                            classNames={{
+                                name: "text-white",
+                                description: "text-gray-400 text-xs"
                             }}
                         />
                     </div>
                     <Button
+                        fullWidth
                         variant="flat"
                         color="danger"
-                        className="w-full justify-start"
+                        className="justify-start"
                         startContent={<LogOut size={18} />}
                         onPress={() => logout()}
                     >
@@ -104,7 +130,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-8">
+            <main className="flex-1 md:ml-72 min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black p-8">
                 <div className="max-w-7xl mx-auto">
                     {children}
                 </div>
