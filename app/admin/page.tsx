@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
 import { databases, Query } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { TrendingUp, Users, Calendar, FileText, CheckCircle, AlertCircle, BarChart3 } from "lucide-react";
+import { TrendingUp, Users, Calendar, FileText, CheckCircle, AlertCircle, BarChart3, Home } from "lucide-react";
 import Link from "next/link";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
@@ -80,6 +80,16 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-8">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center gap-2 text-sm">
+                <Link href="/" className="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                    <FileText size={16} />
+                    Home
+                </Link>
+                <span className="text-gray-600">/</span>
+                <span className="text-yellow-400 font-medium">Dashboard</span>
+            </div>
+
             {/* Header */}
             <div className="space-y-2">
                 <h1 className="text-5xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent">
