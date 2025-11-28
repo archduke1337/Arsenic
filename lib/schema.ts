@@ -1,0 +1,333 @@
+import { z } from "zod";
+
+// Collection IDs
+export const COLLECTIONS = {
+    USERS: "users",
+    REGISTRATIONS: "registrations",
+    EVENTS: "events",
+    COMMITTEES: "committees",
+    TEAM_MEMBERS: "team_members",
+    SPONSORS: "sponsors",
+    GALLERY: "gallery",
+    ALBUMS: "albums",
+    FAQS: "faqs",
+    CONTACT_SUBMISSIONS: "contact_submissions",
+    AWARDS: "awards",
+    SPEAKER_UPDATES: "speaker_updates",
+    SCORES: "scores",
+    ATTENDANCE: "attendance",
+    COUPONS: "coupons",
+    ALUMNI: "alumni",
+} as const;
+
+// Event Types
+export const EVENT_TYPES = ["MUN", "LOK_SABHA", "RAJYA_SABHA", "DEBATE", "YOUTH_PARLIAMENT"] as const;
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+    MUN: "Model United Nations",
+    LOK_SABHA: "Lok Sabha",
+    RAJYA_SABHA: "Rajya Sabha",
+    DEBATE: "Debate Championship",
+    YOUTH_PARLIAMENT: "Youth Parliament",
+};
+
+export type EventType = (typeof EVENT_TYPES)[number];
+
+// User Roles
+export const USER_ROLES = ["delegate", "admin", "speaker", "chairperson"] as const;
+export type UserRole = (typeof USER_ROLES)[number];
+
+export const ADMIN_EMAILS = ["gauravramyadav@gmail.com"];
+
+export function isAdmin(email: string | undefined): boolean {
+    if (!email) return false;
+    return ADMIN_EMAILS.includes(email);
+}
+
+// ============================================
+// ENHANCED SCHEMAS
+// ============================================
+
+// Event Theme Schema
+export const eventThemeSchema = z.object({
+    primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+    secondaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+    accentColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+    bannerUrl: z.string().optional(),
+    thumbnailUrl: z.string().optional(),
+});
+
+// Fee Structure Schema
+export const feeStructureSchema = z.object({
+    baseFee: z.number(),
+    earlyBirdPercentage: z.number().optional(),
+    earlyBirdDeadline: z.string().optional(),
+    groupDiscounts: z.array(z.object({
+        tier: z.number(),
+        percentage: z.number(),
+    })).optional(),
+    customTiers: z.array(z.object({
+        minDelegates: z.number(),
+        discount: z.number(),
+    })).optional(),
+});
+
+// Payment Config Schema
+export const paymentConfigSchema = z.object({
+    razorpay: z.boolean().default(true),
+    easebuzz: z.boolean().default(false),
+    autoFallback: z.boolean().default(false),
+});
+
+// Event Settings Schema
+export const eventSettingsSchema = z.object({
+    allowDoubleDelegation: z.boolean().default(false),
+    hybridMode: z.boolean().default(false),
+    internationalDelegates: z.boolean().default(false),
+    merchandiseUpsell: z.boolean().default(false),
+});
+
+// Enhanced Event Schema
+export const eventSchema = z.object({
+    name: z.string(),
+    type: z.enum(EVENT_TYPES),
+    description: z.string(),
+    agenda: z.string().optional(),
+    backgroundGuideUrl: z.string().optional(),
+    startDate: z.string(),
+    endDate: z.string(),
+    registrationDeadline: z.string().optional(),
+    portfolioReleaseDate: z.string().optional(),
+    fees: z.number(),
+    earlyBirdFee: z.number().optional(),
+    earlyBirdDeadline: z.string().optional(),
+    capacity: z.number().optional(),
+    venue: z.string().optional(),
+    imageUrl: z.string().optional(),
+    isActive: z.boolean(),
+    // New fields for enhanced event management
+    theme: eventThemeSchema.optional(),
+    feeStructure: feeStructureSchema.optional(),
+    paymentConfig: paymentConfigSchema.optional(),
+    settings: eventSettingsSchema.optional(),
+});
+
+// MUN-specific data
+export const munDataSchema = z.object({
+    countries: z.array(z.object({
+        name: z.string(),
+        flag: z.string(),
+        isDouble: z.boolean().default(false),
+    })),
+    difficultyTag: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+});
+
+// Lok Sabha-specific data
+export const lokSabhaDataSchema = z.object({
+    state: z.string(),
+    reservationType: z.enum(['General', 'SC', 'ST']),
+    parties: z.array(z.object({
+        name: z.string(),
+        seatShare: z.number(),
+    })),
+    portfolios: z.array(z.object({
+        role: z.enum(['PM', 'HM', 'FM', 'Speaker', 'Member']),
+        assignedTo: z.string().optional(),
+    })).optional(),
+});
+
+// Rajya Sabha-specific data
+export const rajyaSabhaDataSchema = z.object({
+    stateUT: z.string(),
+    seatsAvailable: z.number(),
+    partyAllocation: z.array(z.object({
+        party: z.string(),
+        seats: z.number(),
+    })),
+    nominatedMembers: z.array(z.string()).optional(),
+});
+
+// Debate-specific data
+export const debateDataSchema = z.object({
+    type: z.enum(['PD', 'Turncoat', 'Extempore']),
+    topics: z.array(z.string()),
+    formatRules: z.string(),
+    adjudicators: z.array(z.object({
+        name: z.string(),
+        expertise: z.string().optional(),
+    })).optional(),
+});
+
+// Enhanced Committee Schema (Format-Aware)
+export const committeeSchema = z.object({
+    name: z.string(),
+    abbreviation: z.string(),
+    type: z.string(),
+    eventType: z.enum(EVENT_TYPES),
+    description: z.string(),
+    agenda: z.string().optional(),
+    backgroundGuideUrl: z.string().optional(),
+    chairperson: z.string().optional(),
+    viceChairperson: z.string().optional(),
+    rapporteur: z.string().optional(),
+    portfolios: z.array(z.string()),
+    capacity: z.number(),
+    imageUrl: z.string().optional(),
+    linkedEventId: z.string().optional(),
+    difficultyTag: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+    // Format-specific data (stored as JSON strings in Appwrite)
+    munData: munDataSchema.optional(),
+    lokSabhaData: lokSabhaDataSchema.optional(),
+    rajyaSabhaData: rajyaSabhaDataSchema.optional(),
+    debateData: debateDataSchema.optional(),
+});
+
+// Enhanced Registration Schema
+export const registrationSchema = z.object({
+    userId: z.string(),
+    eventId: z.string(),
+    code: z.string(),
+    fullName: z.string(),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    institution: z.string().optional(),
+    grade: z.string().optional(),
+    city: z.string().optional(),
+    age: z.number().optional(),
+    committeePreferences: z.array(z.string()).optional(),
+    assignedCommittee: z.string().optional(),
+    assignedPortfolio: z.string().optional(),
+    paymentStatus: z.enum(["pending", "paid", "refunded", "failed"]),
+    paymentAmount: z.number().optional(),
+    status: z.enum(["pending", "confirmed", "cancelled"]),
+    // New fields for check-in system
+    checkedIn: z.boolean().default(false),
+    checkedInAt: z.string().optional(),
+    qrCode: z.string().optional(),
+});
+
+// Enhanced Team Member Schema (Hierarchical)
+export const teamMemberSchema = z.object({
+    name: z.string(),
+    role: z.string(),
+    position: z.enum(["founder", "executive_board", "hod", "secretariat", "subhead", "organizing_committee"]),
+    department: z.string().optional(),
+    parentId: z.string().optional(), // For hierarchical structure
+    bio: z.string().optional(),
+    imageUrl: z.string().optional(),
+    email: z.string().email().optional(),
+    phone: z.string().optional(),
+    socials: z.object({
+        linkedin: z.string().optional(),
+        twitter: z.string().optional(),
+        instagram: z.string().optional(),
+    }).optional(),
+    displayOrder: z.number().optional(),
+});
+
+// Enhanced Gallery Schema
+export const galleryImageSchema = z.object({
+    imageUrl: z.string(),
+    thumbnailUrl: z.string().optional(),
+    albumId: z.string().optional(),
+    eventType: z.string(),
+    conference: z.string().optional(),
+    customTags: z.array(z.string()).optional(),
+    year: z.string(),
+    caption: z.string().optional(),
+    featured: z.boolean().optional(),
+    uploadedBy: z.string().optional(),
+    displayOrder: z.number().optional(),
+});
+
+// ============================================
+// NEW COLLECTION SCHEMAS
+// ============================================
+
+// Albums Schema
+export const albumSchema = z.object({
+    name: z.string(),
+    slug: z.string(),
+    eventType: z.string(),
+    coverImageUrl: z.string().optional(),
+    description: z.string().optional(),
+    year: z.string(),
+    displayOrder: z.number().optional(),
+});
+
+// Sponsors Schema
+export const sponsorSchema = z.object({
+    tier: z.enum(['title', 'platinum', 'gold', 'silver']),
+    name: z.string(),
+    logoUrl: z.string(),
+    websiteUrl: z.string().optional(),
+    displayOrder: z.number().optional(),
+    isActive: z.boolean().default(true),
+});
+
+// Awards Schema
+export const awardSchema = z.object({
+    eventId: z.string(),
+    category: z.string(),
+    awardType: z.enum(['best_delegate', 'high_commendation', 'special_mention', 'best_delegation', 'verbal_mention']),
+    recipientName: z.string(),
+    school: z.string(),
+    committee: z.string().optional(),
+    position: z.number().optional(),
+    certificateUrl: z.string().optional(),
+    isPublished: z.boolean().default(false),
+});
+
+// FAQs Schema
+export const faqSchema = z.object({
+    category: z.string(),
+    question: z.string(),
+    answer: z.string(),
+    displayOrder: z.number().optional(),
+    isActive: z.boolean().default(true),
+});
+
+// Speaker Updates Schema
+export const speakerUpdateSchema = z.object({
+    committeeId: z.string(),
+    speakerId: z.string(),
+    type: z.enum(['crisis', 'gavel', 'mention', 'announcement']),
+    content: z.string(),
+    timestamp: z.string(),
+});
+
+// Contact Submissions Schema
+export const contactSubmissionSchema = z.object({
+    name: z.string(),
+    email: z.string().email(),
+    subject: z.string(),
+    message: z.string(),
+    status: z.enum(['new', 'read', 'replied', 'archived']).default('new'),
+});
+
+// ============================================
+// TYPE EXPORTS
+// ============================================
+
+export type Event = z.infer<typeof eventSchema>;
+export type EventTheme = z.infer<typeof eventThemeSchema>;
+export type FeeStructure = z.infer<typeof feeStructureSchema>;
+export type PaymentConfig = z.infer<typeof paymentConfigSchema>;
+export type EventSettings = z.infer<typeof eventSettingsSchema>;
+
+export type Committee = z.infer<typeof committeeSchema>;
+export type MUNData = z.infer<typeof munDataSchema>;
+export type LokSabhaData = z.infer<typeof lokSabhaDataSchema>;
+export type RajyaSabhaData = z.infer<typeof rajyaSabhaDataSchema>;
+export type DebateData = z.infer<typeof debateDataSchema>;
+
+export type Registration = z.infer<typeof registrationSchema>;
+export type TeamMember = z.infer<typeof teamMemberSchema>;
+export type GalleryImage = z.infer<typeof galleryImageSchema>;
+
+export type Album = z.infer<typeof albumSchema>;
+export type Sponsor = z.infer<typeof sponsorSchema>;
+export type Award = z.infer<typeof awardSchema>;
+export type FAQ = z.infer<typeof faqSchema>;
+export type SpeakerUpdate = z.infer<typeof speakerUpdateSchema>;
+export type ContactSubmission = z.infer<typeof contactSubmissionSchema>;
