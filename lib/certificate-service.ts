@@ -172,8 +172,9 @@ export async function issueCertificate(
 
     // Upload to storage
     const fileName = `cert-${certificateCode}.pdf`;
-    const blob = new Blob([new Uint8Array(pdfBuffer)], { type: 'application/pdf' });
-    const file = new File([blob], fileName, { type: 'application/pdf' });
+    // Convert Buffer to Uint8Array for File API compatibility
+    const uint8Array = new Uint8Array(pdfBuffer);
+    const file = new File([uint8Array], fileName, { type: 'application/pdf' });
     const uploadedFile = await storage.createFile(
       bucketId,
       ID.unique(),
