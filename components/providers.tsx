@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HeroUIProvider } from "@nextui-org/react";
+import { NextUIProvider } from "@nextui-org/react";
 import { ReactNode, useState, useEffect } from "react";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -36,11 +36,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <HeroUIProvider>
+            <NextUIProvider>
                 <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
                     <AuthProvider>{children}</AuthProvider>
                 </ThemeProvider>
-            </HeroUIProvider>
+            </NextUIProvider>
         </QueryClientProvider>
     );
 }
