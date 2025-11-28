@@ -114,8 +114,7 @@ export async function getLeaderboard(
     const scoresResponse = await databases.listDocuments(
       databaseId,
       'scores',
-      filters,
-      limit
+      filters
     );
 
     // Group scores by registration and calculate averages
@@ -137,8 +136,7 @@ export async function getLeaderboard(
     const registrationsResponse = await databases.listDocuments(
       databaseId,
       'registrations',
-      [`eventId == "${eventId}"`],
-      1000
+      [`eventId == "${eventId}"`]
     );
 
     for (const reg of registrationsResponse.documents) {
@@ -243,13 +241,12 @@ export async function getCommitteeRankings(
 
   try {
     // Get all committees for event
+    // Get all committees for event
     const committeesResponse = await databases.listDocuments(
       databaseId,
       'committees',
-      [`eventType == "MUN"`], // Adjust as needed
-      100
+      [`eventType == "MUN"`] // Adjust as needed
     );
-
     const rankings: Record<string, Leaderboard[]> = {};
 
     for (const committee of committeesResponse.documents) {
@@ -271,7 +268,7 @@ export async function exportScoresToCSV(
   eventId: string
 ): Promise<string> {
   try {
-    const leaderboard = await getLeaderboard(eventId, undefined, 10000);
+    const leaderboard = await getLeaderboard(eventId);
 
     const headers = ['Rank', 'Participant', 'Committee', 'Score', 'Total Votes'];
     const rows = leaderboard.map((item) => [
@@ -310,13 +307,12 @@ export async function getScoreStats(eventId: string): Promise<{
   }
 
   try {
+  try {
     const scoresResponse = await databases.listDocuments(
       databaseId,
       'scores',
-      [`eventId == "${eventId}"`],
-      10000
+      [`eventId == "${eventId}"`]
     );
-
     const scores = scoresResponse.documents.map((doc) => doc.score);
 
     return {

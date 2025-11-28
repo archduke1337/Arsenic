@@ -15,7 +15,19 @@ export function QRScanner({ eventId, onScanSuccess, onScanError }: QRScannerProp
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
   const [error, setError] = useState<string>('');
-  const [stats, setStats] = useState({ total: 0, checkedIn: 0, pending: 0, checkInRate: '0%' });
+  const [stats, setStats] = useState<{ 
+    total: number;
+    checkedIn: number;
+    pending: number;
+    checkInRate: string;
+    byCommittee: Record<string, { total: number; checkedIn: number }>;
+  }>({ 
+    total: 0, 
+    checkedIn: 0, 
+    pending: 0, 
+    checkInRate: '0%',
+    byCommittee: {}
+  });
 
   // Initialize camera
   useEffect(() => {
