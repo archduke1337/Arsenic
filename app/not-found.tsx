@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Home, RotateCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
+    const router = useRouter();
+
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 text-center relative overflow-hidden">
             {/* Background Effects */}
@@ -69,7 +74,7 @@ export default function NotFound() {
                         GO HOME
                     </Link>
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => router.back()}
                         className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-black font-black text-lg rounded-xl border-4 border-black shadow-lg hover:shadow-blue-500/50 transition-all hover:scale-105 active:scale-95"
                     >
                         <RotateCcw size={24} />
