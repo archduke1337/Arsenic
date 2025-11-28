@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, Card, CardBody, Chip } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Target, Shield, Zap, Globe, Users, Gavel, Mic, Award, ArrowRight } from "lucide-react";
+import { Target, Shield, Zap, Globe, Users, Gavel, Mic, Award, ArrowRight, Sparkles, Heart, Star, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 
@@ -14,194 +14,363 @@ export default function About() {
         offset: ["start start", "end end"]
     });
 
-    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
     const values = [
         {
             icon: Target,
             title: "Excellence",
-            description: "Striving for the highest standards in debate and diplomacy.",
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
+            description: "Striving for the highest standards in debate and diplomacy through rigorous training.",
+            number: "01"
         },
         {
             icon: Shield,
             title: "Integrity",
-            description: "Upholding ethical principles and fostering honest dialogue.",
-            color: "text-green-500",
-            bg: "bg-green-500/10"
+            description: "Upholding ethical principles and fostering honest dialogue in every committee.",
+            number: "02"
         },
         {
             icon: Zap,
             title: "Innovation",
-            description: "Embracing new ideas and modernizing parliamentary simulations.",
-            color: "text-purple-500",
-            bg: "bg-purple-500/10"
+            description: "Embracing new ideas and modernizing parliamentary simulations for the digital age.",
+            number: "03"
         }
     ];
 
     const offerings = [
-        { title: "Model UN", icon: Globe, desc: "Simulating UN committees to solve global crises." },
-        { title: "Lok Sabha", icon: Users, desc: "Drafting bills and debating national policy." },
-        { title: "Rajya Sabha", icon: Gavel, desc: "Reviewing legislation with elder statesmanship." },
-        { title: "Debate", icon: Mic, desc: "Clashing ideologies in a battle of wits." },
+        { 
+            title: "Model UN", 
+            icon: Globe, 
+            desc: "Simulating UN committees to solve global crises through diplomatic negotiations.",
+            color: "from-blue-500 to-blue-700"
+        },
+        { 
+            title: "Lok Sabha", 
+            icon: Users, 
+            desc: "Drafting bills and debating national policy in India's lower house simulation.",
+            color: "from-blue-600 to-blue-800"
+        },
+        { 
+            title: "Rajya Sabha", 
+            icon: Gavel, 
+            desc: "Reviewing legislation with elder statesmanship in upper house proceedings.",
+            color: "from-blue-700 to-indigo-800"
+        },
+        { 
+            title: "Debate", 
+            icon: Mic, 
+            desc: "Clashing ideologies in a competitive battle of wits and rhetoric.",
+            color: "from-cyan-600 to-blue-700"
+        },
+    ];
+
+    const stats = [
+        { number: "1000+", label: "Delegates", icon: Users },
+        { number: "50+", label: "Committees", icon: Gavel },
+        { number: "100+", label: "Awards", icon: Award },
+        { number: "15+", label: "Countries", icon: Globe },
     ];
 
     return (
         <div className="min-h-screen bg-black text-white" ref={containerRef}>
-            {/* Parallax Hero Section */}
-            <div className="relative h-[70vh] overflow-hidden flex items-center justify-center">
+            {/* Subtle Grain Texture */}
+            <div className="fixed inset-0 bg-noise opacity-[0.015] pointer-events-none z-50" />
+
+            {/* Hero Section */}
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+                {/* Background Image with Overlay */}
                 <motion.div
                     style={{ y }}
-                    className="absolute inset-0 z-0"
+                    className="absolute inset-0"
                 >
-                    <div className="absolute inset-0 bg-black/60 z-10" />
+                    <div className="absolute inset-0 bg-black/70 z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
                     <Image
                         src="https://images.unsplash.com/photo-1596720426673-e4e15688cafb?auto=format&fit=crop&q=80"
-                        alt="Indian Parliament"
+                        alt="Parliament"
                         fill
-                        className="object-cover"
+                        className="object-cover opacity-40"
+                        priority
                     />
                 </motion.div>
 
-                <div className="relative z-20 text-center max-w-4xl mx-auto px-6">
+                {/* Content */}
+                <div className="relative z-20 text-center max-w-6xl mx-auto px-6 py-32">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="space-y-8"
                     >
-                        <Chip color="primary" variant="shadow" className="mb-6">EST. 2024</Chip>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Arsenic Summit</span>
-                        </h1>
-                        <p className="text-xl text-gray-300 leading-relaxed">
+                        {/* Badge */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600/10 border border-blue-500/30 backdrop-blur-sm"
+                        >
+                            <Star size={14} className="text-blue-400" />
+                            <span className="text-sm font-medium text-blue-300">Established 2024</span>
+                        </motion.div>
+
+                        {/* Main Heading */}
+                        <div className="space-y-4">
+                            <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
+                                About
+                            </h1>
+                            <div className="text-6xl md:text-8xl font-bold text-blue-500">
+                                ARSENIC Summit
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
                             A premier platform empowering the next generation of leaders through
                             immersive parliamentary simulations and competitive discourse.
                         </p>
+
+                        {/* Stats Grid */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 max-w-4xl mx-auto"
+                        >
+                            {stats.map((stat, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.7 + index * 0.1 }}
+                                    className="border border-white/5 rounded-2xl p-6 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] transition-colors"
+                                >
+                                    <stat.icon size={24} className="text-blue-500 mb-3 mx-auto" />
+                                    <div className="text-3xl font-bold text-white mb-1">{stat.number}</div>
+                                    <div className="text-sm text-gray-500">{stat.label}</div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
                     </motion.div>
                 </div>
-            </div>
+            </section>
 
-            {/* Mission & Vision Section */}
-            <div className="py-24 px-6 max-w-7xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-16 items-center mb-32">
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2 className="text-4xl font-bold mb-6">Our Mission</h2>
-                        <p className="text-lg text-gray-400 mb-6 leading-relaxed">
-                            To provide a world-class platform for students to develop diplomatic skills,
-                            critical thinking, and public speaking. We believe in the power of youth
-                            to shape the future through constructive dialogue and informed debate.
-                        </p>
-                        <p className="text-lg text-gray-400 leading-relaxed">
-                            At Arsenic Summit, we go beyond traditional simulations. We create an
-                            environment where every voice matters, and every delegate has the
-                            opportunity to make a lasting impact.
-                        </p>
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="relative"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl transform rotate-3 opacity-20 blur-xl" />
-                        <div className="relative w-full h-96 rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
-                            <Image
-                                src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80"
-                                alt="Mission"
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-                    </motion.div>
-                </div>
+            {/* Mission Section */}
+            <section className="relative py-32 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        {/* Text Content */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6 }}
+                            className="space-y-8"
+                        >
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 border border-blue-500/30">
+                                    <Heart size={14} className="text-blue-400" />
+                                    <span className="text-sm font-medium text-blue-300">Our Purpose</span>
+                                </div>
+                                <h2 className="text-5xl md:text-6xl font-bold">
+                                    Our Mission
+                                </h2>
+                            </div>
 
-                {/* Values Section */}
-                <div className="mb-32">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold mb-4">Our Core Values</h2>
-                        <p className="text-gray-400">The principles that guide every aspect of our summit.</p>
+                            <div className="space-y-6 text-lg text-gray-400 leading-relaxed">
+                                <p>
+                                    To provide a world-class platform for students to develop diplomatic skills,
+                                    critical thinking, and public speaking. We believe in the power of youth
+                                    to shape the future through constructive dialogue and informed debate.
+                                </p>
+                                <p>
+                                    At ARSENIC Summit, we go beyond traditional simulations. We create an
+                                    environment where every voice matters, and every delegate has the
+                                    opportunity to make a lasting impact on global discourse.
+                                </p>
+                            </div>
+
+                            <div className="pt-4">
+                                <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-blue-700 rounded-full" />
+                            </div>
+                        </motion.div>
+
+                        {/* Image */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6 }}
+                            className="relative group"
+                        >
+                            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent z-10" />
+                                <Image
+                                    src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80"
+                                    alt="Mission"
+                                    fill
+                                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                />
+                            </div>
+                        </motion.div>
                     </div>
+                </div>
+            </section>
+
+            {/* Values Section */}
+            <section className="relative py-32 px-6">
+                <div className="max-w-7xl mx-auto">
+                    {/* Section Header */}
+                    <div className="text-center mb-20 space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 border border-blue-500/30"
+                        >
+                            <Lightbulb size={14} className="text-blue-400" />
+                            <span className="text-sm font-medium text-blue-300">What We Stand For</span>
+                        </motion.div>
+
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-5xl md:text-6xl font-bold"
+                        >
+                            Core Values
+                        </motion.h2>
+                    </div>
+
+                    {/* Values Grid */}
                     <div className="grid md:grid-cols-3 gap-8">
                         {values.map((val, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.2 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: index * 0.15 }}
+                                className="group relative"
                             >
-                                <Card className="bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all h-full">
-                                    <CardBody className="p-8 text-center">
-                                        <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center ${val.bg} ${val.color}`}>
-                                            <val.icon size={32} />
-                                        </div>
-                                        <h3 className="text-xl font-bold mb-3">{val.title}</h3>
-                                        <p className="text-gray-400">{val.description}</p>
-                                    </CardBody>
-                                </Card>
+                                <div className="border border-white/10 rounded-3xl p-8 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-300 h-full">
+                                    {/* Number */}
+                                    <div className="text-7xl font-bold text-white/5 mb-6">
+                                        {val.number}
+                                    </div>
+
+                                    {/* Icon */}
+                                    <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/30 flex items-center justify-center mb-6 group-hover:bg-blue-600/20 transition-colors">
+                                        <val.icon size={32} className="text-blue-500" />
+                                    </div>
+
+                                    {/* Content */}
+                                    <h3 className="text-2xl font-bold mb-4">{val.title}</h3>
+                                    <p className="text-gray-400 leading-relaxed">{val.description}</p>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
+            </section>
 
-                {/* What We Offer */}
-                <div className="mb-32">
-                    <div className="bg-gradient-to-r from-zinc-900 to-black rounded-3xl p-12 border border-white/10 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-                        <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-12 text-center">What We Offer</h2>
-                            <div className="grid md:grid-cols-4 gap-6">
-                                {offerings.map((offer, index) => (
-                                    <motion.div
-                                        key={index}
-                                        whileHover={{ scale: 1.05 }}
-                                        className="bg-white/5 p-6 rounded-xl border border-white/5 hover:border-blue-500/30 transition-colors"
-                                    >
-                                        <offer.icon className="w-10 h-10 text-blue-400 mb-4" />
-                                        <h3 className="font-bold mb-2">{offer.title}</h3>
-                                        <p className="text-sm text-gray-400">{offer.desc}</p>
-                                    </motion.div>
-                                ))}
-                            </div>
+            {/* Offerings Section */}
+            <section className="relative py-32 px-6">
+                <div className="max-w-7xl mx-auto">
+                    {/* Section Header */}
+                    <div className="text-center mb-20 space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 border border-blue-500/30"
+                        >
+                            <Sparkles size={14} className="text-blue-400" />
+                            <span className="text-sm font-medium text-blue-300">Our Programs</span>
+                        </motion.div>
+
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-5xl md:text-6xl font-bold"
+                        >
+                            What We Offer
+                        </motion.h2>
+                    </div>
+
+                    {/* Offerings Grid */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {offerings.map((offer, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: index * 0.1 }}
+                                className="group relative"
+                            >
+                                <div className="border border-white/10 rounded-3xl p-10 bg-white/[0.02] backdrop-blur-sm hover:border-blue-500/30 transition-all duration-300 h-full">
+                                    {/* Icon */}
+                                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${offer.color} bg-opacity-10 flex items-center justify-center mb-6`}>
+                                        <offer.icon size={36} className="text-blue-500" />
+                                    </div>
+
+                                    {/* Content */}
+                                    <h3 className="text-3xl font-bold mb-4">{offer.title}</h3>
+                                    <p className="text-gray-400 text-lg leading-relaxed">{offer.desc}</p>
+
+                                    {/* Arrow Icon */}
+                                    <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <ArrowRight size={24} className="text-blue-500" />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="relative py-32 px-6">
+                <div className="max-w-4xl mx-auto text-center space-y-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <h2 className="text-5xl md:text-6xl font-bold mb-6">
+                            Ready to Make History?
+                        </h2>
+                        <p className="text-xl text-gray-400 leading-relaxed mb-12">
+                            Join hundreds of delegates from across the nation in this celebration
+                            of democracy, diplomacy, and meaningful discourse.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <Button
+                                as={Link}
+                                href="/register"
+                                size="lg"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base"
+                                endContent={<ArrowRight size={20} />}
+                            >
+                                Register Now
+                            </Button>
+                            <Button
+                                as={Link}
+                                href="/team"
+                                size="lg"
+                                variant="bordered"
+                                className="border-white/20 hover:border-blue-500/50 hover:bg-blue-500/5 text-white font-semibold px-8 h-14 text-base"
+                            >
+                                Meet the Team
+                            </Button>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
-
-                {/* CTA Section */}
-                <div className="text-center max-w-2xl mx-auto">
-                    <h2 className="text-4xl font-bold mb-6">Ready to Make History?</h2>
-                    <p className="text-gray-400 mb-8 text-lg">
-                        Join hundreds of delegates from across the nation in this celebration of democracy.
-                    </p>
-                    <div className="flex justify-center gap-4">
-                        <Button
-                            as={Link}
-                            href="/register"
-                            size="lg"
-                            className="bg-gradient-to-r from-blue-600 to-cyan-600 font-bold text-white shadow-lg shadow-blue-500/25"
-                            endContent={<ArrowRight />}
-                        >
-                            Register Now
-                        </Button>
-                        <Button
-                            as={Link}
-                            href="/team"
-                            size="lg"
-                            variant="bordered"
-                            className="text-white border-white/20 font-semibold"
-                        >
-                            Meet the Team
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
     );
 }
