@@ -1,7 +1,7 @@
-import { Metadata, Route } from 'next';
+import { MetadataRoute } from 'next';
 
-export default function sitemap(): Metadata {
-    const baseUrl = 'https://arsenicsummit.com';
+export default function sitemap(): MetadataRoute.Sitemap {
+    const baseUrl = 'https://arsenicsummit.org';
 
     // Static routes
     const routes = [
@@ -20,5 +20,5 @@ export default function sitemap(): Metadata {
         priority: route === '' ? 1 : 0.8,
     }));
 
-    return routes as any; // Type casting to avoid strict Metadata type issues in some Next.js versions
+    return routes;
 }
