@@ -1,5 +1,5 @@
-import { databases, account, ID } from '@/lib/appwrite';
-import { Query } from 'appwrite';
+import { databases, account, ID, Query } from '@/lib/appwrite';
+
 
 export interface ForumPost {
   id: string;
@@ -185,11 +185,13 @@ export async function getForumPosts(
     const results = await databases.listDocuments(
       databaseId,
       'forum_posts',
-      filters,
-      limit,
-      0,
-      undefined,
-      ['-isPinned', '-createdAt'] // Pin important posts first
+      [
+        ...filters,
+        Query.limit(limit),
+        Query.offset(0),
+        Query.orderDesc('isPinned'),
+        Query.orderDesc('createdAt')
+      ]
     );
 
     return results.documents.map((post) => ({
@@ -211,44 +213,6 @@ export async function getForumPosts(
     }));
   } catch (error) {
     console.error('Error fetching forum posts:', error);
-    throw error;
-  }
-}
-
-/**
- * Get replies to post
- */
-export async function getPostReplies(postId: string): Promise<ForumReply[]> {
-  try {
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-
-    if (!databaseId) {
-      throw new Error('Database not configured');
-    }
-
-    const results = await databases.listDocuments(
-      databaseId,
-      'forum_replies',
-      [`postId == "${postId}"`],
-      100,
-      0,
-      undefined,
-      ['-isAnswer', '-likes', '-createdAt'] // Show answers first
-    );
-
-    return results.documents.map((reply) => ({
-      id: reply.$id,
-      postId: reply.postId,
-      authorId: reply.authorId,
-      authorName: reply.authorName,
-      content: reply.content,
-      likes: reply.likes || 0,
-      isAnswer: reply.isAnswer || false,
-      createdAt: new Date(reply.createdAt),
-      updatedAt: new Date(reply.updatedAt),
-    }));
-  } catch (error) {
-    console.error('Error fetching replies:', error);
     throw error;
   }
 }
