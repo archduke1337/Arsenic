@@ -51,7 +51,16 @@ export async function submitScore(
       }
     );
 
-    return scoreDoc as Score;
+    return {
+      registrationId: scoreDoc.registrationId,
+      eventId: scoreDoc.eventId,
+      committeeId: scoreDoc.committeeId,
+      score: scoreDoc.score,
+      feedback: scoreDoc.feedback,
+      rank: scoreDoc.rank,
+      createdAt: new Date(scoreDoc.createdAt),
+      updatedAt: new Date(scoreDoc.updatedAt),
+    } as Score;
   } catch (error) {
     console.error('Error submitting score:', error);
     throw error;
@@ -83,7 +92,16 @@ export async function updateScore(
       }
     );
 
-    return updated as Score;
+    return {
+      registrationId: updated.registrationId,
+      eventId: updated.eventId,
+      committeeId: updated.committeeId,
+      score: updated.score,
+      feedback: updated.feedback,
+      rank: updated.rank,
+      createdAt: new Date(updated.createdAt),
+      updatedAt: new Date(updated.updatedAt),
+    } as Score;
   } catch (error) {
     console.error('Error updating score:', error);
     throw error;
