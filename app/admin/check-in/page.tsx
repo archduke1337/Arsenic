@@ -110,7 +110,7 @@ export default function CheckInPage() {
             }
 
             if (registration.checkedIn) {
-                toast.warning(`${registration.name} is already checked in`);
+                toast.warning(`${registration.fullName || registration.name || 'This person'} is already checked in`);
                 playSound('warning');
                 return;
             }
@@ -205,11 +205,16 @@ export default function CheckInPage() {
         });
     };
 
-    const filteredRegistrations = registrations.filter(r =>
-        r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.school?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredRegistrations = registrations.filter(r => {
+        if (!searchQuery) return false;
+        const query = searchQuery.toLowerCase();
+        return (
+            (r.fullName?.toLowerCase().includes(query)) ||
+            (r.name?.toLowerCase().includes(query)) ||
+            (r.email?.toLowerCase().includes(query)) ||
+            (r.institution?.toLowerCase().includes(query))
+        );
+    });
 
     return (
         <div className="min-h-screen bg-black p-8">
@@ -374,10 +379,10 @@ export default function CheckInPage() {
                                         >
                                             <div className="flex justify-between items-start">
                                                 <div className="flex-1">
-                                                    <p className="font-semibold">{reg.name}</p>
+                                                    <p className="font-semibold">{reg.fullName || reg.name || 'Unknown'}</p>
                                                     <p className="text-xs text-gray-400">{reg.email}</p>
-                                                    {reg.school && (
-                                                        <p className="text-xs text-gray-500">{reg.school}</p>
+                                                    {reg.institution && (
+                                                        <p className="text-xs text-gray-500">{reg.institution}</p>
                                                     )}
                                                 </div>
                                                 {reg.checkedIn ? (
@@ -414,12 +419,12 @@ export default function CheckInPage() {
                                         key={reg.$id}
                                         className="p-3 bg-white/5 rounded-lg border border-white/10"
                                     >
-                                        <p className="font-semibold text-sm">{reg.name}</p>
+                                        <p className="font-semibold text-sm">{reg.fullName || reg.name || 'Unknown Attendee'}</p>
                                         <p className="text-xs text-gray-400">
-                                            {new Date(reg.checkedInAt).toLocaleTimeString('en-IN', {
+                                            {reg.checkedInAt ? new Date(reg.checkedInAt).toLocaleTimeString('en-IN', {
                                                 hour: '2-digit',
                                                 minute: '2-digit',
-                                            })}
+                                            }) : 'Just now'}
                                         </p>
                                     </div>
                                 ))}
