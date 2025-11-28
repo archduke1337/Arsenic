@@ -26,7 +26,7 @@ export default function PaymentStep({ data }: Props) {
                         amount: data.amount,
                         email: data.email,
                         name: data.fullName,
-                        registrationId: data.registrationCode,
+                        registrationId: `REG_${Date.now()}`,
                     }),
                 });
                 const result = await response.json();
@@ -41,7 +41,7 @@ export default function PaymentStep({ data }: Props) {
                         email: data.email,
                         name: data.fullName,
                         phone: data.phone,
-                        registrationId: data.registrationCode,
+                        registrationId: `REG_${Date.now()}`,
                     }),
                 });
                 const result = await response.json();
