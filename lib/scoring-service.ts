@@ -1,15 +1,7 @@
 import { databases, ID } from '@/lib/appwrite';
-
-export interface Score {
-  registrationId: string;
-  eventId: string;
-  committeeId: string;
-  score: number;
-  feedback?: string;
-  rank?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { COLLECTIONS } from '@/lib/schema';
+import type { Score } from '@/lib/schema';
+import { Query } from 'appwrite';
 
 export interface Leaderboard {
   rank: number;
@@ -38,7 +30,7 @@ export async function submitScore(
   try {
     const scoreDoc = await databases.createDocument(
       databaseId,
-      'scores',
+      COLLECTIONS.SCORES,
       ID.unique(),
       {
         registrationId,
@@ -46,8 +38,8 @@ export async function submitScore(
         committeeId,
         score: Math.min(100, Math.max(0, score)), // Clamp between 0-100
         feedback,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       }
     );
 
@@ -58,8 +50,8 @@ export async function submitScore(
       score: scoreDoc.score,
       feedback: scoreDoc.feedback,
       rank: scoreDoc.rank,
-      createdAt: new Date(scoreDoc.createdAt),
-      updatedAt: new Date(scoreDoc.updatedAt),
+      createdAt: scoreDoc.createdAt,
+      updatedAt: scoreDoc.updatedAt,
     } as Score;
   } catch (error) {
     console.error('Error submitting score:', error);
@@ -83,12 +75,12 @@ export async function updateScore(
   try {
     const updated = await databases.updateDocument(
       databaseId,
-      'scores',
+      COLLECTIONS.SCORES,
       scoreId,
       {
         score: Math.min(100, Math.max(0, score)),
         feedback,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       }
     );
 
@@ -99,8 +91,8 @@ export async function updateScore(
       score: updated.score,
       feedback: updated.feedback,
       rank: updated.rank,
-      createdAt: new Date(updated.createdAt),
-      updatedAt: new Date(updated.updatedAt),
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
     } as Score;
   } catch (error) {
     console.error('Error updating score:', error);
@@ -122,17 +114,15 @@ export async function getLeaderboard(
   }
 
   try {
-    // Build query filters
-    const filters = [`eventId == "${eventId}"`];
-    if (committeeId) {
-      filters.push(`committeeId == "${committeeId}"`);
-    }
-
     // Fetch all scores
     const scoresResponse = await databases.listDocuments(
       databaseId,
-      'scores',
-      filters
+      COLLECTIONS.SCORES,
+      [
+        Query.equal("eventId", eventId),
+        ...(committeeId ? [Query.equal("committeeId", committeeId)] : []),
+        Query.limit(1000)
+      ]
     );
 
     // Group scores by registration and calculate averages
@@ -153,8 +143,8 @@ export async function getLeaderboard(
     // Fetch registration details for names
     const registrationsResponse = await databases.listDocuments(
       databaseId,
-      'registrations',
-      [`eventId == "${eventId}"`]
+      COLLECTIONS.REGISTRATIONS,
+      [Query.equal("eventId", eventId), Query.limit(1000)]
     );
 
     for (const reg of registrationsResponse.documents) {
@@ -237,7 +227,7 @@ async function getParticipantName(
   try {
     const reg = await databases.getDocument(
       databaseId,
-      'registrations',
+      COLLECTIONS.REGISTRATIONS,
       registrationId
     );
     return reg.fullName || 'Unknown';
@@ -259,11 +249,10 @@ export async function getCommitteeRankings(
 
   try {
     // Get all committees for event
-    // Get all committees for event
     const committeesResponse = await databases.listDocuments(
       databaseId,
-      'committees',
-      [`eventType == "MUN"`] // Adjust as needed
+      COLLECTIONS.COMMITTEES,
+      [Query.limit(100)]
     );
     const rankings: Record<string, Leaderboard[]> = {};
 
@@ -327,8 +316,8 @@ export async function getScoreStats(eventId: string): Promise<{
   try {
     const scoresResponse = await databases.listDocuments(
       databaseId,
-      'scores',
-      [`eventId == "${eventId}"`]
+      COLLECTIONS.SCORES,
+      [Query.equal("eventId", eventId), Query.limit(1000)]
     );
     const scores = scoresResponse.documents.map((doc) => doc.score);
 

@@ -1,23 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { databases, DATABASE_ID } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
+import { COLLECTIONS, registrationSchema } from "@/lib/schema";
 import { ID } from "appwrite";
-import { z } from "zod";
-
-const registrationSchema = z.object({
-    userId: z.string().min(1),
-    eventId: z.string().min(1),
-    fullName: z.string().min(2),
-    email: z.string().email(),
-    phone: z.string().optional(),
-    institution: z.string().optional(),
-});
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        // Validate with Zod
+        // Validate with Zod schema
         const validationResult = registrationSchema.safeParse(body);
 
         if (!validationResult.success) {
@@ -32,8 +22,8 @@ export async function POST(request: NextRequest) {
 
         const validData = validationResult.data;
 
-        // Generate registration code
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        // Generate registration code if not provided
+        const code = validData.code || Math.random().toString(36).substring(2, 8).toUpperCase();
 
         // Create registration in Appwrite
         const registration = await databases.createDocument(
@@ -43,9 +33,11 @@ export async function POST(request: NextRequest) {
             {
                 ...validData,
                 code,
-                status: "confirmed",
-                paymentStatus: "pending",
+                status: validData.status || "confirmed",
+                paymentStatus: validData.paymentStatus || "pending",
+                checkedIn: false,
                 createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
             }
         );
 

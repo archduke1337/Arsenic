@@ -98,18 +98,18 @@ export const eventSchema = z.object({
     endDate: z.string(),
     registrationDeadline: z.string().optional(),
     portfolioReleaseDate: z.string().optional(),
-    fees: z.number(),
-    earlyBirdFee: z.number().optional(),
-    earlyBirdDeadline: z.string().optional(),
+    fees: z.number().default(0),
     capacity: z.number().optional(),
     venue: z.string().optional(),
     imageUrl: z.string().optional(),
-    isActive: z.boolean(),
-    // New fields for enhanced event management
+    isActive: z.boolean().default(true),
+    // Theme
     theme: eventThemeSchema.optional(),
-    feeStructure: feeStructureSchema.optional(),
-    paymentConfig: paymentConfigSchema.optional(),
-    settings: eventSettingsSchema.optional(),
+    // Fee Structure (JSON string)
+    feeStructure: z.string().optional(),
+    // Payment & Settings (JSON strings)
+    paymentConfig: z.string().optional(),
+    settings: z.string().optional(),
 });
 
 // MUN-specific data
@@ -176,17 +176,17 @@ export const committeeSchema = z.object({
     linkedEventId: z.string().optional(),
     difficultyTag: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
     // Format-specific data (stored as JSON strings in Appwrite)
-    munData: munDataSchema.optional(),
-    lokSabhaData: lokSabhaDataSchema.optional(),
-    rajyaSabhaData: rajyaSabhaDataSchema.optional(),
-    debateData: debateDataSchema.optional(),
+    munData: z.string().optional(), // JSON string
+    lokSabhaData: z.string().optional(), // JSON string
+    rajyaSabhaData: z.string().optional(), // JSON string
+    debateData: z.string().optional(), // JSON string
 });
 
 // Enhanced Registration Schema
 export const registrationSchema = z.object({
     userId: z.string(),
     eventId: z.string(),
-    code: z.string(),
+    code: z.string().min(1).optional(), // Generated if not provided
     fullName: z.string(),
     email: z.string().email(),
     phone: z.string().optional(),
@@ -194,16 +194,19 @@ export const registrationSchema = z.object({
     grade: z.string().optional(),
     city: z.string().optional(),
     age: z.number().optional(),
-    committeePreferences: z.array(z.string()).optional(),
+    committeePreferences: z.array(z.string()).default([]),
     assignedCommittee: z.string().optional(),
     assignedPortfolio: z.string().optional(),
-    paymentStatus: z.enum(["pending", "paid", "refunded", "failed"]),
+    paymentStatus: z.enum(["pending", "paid", "refunded", "failed"]).default("pending"),
     paymentAmount: z.number().optional(),
-    status: z.enum(["pending", "confirmed", "cancelled"]),
-    // New fields for check-in system
+    status: z.enum(["pending", "confirmed", "cancelled"]).default("pending"),
+    // Check-in system
     checkedIn: z.boolean().default(false),
     checkedInAt: z.string().optional(),
     qrCode: z.string().optional(),
+    // Timestamps
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
 });
 
 // Enhanced Team Member Schema (Hierarchical)
@@ -263,6 +266,59 @@ export const sponsorSchema = z.object({
     websiteUrl: z.string().optional(),
     displayOrder: z.number().optional(),
     isActive: z.boolean().default(true),
+});
+
+// Scores Schema (for ranking and leaderboards)
+export const scoreSchema = z.object({
+    registrationId: z.string(),
+    eventId: z.string(),
+    committeeId: z.string(),
+    score: z.number().min(0).max(100),
+    feedback: z.string().optional(),
+    rank: z.number().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+// Attendance Schema (for check-in tracking)
+export const attendanceSchema = z.object({
+    registrationId: z.string(),
+    eventId: z.string(),
+    committeeId: z.string().optional(),
+    checkedInAt: z.string(),
+    checkedInBy: z.string().optional(),
+    checkOutTime: z.string().optional(),
+    attendanceStatus: z.enum(['present', 'absent', 'late', 'excused']).default('present'),
+});
+
+// Coupons Schema (for discount management)
+export const couponSchema = z.object({
+    code: z.string().min(1),
+    eventId: z.string(),
+    discountType: z.enum(['percentage', 'fixed']),
+    discountValue: z.number().positive(),
+    maxUses: z.number().optional(),
+    currentUses: z.number().default(0),
+    expiryDate: z.string().optional(),
+    isActive: z.boolean().default(true),
+    createdBy: z.string(),
+    createdAt: z.string(),
+});
+
+// Alumni Schema
+export const alumniSchema = z.object({
+    userId: z.string(),
+    name: z.string(),
+    email: z.string().email(),
+    institution: z.string().optional(),
+    graduationYear: z.string().optional(),
+    eventsAttended: z.array(z.string()).default([]),
+    achievements: z.array(z.string()).optional(),
+    bio: z.string().optional(),
+    profileImageUrl: z.string().optional(),
+    linkedinUrl: z.string().optional(),
+    isActive: z.boolean().default(true),
+    joinedAt: z.string(),
 });
 
 // Awards Schema
@@ -331,3 +387,7 @@ export type Award = z.infer<typeof awardSchema>;
 export type FAQ = z.infer<typeof faqSchema>;
 export type SpeakerUpdate = z.infer<typeof speakerUpdateSchema>;
 export type ContactSubmission = z.infer<typeof contactSubmissionSchema>;
+export type Score = z.infer<typeof scoreSchema>;
+export type Attendance = z.infer<typeof attendanceSchema>;
+export type Coupon = z.infer<typeof couponSchema>;
+export type Alumni = z.infer<typeof alumniSchema>;

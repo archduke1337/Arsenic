@@ -125,7 +125,7 @@ export default function AdminDashboard() {
                                     <Progress 
                                         value={confirmationRate} 
                                         className="h-1" 
-                                        classNames={{ indicator: "bg-green-500" }
+                                        classNames={{ indicator: "bg-green-500" }}
                                     />
                                 </div>
                             </div>
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
                                     <Progress 
                                         value={checkInRate} 
                                         className="h-1" 
-                                        classNames={{ indicator: "bg-purple-500" }
+                                        classNames={{ indicator: "bg-purple-500" }}
                                     />
                                 </div>
                             </div>
