@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Select, SelectItem, Card, CardBody } from "@heroui/react";
+import { Button, Input, Select, SelectItem, Card, CardBody } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
 export default function EventRegistration() {

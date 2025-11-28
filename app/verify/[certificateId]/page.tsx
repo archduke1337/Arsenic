@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
     Card, CardBody, Input, Button, Spinner, Chip
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { CheckCircle, XCircle, Search, Trophy, Calendar, MapPin, User } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
