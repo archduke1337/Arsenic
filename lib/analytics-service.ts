@@ -1,4 +1,5 @@
 import { databases } from '@/lib/appwrite';
+import { Query } from 'appwrite';
 
 export interface AnalyticsData {
   registrationStats: {
@@ -98,8 +99,7 @@ export async function getRevenueAnalytics(eventId?: string): Promise<{
     const payments = await databases.listDocuments(
       databaseId,
       'payments',
-      filters,
-      10000
+      [...filters, Query.limit(10000)]
     );
 
     const stats = {
@@ -223,8 +223,7 @@ export async function getEventMetrics(eventId: string): Promise<{
     const scores = await databases.listDocuments(
       databaseId,
       'scores',
-      [`eventId == "${eventId}"`],
-      10000
+      [`eventId == "${eventId}"`, Query.limit(10000)]
     );
 
     const avgScore =
