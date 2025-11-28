@@ -3,7 +3,7 @@
 import {
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Button, Chip, Divider, Card, CardBody
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { User, Mail, Phone, School, Calendar, DollarSign, CreditCard, CheckCircle, XCircle, MapPin } from "lucide-react";
 import QRCodeDisplay from "./QRCodeDisplay";
 

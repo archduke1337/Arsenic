@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { Button, User } from "@heroui/react";
+import { Button, User } from "@nextui-org/react";
 import {
     LayoutDashboard,
     Calendar,

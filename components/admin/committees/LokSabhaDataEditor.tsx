@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Input, Button, Select, SelectItem, Chip } from "@heroui/react";
+import { Card, CardBody, Input, Button, Select, SelectItem, Chip } from "@nextui-org/react";
 import { Plus, X, Building2 } from "lucide-react";
 import { useState } from "react";
 

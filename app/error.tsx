@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@heroui/react";
+import { Button } from "@nextui-org/react";
 import { RefreshCcw, AlertOctagon } from "lucide-react";
 
 export default function Error({

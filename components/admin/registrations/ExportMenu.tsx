@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { Download, FileText, File, FileSpreadsheet } from "lucide-react";
 import {
     exportToCSV,

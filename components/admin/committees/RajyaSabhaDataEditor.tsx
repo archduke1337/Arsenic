@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Input, Button, Chip } from "@heroui/react";
+import { Card, CardBody, Input, Button, Chip } from "@nextui-org/react";
 import { Plus, X, Users, Upload, Download, GripVertical } from "lucide-react";
 import { useState, useRef } from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';

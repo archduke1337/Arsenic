@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Card, CardBody, Button, Progress, Image } from "@heroui/react";
+import { Card, CardBody, Button, Progress, Image } from "@nextui-org/react";
 import { Upload, X, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { storage } from "@/lib/appwrite";
 import { ID } from "appwrite";

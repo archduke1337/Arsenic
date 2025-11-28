@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Avatar, Button, Chip, Input } from "@heroui/react";
+import { Card, CardBody, Avatar, Button, Chip, Input } from "@nextui-org/react";
 import { Search, MessageCircle, MapPin } from "lucide-react";
 
 export default function NetworkingPage() {

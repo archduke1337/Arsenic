@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Card, CardBody, Image as NextUIImage, Chip, Spinner } from "@heroui/react";
+import { Button, Card, CardBody, Image as NextUIImage, Chip, Spinner } from "@nextui-org/react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Linkedin, Twitter, Instagram, Mail, Github } from "lucide-react";

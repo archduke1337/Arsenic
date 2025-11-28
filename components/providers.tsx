@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider } from "@nextui-org/react";
 import { ReactNode, useState, useEffect } from "react";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";

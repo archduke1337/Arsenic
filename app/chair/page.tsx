@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, Spinner, Chip, Progress } from "@heroui/react";
+import { Card, CardBody, Spinner, Chip, Progress } from "@nextui-org/react";
 import { Users, ClipboardCheck, Trophy, Calendar, Clock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { databases } from "@/lib/appwrite";

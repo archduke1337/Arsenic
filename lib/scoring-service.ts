@@ -187,11 +187,10 @@ export async function getParticipantRanking(
 ): Promise<{ rank: number; score: number; outOf: number }> {
   try {
     const leaderboard = await getLeaderboard(eventId);
+    const participantName = await getParticipantName(registrationId, eventId);
 
     const participant = leaderboard.find(
-      (item) =>
-        item.participantName ===
-        (await getParticipantName(registrationId, eventId))
+      (item) => item.participantName === participantName
     );
 
     if (!participant) {

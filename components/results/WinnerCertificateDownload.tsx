@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@nextui-org/react";
 import { Download } from "lucide-react";
 import { useState } from "react";
 import { generateCertificate } from "@/lib/certificate-generator";

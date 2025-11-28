@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, CardBody, Divider, Tab, Tabs } from "@heroui/react";
+import { Button, Card, CardBody, Divider, Tab, Tabs } from "@nextui-org/react";
 import { RegistrationData } from "../registration-form";
 import { CreditCard, Wallet } from "lucide-react";
 

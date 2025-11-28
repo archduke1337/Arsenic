@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@heroui/react";
+import { Input } from "@nextui-org/react";
 import { RegistrationData } from "../registration-form";
 
 interface Props {

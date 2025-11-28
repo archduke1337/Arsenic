@@ -1,4 +1,4 @@
-import { heroui } from "@heroui/react";
+import { nextui } from "@nextui-org/react";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -35,5 +35,5 @@ export default {
         },
     },
     darkMode: "class",
-    plugins: [heroui()],
+    plugins: [nextui()],
 }

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Card, CardBody, Chip } from "@heroui/react";
+import { Card, CardBody, Chip } from "@nextui-org/react";
 import { CheckCircle, User, Calendar } from "lucide-react";
 
 interface CheckInSuccessProps {

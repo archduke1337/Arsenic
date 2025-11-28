@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Input, Button, Select, SelectItem, Chip, Progress } from "@heroui/react";
+import { Card, CardBody, Input, Button, Select, SelectItem, Chip, Progress } from "@nextui-org/react";
 import { Upload, X, FolderOpen, Image as ImageIcon, Check } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";

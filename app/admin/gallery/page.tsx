@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
     Card, CardBody, Button, Select, SelectItem, Tabs, Tab, Chip, Checkbox
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { Plus, Image as ImageIcon, Trash2, Eye, Edit, Star } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";

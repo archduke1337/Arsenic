@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
     Card, CardBody, Input, Select, SelectItem, Button,
     Chip, Avatar, Spinner, Pagination
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { Search, Trophy, Medal, ChevronRight } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";

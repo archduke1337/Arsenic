@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, CardFooter, Chip, Input, Tab, Tabs, Spinner } from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, Chip, Input, Tab, Tabs, Spinner } from "@nextui-org/react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Calendar, MapPin, Users, ArrowRight } from "lucide-react";

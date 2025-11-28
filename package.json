@@ -7,13 +7,13 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+        "lint": "eslint . --ext .ts,.tsx"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/sortable": "^10.0.0",
         "@hookform/resolvers": "^5.2.2",
-        "@heroui/react": "^3.0.0",
+        "@nextui-org/react": "^2.6.11",
         "@tanstack/react-query": "^5.90.11",
         "@tiptap/extension-placeholder": "^3.11.0",
         "@tiptap/react": "^3.11.0",

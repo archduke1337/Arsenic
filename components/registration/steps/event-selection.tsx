@@ -1,6 +1,6 @@
 "use client";
 
-import { RadioGroup, Radio, Select, SelectItem, Input } from "@heroui/react";
+import { RadioGroup, Radio, Select, SelectItem, Input } from "@nextui-org/react";
 import { RegistrationData } from "../registration-form";
 import { EVENT_TYPES, EVENT_TYPE_LABELS } from "@/lib/schema";
 

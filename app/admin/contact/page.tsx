@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Button } from "@heroui/react";
+import { Card, CardBody, Button } from "@nextui-org/react";
 
 export default function AdminContact() {
     // TODO: Fetch from Appwrite

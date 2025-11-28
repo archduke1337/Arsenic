@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Spinner } from "@heroui/react";
+import { Card, CardBody, Spinner } from "@nextui-org/react";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
 import { databases } from "@/lib/appwrite";

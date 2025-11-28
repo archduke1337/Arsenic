@@ -10,19 +10,12 @@ import {
     NavbarMenuItem,
     Button,
     Link,
-<<<<<<< Updated upstream
+    Dropdown,
+    DropdownTrigger,
+    DropdownMenu,
+    DropdownItem,
+    Avatar,
 } from "@nextui-org/react";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Avatar
-} from "@nextui-org/react";
-
-=======
-} from "@heroui/react";
->>>>>>> Stashed changes
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";

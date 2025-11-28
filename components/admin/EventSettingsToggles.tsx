@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Switch } from "@heroui/react";
+import { Card, CardBody, Switch } from "@nextui-org/react";
 
 interface EventSettings {
     allowDoubleDelegation: boolean;

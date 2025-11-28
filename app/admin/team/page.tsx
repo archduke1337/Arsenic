@@ -5,7 +5,7 @@ import {
     Card, CardBody, Button, Input, Textarea, Select, SelectItem,
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     useDisclosure, Avatar, Chip
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { Plus, Edit, Trash2, User, Upload } from "lucide-react";
 import { databases, storage } from "@/lib/appwrite";
 import { COLLECTIONS, TeamMember } from "@/lib/schema";

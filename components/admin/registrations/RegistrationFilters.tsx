@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, SelectItem, Input, Button, Chip } from "@heroui/react";
+import { Select, SelectItem, Input, Button, Chip } from "@nextui-org/react";
 import { X } from "lucide-react";
 
 interface RegistrationFiltersProps {

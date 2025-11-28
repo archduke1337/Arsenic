@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, Chip, Tabs, Tab, Spinner } from "@heroui/react";
+import { Card, CardBody, Chip, Tabs, Tab, Spinner } from "@nextui-org/react";
 import { Globe, Users, Gavel, MapPin, User } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";

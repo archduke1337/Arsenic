@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Button, Card, Progress, Chip } from '@heroui/react';
+import { Button, Card, Progress, Chip } from '@nextui-org/react';
 
 interface QRScannerProps {
   eventId: string;

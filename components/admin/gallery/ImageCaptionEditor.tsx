@@ -10,7 +10,7 @@ import {
     Button,
     Input,
     Textarea,
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { Save } from "lucide-react";
 
 interface ImageCaptionEditorProps {

@@ -7,7 +7,7 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-} from "@heroui/react";
+} from "@nextui-org/react";
 import { AlertCircle } from "lucide-react";
 
 interface ConfirmDialogProps {
