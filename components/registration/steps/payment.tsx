@@ -15,11 +15,44 @@ export default function PaymentStep({ data }: Props) {
 
     const handlePayment = async () => {
         setIsProcessing(true);
-        // TODO: Implement actual payment integration
-        setTimeout(() => {
+        try {
+            // Implement payment integration with selected gateway
+            if (paymentMethod === "razorpay") {
+                // Call Razorpay API via route handler
+                const response = await fetch('/api/payments/razorpay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: data.amount,
+                        email: data.email,
+                        name: data.fullName,
+                        registrationId: data.registrationCode,
+                    }),
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+            } else {
+                // Call Easebuzz API via route handler
+                const response = await fetch('/api/payments/easebuzz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: data.amount,
+                        email: data.email,
+                        name: data.fullName,
+                        phone: data.phone,
+                        registrationId: data.registrationCode,
+                    }),
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
             setIsProcessing(false);
-            alert("Payment integration pending");
-        }, 2000);
+        }
     };
 
     return (

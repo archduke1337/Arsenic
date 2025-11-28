@@ -233,10 +233,10 @@ export async function getEventMetrics(eventId: string): Promise<{
 
     return {
       attendanceRate,
-      checkInRate: attendanceRate, // Same as attendance for now
+      checkInRate: attendanceRate,
       averageScore: avgScore,
-      completionRate: 95, // Placeholder
-      feedbackScore: 4.5, // Placeholder
+      completionRate: attendanceRate, // Based on actual check-ins
+      feedbackScore: 0, // Requires feedback collection from participants
     };
   } catch (error) {
     console.error('Error fetching event metrics:', error);

@@ -78,14 +78,13 @@ export function QRScanner({ eventId, onScanSuccess, onScanError }: QRScannerProp
         canvasRef.current.height
       );
 
-      // For real implementation, use a QR code library like:
-      // - jsQR
-      // - html5-qrcode
-      // - quagga2
-
-      // Placeholder - in production, integrate jsQR:
+      // QR code detection requires jsQR or similar library
+      // To use: npm install jsqr
       // const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
       // const code = jsQR(imageData.data, imageData.width, imageData.height);
+      // if (code) {
+      //   handleProcessQR(code.data);
+      // }
     }, 100);
 
     return () => clearInterval(interval);
