@@ -183,8 +183,7 @@ export async function GET(request: NextRequest) {
     const registrations = await databases.listDocuments(
       databaseId,
       'registrations',
-      [`eventId == "${eventId}"`],
-      100
+      [`eventId == "${eventId}"`]
     );
 
     // Calculate stats
