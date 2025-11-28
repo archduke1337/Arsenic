@@ -96,6 +96,7 @@ export default function Register() {
                                 }
                                 startContent={<Mail className="text-gray-400" size={18} />}
                                 variant="bordered"
+                                autoComplete="email"
                                 classNames={{
                                     inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
                                     label: "text-gray-400",
@@ -114,6 +115,7 @@ export default function Register() {
                                 }
                                 startContent={<Lock className="text-gray-400" size={18} />}
                                 variant="bordered"
+                                autoComplete="new-password"
                                 classNames={{
                                     inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
                                     label: "text-gray-400",
@@ -132,6 +134,7 @@ export default function Register() {
                                 }
                                 startContent={<Lock className="text-gray-400" size={18} />}
                                 variant="bordered"
+                                autoComplete="new-password"
                                 classNames={{
                                     inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
                                     label: "text-gray-400",

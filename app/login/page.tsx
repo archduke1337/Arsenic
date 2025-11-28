@@ -67,6 +67,7 @@ export default function Login() {
                                 onValueChange={setEmail}
                                 startContent={<Mail className="text-gray-400" size={18} />}
                                 variant="bordered"
+                                autoComplete="email"
                                 classNames={{
                                     inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
                                     label: "text-gray-400",
@@ -83,6 +84,7 @@ export default function Login() {
                                 onValueChange={setPassword}
                                 startContent={<Lock className="text-gray-400" size={18} />}
                                 variant="bordered"
+                                autoComplete="current-password"
                                 classNames={{
                                     inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
                                     label: "text-gray-400",
