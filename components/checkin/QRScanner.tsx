@@ -56,7 +56,7 @@ export function QRScanner({ eventId, onScanSuccess, onScanError }: QRScannerProp
 
     const interval = setInterval(() => {
       const context = canvasRef.current?.getContext('2d');
-      if (!context || !videoRef.current) return;
+      if (!context || !videoRef.current || !canvasRef.current) return;
 
       context.drawImage(
         videoRef.current,
