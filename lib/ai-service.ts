@@ -1,4 +1,4 @@
-import { databases } from '@/lib/appwrite';
+import { databases, Query } from '@/lib/appwrite';
 
 /**
  * AI Features Service
@@ -39,8 +39,7 @@ export async function smartCommitteeMatching(
     const committees = await databases.listDocuments(
       databaseId,
       'committees',
-      [],
-      100
+      [Query.limit(100)]
     );
 
     // For now, use simple matching logic
@@ -192,8 +191,7 @@ export async function analyzePerformancePatterns(eventId: string): Promise<{
     const scores = await databases.listDocuments(
       databaseId,
       'scores',
-      [`eventId == "${eventId}"`],
-      10000
+      [Query.equal('eventId', eventId), Query.limit(10000)]
     );
 
     // Calculate patterns (placeholder)

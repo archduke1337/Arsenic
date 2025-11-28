@@ -250,7 +250,7 @@ export async function getCommitteeRankings(
     const rankings: Record<string, Leaderboard[]> = {};
 
     for (const committee of committeesResponse.documents) {
-      const leaderboard = await getLeaderboard(eventId, committee.$id, 50);
+      const leaderboard = await getLeaderboard(eventId, committee.$id);
       rankings[committee.name] = leaderboard;
     }
 
