@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import {
     Card, CardBody, Input, Select, SelectItem, Button,
-    Chip, Avatar, Spinner, Pagination
+    Chip, Avatar, Spinner, Pagination, Tabs, Tab, Progress
 } from "@nextui-org/react";
-import { Search, Trophy, Medal, ChevronRight } from "lucide-react";
+import { Search, Trophy, Medal, ChevronRight, TrendingUp } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";
 import { Query } from "appwrite";
@@ -16,26 +16,38 @@ const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function ResultsPage() {
     const [awards, setAwards] = useState<any[]>([]);
+    const [scores, setScores] = useState<any[]>([]);
+    const [events, setEvents] = useState<any[]>([]);
+    const [registrations, setRegistrations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedEvent, setSelectedEvent] = useState("ALL");
+    const [selectedTab, setSelectedTab] = useState("leaderboard");
     const [page, setPage] = useState(1);
 
     const itemsPerPage = 12;
 
     useEffect(() => {
-        const fetchAwards = async () => {
+        const fetchData = async () => {
             try {
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    COLLECTIONS.AWARDS,
-                    [
-                        Query.equal("published", true),
-                        Query.orderDesc("$createdAt"),
-                        Query.limit(100)
-                    ]
-                );
-                setAwards(response.documents as unknown as any[]);
+                const [awardsRes, scoresRes, eventsRes, regsRes] = await Promise.all([
+                    databases.listDocuments(
+                        DATABASE_ID,
+                        COLLECTIONS.AWARDS,
+                        [Query.equal("isPublished", true), Query.orderDesc("$createdAt"), Query.limit(100)]
+                    ),
+                    databases.listDocuments(
+                        DATABASE_ID,
+                        COLLECTIONS.SCORES,
+                        [Query.orderDesc("score"), Query.limit(500)]
+                    ),
+                    databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(100)]),
+                    databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.limit(500)]),
+                ]);
+                setAwards(awardsRes.documents as unknown as any[]);
+                setScores(scoresRes.documents as unknown as any[]);
+                setEvents(eventsRes.documents as unknown as any[]);
+                setRegistrations(regsRes.documents as unknown as any[]);
             } catch (error) {
                 console.error("Error fetching results:", error);
             } finally {
@@ -43,36 +55,53 @@ export default function ResultsPage() {
             }
         };
 
-        fetchAwards();
+        fetchData();
     }, []);
 
     const filteredAwards = useMemo(() => {
         return awards.filter(award => {
-            // Event filter
-            if (selectedEvent !== "ALL" && award.eventType !== selectedEvent) return false;
-
-            // Search filter
+            if (selectedEvent !== "ALL" && award.eventId !== selectedEvent) return false;
             if (searchQuery) {
                 const searchLower = searchQuery.toLowerCase();
-                const name = award.registration?.name?.toLowerCase() || "";
-                const school = award.registration?.school?.toLowerCase() || "";
-                const category = getAwardLabel(award.category).toLowerCase();
-
-                return name.includes(searchLower) ||
-                    school.includes(searchLower) ||
-                    category.includes(searchLower);
+                const name = award.recipientName?.toLowerCase() || "";
+                const school = award.school?.toLowerCase() || "";
+                const category = award.category?.toLowerCase() || "";
+                return name.includes(searchLower) || school.includes(searchLower) || category.includes(searchLower);
             }
-
             return true;
         });
     }, [awards, selectedEvent, searchQuery]);
+
+    const filteredScores = useMemo(() => {
+        let result = scores;
+        if (selectedEvent !== "ALL") {
+            result = result.filter(s => s.eventId === selectedEvent);
+        }
+        if (searchQuery) {
+            const searchLower = searchQuery.toLowerCase();
+            result = result.filter(s => {
+                const reg = registrations.find(r => r.$id === s.registrationId);
+                return reg?.fullName?.toLowerCase().includes(searchLower) || false;
+            });
+        }
+        return result;
+    }, [scores, selectedEvent, searchQuery, registrations]);
+
+    const getRegistrationName = (registrationId: string) => {
+        return registrations.find(r => r.$id === registrationId)?.fullName || "Unknown";
+    };
+
+    const paginatedLeaderboard = useMemo(() => {
+        const start = (page - 1) * itemsPerPage;
+        return filteredScores.slice(start, start + itemsPerPage);
+    }, [filteredScores, page]);
 
     const paginatedAwards = useMemo(() => {
         const start = (page - 1) * itemsPerPage;
         return filteredAwards.slice(start, start + itemsPerPage);
     }, [filteredAwards, page]);
 
-    const totalPages = Math.ceil(filteredAwards.length / itemsPerPage);
+    const totalPages = Math.ceil(Math.max(filteredAwards.length, filteredScores.length) / itemsPerPage);
 
     if (loading) {
         return (
@@ -125,60 +154,115 @@ export default function ResultsPage() {
                     </Select>
                 </div>
 
-                {/* Results Grid */}
-                {filteredAwards.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {paginatedAwards.map((award) => {
-                            const colors = getAwardTierColor(award.category);
-
-                            return (
-                                <Link href={`/results/${award.$id}`} key={award.$id}>
-                                    <Card className="bg-zinc-900/50 border border-white/10 hover:border-yellow-500/50 transition-all duration-300 group h-full">
-                                        <CardBody className="p-6 space-y-6">
-                                            {/* Header */}
-                                            <div className="flex justify-between items-start">
-                                                <div className={`p-3 rounded-2xl bg-gradient-to-br ${colors.gradient} bg-opacity-10`}>
-                                                    <Trophy className="text-white w-6 h-6" />
+                {/* Tabs */}
+                <Tabs
+                    selectedKey={selectedTab}
+                    onSelectionChange={(key) => {
+                        setSelectedTab(key as string);
+                        setPage(1);
+                    }}
+                    color="warning"
+                    variant="underlined"
+                    className="w-full"
+                >
+                    <Tab key="leaderboard" title="Leaderboard">
+                        {/* Leaderboard Content */}
+                        {filteredScores.length > 0 ? (
+                            <div className="space-y-6 mt-6">
+                                {paginatedLeaderboard.map((score, idx) => {
+                                    const actualRank = (page - 1) * itemsPerPage + idx + 1;
+                                    const medalEmoji = actualRank === 1 ? "🥇" : actualRank === 2 ? "🥈" : actualRank === 3 ? "🥉" : "";
+                                    return (
+                                        <Card key={score.$id} className="bg-zinc-900/50 border border-white/10">
+                                            <CardBody className="p-6 flex-row justify-between items-center gap-4">
+                                                <div className="flex items-center gap-4 flex-grow">
+                                                    <div className="text-3xl font-bold text-yellow-500 w-12 text-center">
+                                                        {medalEmoji || `${actualRank}`}
+                                                    </div>
+                                                    <div className="flex-grow">
+                                                        <h3 className="text-lg font-bold text-white">
+                                                            {getRegistrationName(score.registrationId)}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-400">
+                                                            {score.committeeId || "General"}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <Chip size="sm" variant="flat" className="bg-white/5">
-                                                    {award.eventType?.replace(/_/g, ' ')}
-                                                </Chip>
-                                            </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-right">
+                                                        <div className="text-2xl font-bold text-yellow-400">{score.score}</div>
+                                                        <p className="text-xs text-gray-500">/100</p>
+                                                    </div>
+                                                    <div className="w-32">
+                                                        <Progress
+                                                            value={score.score}
+                                                            color={score.score >= 80 ? "success" : score.score >= 60 ? "warning" : "danger"}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 bg-zinc-900/30 rounded-3xl border border-white/5 mt-6">
+                                <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-gray-300">No leaderboard data yet</h3>
+                                <p className="text-gray-500 mt-2">Scores will appear here after judging</p>
+                            </div>
+                        )}
+                    </Tab>
 
-                                            {/* Winner Info */}
-                                            <div className="space-y-2">
-                                                <h3 className="text-xl font-bold group-hover:text-yellow-400 transition-colors">
-                                                    {award.registration?.name}
-                                                </h3>
-                                                <p className="text-gray-400 text-sm">
-                                                    {award.registration?.school || 'Independent'}
-                                                </p>
-                                            </div>
-
-                                            {/* Award Badge */}
-                                            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${colors.bg} ${colors.text}`}>
-                                                <Medal size={14} />
-                                                {getAwardLabel(award.category)}
-                                            </div>
-
-                                            {/* Footer */}
-                                            <div className="pt-4 border-t border-white/5 flex justify-between items-center text-sm text-gray-500">
-                                                <span>View Certificate</span>
-                                                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                            </div>
-                                        </CardBody>
-                                    </Card>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="text-center py-20 bg-zinc-900/30 rounded-3xl border border-white/5">
-                        <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-gray-300">No results found</h3>
-                        <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
-                    </div>
-                )}
+                    <Tab key="awards" title="Awards">
+                        {/* Awards Grid */}
+                        {filteredAwards.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                                {paginatedAwards.map((award) => {
+                                    const colors = getAwardTierColor(award.awardType);
+                                    return (
+                                        <Link href={`/results/${award.$id}`} key={award.$id}>
+                                            <Card className="bg-zinc-900/50 border border-white/10 hover:border-yellow-500/50 transition-all duration-300 group h-full">
+                                                <CardBody className="p-6 space-y-6">
+                                                    <div className="flex justify-between items-start">
+                                                        <div className={`p-3 rounded-2xl bg-gradient-to-br ${colors.gradient} bg-opacity-10`}>
+                                                            <Trophy className="text-white w-6 h-6" />
+                                                        </div>
+                                                        <Chip size="sm" variant="flat" className="bg-white/5">
+                                                            {award.category}
+                                                        </Chip>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <h3 className="text-xl font-bold group-hover:text-yellow-400 transition-colors">
+                                                            {award.recipientName}
+                                                        </h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {award.school || 'Independent'}
+                                                        </p>
+                                                    </div>
+                                                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${colors.bg} ${colors.text}`}>
+                                                        <Medal size={14} />
+                                                        {award.awardType}
+                                                    </div>
+                                                    <div className="pt-4 border-t border-white/5 flex justify-between items-center text-sm text-gray-500">
+                                                        <span>View Certificate</span>
+                                                        <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                                    </div>
+                                                </CardBody>
+                                            </Card>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 bg-zinc-900/30 rounded-3xl border border-white/5 mt-6">
+                                <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-gray-300">No awards published yet</h3>
+                                <p className="text-gray-500 mt-2">Awards will appear here after event concludes</p>
+                            </div>
+                        )}
+                    </Tab>
+                </Tabs>
 
                 {/* Pagination */}
                 {totalPages > 1 && (
