@@ -3,7 +3,7 @@
 import { Card, CardBody, Spinner } from "@nextui-org/react";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
-import { databases } from "@/lib/appwrite";
+import { databases, Query } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
@@ -25,10 +25,10 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
         try {
             const [events, registrations, team, sponsors] = await Promise.all([
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.TEAM_MEMBERS),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.SPONSORS),
+                databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(1)]),
+                databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.limit(1)]),
+                databases.listDocuments(DATABASE_ID, COLLECTIONS.TEAM_MEMBERS, [Query.limit(1)]),
+                databases.listDocuments(DATABASE_ID, COLLECTIONS.SPONSORS, [Query.limit(1)]),
             ]);
 
             setStats({
