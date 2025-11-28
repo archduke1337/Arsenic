@@ -150,8 +150,8 @@ export async function getLeaderboard(
       .map(([regId, data]) => {
         const avgScore = data.scores.length
           ? Math.round(
-              (data.scores.reduce((a, b) => a + b, 0) / data.scores.length) * 10
-            ) / 10
+            (data.scores.reduce((a, b) => a + b, 0) / data.scores.length) * 10
+          ) / 10
           : 0;
 
         return {
@@ -307,7 +307,6 @@ export async function getScoreStats(eventId: string): Promise<{
   }
 
   try {
-  try {
     const scoresResponse = await databases.listDocuments(
       databaseId,
       'scores',
@@ -319,8 +318,8 @@ export async function getScoreStats(eventId: string): Promise<{
       averageScore:
         scores.length > 0
           ? Math.round(
-              (scores.reduce((a, b) => a + b, 0) / scores.length) * 10
-            ) / 10
+            (scores.reduce((a, b) => a + b, 0) / scores.length) * 10
+          ) / 10
           : 0,
       highestScore: scores.length > 0 ? Math.max(...scores) : 0,
       lowestScore: scores.length > 0 ? Math.min(...scores) : 0,
