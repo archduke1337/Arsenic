@@ -1,4 +1,6 @@
-import { databases, ID } from '@/lib/appwrite';
+
+
+import { databases, ID, Query } from '@/lib/appwrite';
 
 export interface MerchandiseItem {
   id: string;
@@ -47,8 +49,7 @@ export async function getMerchandiseCatalog(
     const results = await databases.listDocuments(
       databaseId,
       'merchandise',
-      filters,
-      100
+      [...filters, Query.limit(100)]
     );
 
     return results.documents.map((item) => ({
@@ -226,8 +227,7 @@ export async function getMerchandiseSalesAnalytics(): Promise<{
     const orders = await databases.listDocuments(
       databaseId,
       'merchandise_orders',
-      [],
-      10000
+      [Query.limit(10000)]
     );
 
     let totalRevenue = 0;

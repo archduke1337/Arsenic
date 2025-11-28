@@ -1,5 +1,5 @@
-import { databases } from '@/lib/appwrite';
-import { Query } from 'appwrite';
+import { databases, Query } from '@/lib/appwrite';
+
 
 export interface AnalyticsData {
   registrationStats: {
@@ -45,8 +45,7 @@ export async function getRegistrationAnalytics(eventId?: string): Promise<{
     const registrations = await databases.listDocuments(
       databaseId,
       'registrations',
-      filters,
-      10000
+      [...filters, Query.limit(10000)]
     );
 
     const stats = {
@@ -128,8 +127,7 @@ export async function getRevenueAnalytics(eventId?: string): Promise<{
     const registrations = await databases.listDocuments(
       databaseId,
       'registrations',
-      filters,
-      10000
+      [...filters, Query.limit(10000)]
     );
 
     stats.averagePerRegistration =
@@ -165,8 +163,7 @@ export async function getParticipantDemographics(eventId?: string): Promise<{
     const registrations = await databases.listDocuments(
       databaseId,
       'registrations',
-      filters,
-      10000
+      [...filters, Query.limit(10000)]
     );
 
     const stats = {
@@ -211,8 +208,7 @@ export async function getEventMetrics(eventId: string): Promise<{
     const registrations = await databases.listDocuments(
       databaseId,
       'registrations',
-      [`eventId == "${eventId}"`],
-      10000
+      [`eventId == "${eventId}"`, Query.limit(10000)]
     );
 
     const attendance = registrations.documents.filter((r) => r.checkedIn).length;
@@ -229,10 +225,10 @@ export async function getEventMetrics(eventId: string): Promise<{
     const avgScore =
       scores.documents.length > 0
         ? Math.round(
-            (scores.documents.reduce((sum, s) => sum + s.score, 0) /
-              scores.documents.length) *
-              10
-          ) / 10
+          (scores.documents.reduce((sum, s) => sum + s.score, 0) /
+            scores.documents.length) *
+          10
+        ) / 10
         : 0;
 
     return {

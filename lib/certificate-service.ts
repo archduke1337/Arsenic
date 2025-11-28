@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import crypto from 'crypto';
 import { databases, ID, storage } from '@/lib/appwrite';
+import { Query } from 'appwrite';
 
 export interface Certificate {
   id: string;
@@ -311,8 +312,7 @@ export async function getCertificatesByEvent(eventId: string): Promise<Certifica
     const results = await databases.listDocuments(
       databaseId,
       'awards',
-      [`eventId == "${eventId}"`],
-      1000
+      [`eventId == "${eventId}"`, Query.limit(1000)]
     );
 
     return results.documents.map((cert) => ({

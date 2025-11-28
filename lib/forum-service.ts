@@ -1,4 +1,5 @@
 import { databases, account, ID } from '@/lib/appwrite';
+import { Query } from 'appwrite';
 
 export interface ForumPost {
   id: string;
@@ -378,8 +379,7 @@ export async function searchForumPosts(
     const results = await databases.listDocuments(
       databaseId,
       'forum_posts',
-      [`eventId == "${eventId}"`],
-      1000
+      [`eventId == "${eventId}"`, Query.limit(1000)]
     );
 
     const filtered = results.documents.filter(
@@ -426,8 +426,7 @@ export async function deletePost(postId: string): Promise<void> {
     const replies = await databases.listDocuments(
       databaseId,
       'forum_replies',
-      [`postId == "${postId}"`],
-      1000
+      [`postId == "${postId}"`, Query.limit(1000)]
     );
 
     for (const reply of replies.documents) {
