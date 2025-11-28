@@ -1,7 +1,7 @@
 "use client";
 
 import {
-    Navbar as HeroUINavbar,
+    Navbar as NextUINavbar,
     NavbarBrand,
     NavbarContent,
     NavbarItem,
@@ -60,7 +60,7 @@ export default function Navbar() {
     ];
 
     return (
-        <HeroUINavbar
+        <NextUINavbar
             onMenuOpenChange={setIsMenuOpen}
             maxWidth="xl"
             height="70px"
@@ -306,6 +306,6 @@ export default function Navbar() {
                     ))}
                 </NavbarMenuItem>
             </NavbarMenu>
-        </HeroUINavbar>
+        </NextUINavbar>
     );
 }
