@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Switch, Chip } from "@nextui-org/react";
+import { Card, CardBody, Switch, Chip } from "@heroui/react";
 import { CreditCard } from "lucide-react";
 
 interface PaymentGatewayConfig {

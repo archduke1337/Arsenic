@@ -6,7 +6,7 @@ import {
     Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
     Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Autocomplete, AutocompleteItem, Avatar
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Trophy, Search, Plus, Download, Trash2, Edit, Award, Share2 } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";

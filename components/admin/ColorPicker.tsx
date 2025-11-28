@@ -2,7 +2,7 @@
 
 import { HexColorPicker } from "react-colorful";
 import { useState } from "react";
-import { Input, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import { Input, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 
 interface ColorPickerProps {
     label: string;

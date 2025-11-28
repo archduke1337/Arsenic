@@ -3,7 +3,7 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Button, Card, CardBody, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
 import { Bold, Italic, List, ListOrdered, Save, Send } from "lucide-react";
 import { useState } from "react";
 

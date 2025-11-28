@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, Chip } from "@nextui-org/react";
+import { Button, Card, CardBody, Chip } from "@heroui/react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Target, Shield, Zap, Globe, Users, Gavel, Mic, Award, ArrowRight } from "lucide-react";

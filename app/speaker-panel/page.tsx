@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardBody, Button, User, Chip, Progress, Spinner } from "@nextui-org/react";
-import { CheckCircle, Clock, Shield, Users } from "lucide-react";
+import { Card, CardBody, Button, Chip, Progress, Spinner } from "@heroui/react";
+import { CheckCircle, Clock, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";

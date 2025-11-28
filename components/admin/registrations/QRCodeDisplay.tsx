@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, Button } from "@nextui-org/react";
+import { Card, CardBody, Button } from "@heroui/react";
 import { Download, Printer } from "lucide-react";
 import { generateQRCode, downloadQRCode } from "@/lib/qrcode-utils";
 

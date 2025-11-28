@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalContent, ModalBody } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody } from "@heroui/react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ZoomIn } from "lucide-react";

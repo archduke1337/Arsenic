@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Card, CardBody, Chip, Button } from "@nextui-org/react";
+import { Card, CardBody, Chip, Button } from "@heroui/react";
 import { AlertCircle, Download, MapPin } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 

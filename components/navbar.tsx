@@ -1,7 +1,7 @@
 "use client";
 
 import {
-    Navbar as NextUINavbar,
+    Navbar as HeroUINavbar,
     NavbarBrand,
     NavbarContent,
     NavbarItem,
@@ -10,6 +10,7 @@ import {
     NavbarMenuItem,
     Button,
     Link,
+<<<<<<< Updated upstream
 } from "@nextui-org/react";
 import {
   Dropdown,
@@ -19,6 +20,9 @@ import {
   Avatar
 } from "@nextui-org/react";
 
+=======
+} from "@heroui/react";
+>>>>>>> Stashed changes
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
@@ -63,7 +67,7 @@ export default function Navbar() {
     ];
 
     return (
-        <NextUINavbar
+        <HeroUINavbar
             onMenuOpenChange={setIsMenuOpen}
             maxWidth="xl"
             height="70px"
@@ -309,6 +313,6 @@ export default function Navbar() {
                     ))}
                 </NavbarMenuItem>
             </NavbarMenu>
-        </NextUINavbar>
+        </HeroUINavbar>
     );
 }

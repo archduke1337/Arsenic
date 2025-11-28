@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, Button, Progress } from "@nextui-org/react";
+import { Card, CardBody, Button, Progress } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Check } from "lucide-react";
 import EventSelectionStep from "./steps/event-selection";

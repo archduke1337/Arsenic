@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
     Card, CardBody, Input, Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
     User, Chip
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Search, CheckCircle, XCircle } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";

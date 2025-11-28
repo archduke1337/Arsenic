@@ -1,9 +1,13 @@
 "use client";
 
+<<<<<<< Updated upstream
 import { Link, Button, Input } from "@nextui-org/react";
 import { Mail, MapPin, Phone, Send, Instagram, Twitter, Linkedin, Youtube, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+=======
+import { Link } from "@heroui/react";
+>>>>>>> Stashed changes
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();

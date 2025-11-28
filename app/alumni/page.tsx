@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Avatar, Chip, Button, Input } from "@nextui-org/react";
+import { Card, CardBody, Avatar, Chip, Button, Input } from "@heroui/react";
 import { Twitter, Linkedin, Globe, Award } from "lucide-react";
 
 export default function Alumni() {

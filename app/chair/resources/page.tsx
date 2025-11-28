@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, Button, Input, Tab, Tabs } from "@nextui-org/react";
+import { Card, CardBody, Button, Input, Tab, Tabs } from "@heroui/react";
 import { Upload, FileText, Download, Trash2, Link as LinkIcon } from "lucide-react";
 import { toast, Toaster } from "sonner";
 

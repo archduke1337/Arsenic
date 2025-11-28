@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, Input, Textarea } from "@nextui-org/react";
+import { Button, Card, CardBody, Input, Textarea } from "@heroui/react";
 import { motion } from "framer-motion";
 import { Mail, MapPin, Phone, Send, MessageSquare } from "lucide-react";
 import { useState } from "react";

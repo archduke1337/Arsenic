@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { Button, User } from "@nextui-org/react";
+import { Button, User } from "@heroui/react";
 import { LayoutDashboard, FileText, Users, Download, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

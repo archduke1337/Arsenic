@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, Input, Chip, Accordion, AccordionItem } from "@nextui-org/react";
+import { Card, CardBody, Input, Chip, Accordion, AccordionItem } from "@heroui/react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Query } from "appwrite";

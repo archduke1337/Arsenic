@@ -1,7 +1,7 @@
 "use client";
 
 import { getAwardLabel, getAwardTierColor } from "@/lib/award-categories";
-import { Button, Card, CardBody } from "@nextui-org/react";
+import { Button, Card, CardBody } from "@heroui/react";
 import { Trophy, Calendar, MapPin, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import WinnerCertificateDownload from "@/components/results/WinnerCertificateDownload";

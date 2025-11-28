@@ -5,7 +5,7 @@ import {
     Card, CardBody, Button, Input, Select, SelectItem, Textarea,
     Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
     useDisclosure, Chip, Switch, Tabs, Tab, Divider
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Plus, Edit, Trash2, Calendar, Palette, Copy } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES, EVENT_TYPE_LABELS } from "@/lib/schema";
