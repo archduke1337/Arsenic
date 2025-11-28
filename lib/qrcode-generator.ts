@@ -53,7 +53,7 @@ export async function generateQRCodeBuffer(
 
     const buffer = await QRCode.toBuffer(data, {
       errorCorrectionLevel: 'H',
-      type: 'image/png',
+      type: 'png',
       width: 200,
       margin: 2,
       color: {
