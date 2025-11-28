@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
             session: {
                 $id: session.$id,
                 userId: session.userId,
-                email: session.email,
+                email: email,
             },
         });
 
