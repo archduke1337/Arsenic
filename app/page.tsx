@@ -87,6 +87,22 @@ export default function ModernHero() {
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
+            {/* Video Background Alternative - Animated Gradient */}
+            <div className="absolute inset-0 overflow-hidden">
+                {/* Animated Background Video/GIF Style Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-black to-black">
+                    {/* Animated mesh background */}
+                    <div className="absolute inset-0" style={{
+                        backgroundImage: `
+                            radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(129, 140, 248, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 40% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
+                        `,
+                        animation: 'gradient-shift 15s ease-in-out infinite'
+                    }} />
+                </div>
+            </div>
+
             {/* Ambient Background */}
             <div className="absolute inset-0 overflow-hidden">
                 <div
@@ -193,6 +209,66 @@ export default function ModernHero() {
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            </div>
+
+            {/* Why Join Section - Visual Cards */}
+            <div className="relative z-10 py-32 px-6 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16 space-y-4">
+                        <h2 className="text-4xl md:text-5xl font-bold">Why Join ARSENIC?</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                            Experience unparalleled opportunities to develop, compete, and connect
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {[
+                            { 
+                                emoji: "🎓", 
+                                title: "World-Class Learning", 
+                                desc: "Expert mentorship from seasoned diplomats and debaters" 
+                            },
+                            { 
+                                emoji: "🌍", 
+                                title: "Global Network", 
+                                desc: "Connect with delegates from 50+ countries" 
+                            },
+                            { 
+                                emoji: "🏆", 
+                                title: "Prestige & Recognition", 
+                                desc: "Build your resume with achievements from India's premier summit" 
+                            },
+                            { 
+                                emoji: "💡", 
+                                title: "Innovation Hub", 
+                                desc: "Cutting-edge parliamentary simulation technology" 
+                            },
+                            { 
+                                emoji: "🤝", 
+                                title: "Lifelong Connections", 
+                                desc: "Join an alumni network of 5000+ leaders" 
+                            },
+                            { 
+                                emoji: "🎯", 
+                                title: "Personal Growth", 
+                                desc: "Develop confidence, leadership, and public speaking skills" 
+                            }
+                        ].map((item, index) => (
+                            <div
+                                key={index}
+                                className="group relative p-8 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-blue-600/10 hover:border-blue-500/30 transition-all duration-300"
+                                style={{
+                                    animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+                                }}
+                            >
+                                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{item.emoji}</div>
+                                <h3 className="text-xl font-bold mb-2 text-white">{item.title}</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/5 group-hover:to-indigo-600/5 transition-all" />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -436,6 +512,15 @@ export default function ModernHero() {
 
                 .animate-fadeInUp {
                     animation: fadeInUp 0.8s ease-out;
+                }
+
+                @keyframes gradient-shift {
+                    0%, 100% {
+                        background-position: 0% 50%;
+                    }
+                    50% {
+                        background-position: 100% 50%;
+                    }
                 }
 
                 @keyframes pulse {
