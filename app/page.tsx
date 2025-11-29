@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight, Users, MapPin, Trophy, Calendar, ChevronDown } from "lucide-react";
 
-const CountUp = ({ end, duration = 2 }) => {
+const CountUp = ({ end, duration = 2 }: { end: number; duration?: number }) => {
     const [count, setCount] = useState(0);
     const ref = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
@@ -13,8 +13,8 @@ const CountUp = ({ end, duration = 2 }) => {
             ([entry]) => {
                 if (entry.isIntersecting && !hasAnimated) {
                     setHasAnimated(true);
-                    let startTime;
-                    const animate = (currentTime) => {
+                    let startTime: number;
+                    const animate = (currentTime: number) => {
                         if (!startTime) startTime = currentTime;
                         const progress = (currentTime - startTime) / (duration * 1000);
                         if (progress < 1) {

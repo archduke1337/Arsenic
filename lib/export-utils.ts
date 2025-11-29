@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -29,13 +28,39 @@ export function exportToCSV(data: any[], filename: string) {
 }
 
 /**
- * Export data to Excel format
+ * Export data to Excel format (uses CSV for security)
+ * Note: For Excel compatibility, use CSV format which Excel can open natively
  */
 export function exportToExcel(data: any[], filename: string, sheetName: string = 'Sheet1') {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-    XLSX.writeFile(workbook, filename);
+    if (data.length === 0) {
+        throw new Error('No data to export');
+    }
+
+    // Convert to CSV and use Excel-compatible headers
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+        headers.join(','),
+        ...data.map(row =>
+            headers.map(header => {
+                const value = row[header];
+                // Escape quotes and wrap in quotes if contains comma or quotes
+                if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                    return `"${value.replace(/"/g, '""')}"`;
+                }
+                return value ?? '';
+            }).join(',')
+        )
+    ].join('\n');
+
+    // Add BOM for Excel UTF-8 encoding
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename.endsWith('.xlsx') ? filename.replace('.xlsx', '.csv') : filename;
+    link.click();
+    URL.revokeObjectURL(url);
 }
 
 /**
