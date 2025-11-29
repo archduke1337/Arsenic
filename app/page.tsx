@@ -1,6 +1,9 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { ArrowRight, Users, MapPin, Trophy, Calendar, ChevronDown } from "lucide-react";
 
 const CountUp = ({ end, duration = 2 }: { end: number; duration?: number }) => {
@@ -148,16 +151,13 @@ export default function ModernHero() {
                         className="flex flex-col sm:flex-row justify-center gap-4 pt-4 opacity-0 animate-fadeInUp"
                         style={{ animationDelay: "1s", animationFillMode: "forwards" }}
                     >
-                        <button className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-all duration-300 overflow-hidden">
-                            <span className="relative z-10 flex items-center gap-2">
-                                Register Now
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </button>
-                        <button className="px-8 py-4 border border-white/10 hover:border-white/20 rounded-lg font-medium transition-all duration-300 hover:bg-white/[0.02]">
+                        <Link href="/register" className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg font-semibold text-white transition-all duration-300 overflow-hidden shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-2">
+                            <span className="relative z-10">Register Now</span>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <Link href="/about" className="px-8 py-4 border border-white/20 hover:border-white/40 rounded-lg font-semibold transition-all duration-300 hover:bg-white/[0.05] flex items-center justify-center">
                             Learn More
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -281,24 +281,64 @@ export default function ModernHero() {
             </div>
 
             {/* CTA Section */}
-            <div className="relative z-10 py-32 px-6">
-                <div className="max-w-4xl mx-auto text-center space-y-8">
-                    <h2 className="text-5xl md:text-6xl font-bold">
-                        Ready to Make Your Mark?
-                    </h2>
-                    <p className="text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
-                        Join hundreds of delegates from across the region. Debate globally, impact locally, and forge lifelong connections.
-                    </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                        <button className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-all duration-300 overflow-hidden">
-                            <span className="relative z-10 flex items-center gap-2">
-                                Register Today
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                        </button>
-                        <button className="px-8 py-4 border border-white/10 hover:border-white/20 rounded-lg font-medium transition-all duration-300 hover:bg-white/[0.02]">
-                            View Delegates
-                        </button>
+            <div className="relative z-10 py-32 px-6 border-t border-white/10">
+                <div className="max-w-7xl mx-auto">
+                    {/* Trust/Credibility Section */}
+                    <div className="mb-32 grid md:grid-cols-4 gap-8">
+                        <div className="space-y-3 text-center">
+                            <div className="text-5xl font-bold text-blue-400">2000+</div>
+                            <p className="text-gray-400">Annual Delegates</p>
+                            <p className="text-xs text-gray-500">From 50+ Countries</p>
+                        </div>
+                        <div className="space-y-3 text-center">
+                            <div className="text-5xl font-bold text-blue-400">25+</div>
+                            <p className="text-gray-400">Simultaneous Committees</p>
+                            <p className="text-xs text-gray-500">Professional Adjudication</p>
+                        </div>
+                        <div className="space-y-3 text-center">
+                            <div className="text-5xl font-bold text-blue-400">150+</div>
+                            <p className="text-gray-400">Expert Judges</p>
+                            <p className="text-xs text-gray-500">Industry Leaders</p>
+                        </div>
+                        <div className="space-y-3 text-center">
+                            <div className="text-5xl font-bold text-blue-400">15+</div>
+                            <p className="text-gray-400">Years of Excellence</p>
+                            <p className="text-xs text-gray-500">Proven Track Record</p>
+                        </div>
+                    </div>
+
+                    {/* Main CTA Content */}
+                    <div className="text-center space-y-8">
+                        <h2 className="text-5xl md:text-6xl font-bold">
+                            Ready to Make Your Mark?
+                        </h2>
+                        <p className="text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
+                            Join thousands of delegates from across the region. Debate globally, impact locally, and forge lifelong connections with fellow leaders.
+                        </p>
+                        
+                        {/* Enhanced CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
+                            <Link href="/register" className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg font-semibold text-white transition-all duration-300 overflow-hidden shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-2">
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Register Now - Early Bird
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                            </Link>
+                            <button className="px-8 py-4 border border-blue-500/30 hover:border-blue-400 hover:bg-blue-500/10 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2">
+                                📋 View Committees
+                            </button>
+                        </div>
+
+                        {/* Trust Badges */}
+                        <div className="pt-8 border-t border-white/10 mt-12">
+                            <p className="text-sm text-gray-500 mb-6">Trusted by leading educational institutions</p>
+                            <div className="flex flex-wrap justify-center gap-6 items-center opacity-60 hover:opacity-100 transition-opacity">
+                                <div className="text-sm font-medium text-gray-400">✓ ISO Certified</div>
+                                <div className="text-sm font-medium text-gray-400">✓ Government Recognized</div>
+                                <div className="text-sm font-medium text-gray-400">✓ International Standards</div>
+                                <div className="text-sm font-medium text-gray-400">✓ Transparent Judging</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

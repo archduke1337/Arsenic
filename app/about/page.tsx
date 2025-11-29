@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -333,42 +335,106 @@ export default function About() {
             </section>
 
             {/* CTA Section */}
-            <section className="relative py-32 px-6">
-                <div className="max-w-4xl mx-auto text-center space-y-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-5xl md:text-6xl font-bold mb-6">
-                            Ready to Make History?
-                        </h2>
-                        <p className="text-xl text-gray-400 leading-relaxed mb-12">
-                            Join hundreds of delegates from across the nation in this celebration
-                            of democracy, diplomacy, and meaningful discourse.
-                        </p>
+            <section className="relative py-32 px-6 border-t border-white/10">
+                <div className="max-w-7xl mx-auto">
+                    {/* Impact Section */}
+                    <div className="mb-32">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16 space-y-4"
+                        >
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 border border-blue-500/30">
+                                <Award size={14} className="text-blue-400" />
+                                <span className="text-sm font-medium text-blue-300">Our Impact</span>
+                            </div>
+                            <h2 className="text-5xl md:text-6xl font-bold">
+                                Recognition & Achievement
+                            </h2>
+                        </motion.div>
 
-                        <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <Button
-                                as={Link}
-                                href="/register"
-                                size="lg"
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base"
-                                endContent={<ArrowRight size={20} />}
+                        <div className="grid md:grid-cols-3 gap-8">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-blue-600/10 to-transparent hover:border-blue-500/30 transition-all"
                             >
-                                Register Now
-                            </Button>
-                            <Button
-                                as={Link}
-                                href="/team"
-                                size="lg"
-                                variant="bordered"
-                                className="border-white/20 hover:border-blue-500/50 hover:bg-blue-500/5 text-white font-semibold px-8 h-14 text-base"
+                                <div className="text-4xl font-bold text-blue-400 mb-3">2020</div>
+                                <h3 className="text-xl font-bold mb-3">Founded with Vision</h3>
+                                <p className="text-gray-400">
+                                    Started as a small initiative with a big dream to revolutionize parliamentary simulations in India.
+                                </p>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-blue-600/10 to-transparent hover:border-blue-500/30 transition-all"
                             >
-                                Meet the Team
-                            </Button>
+                                <div className="text-4xl font-bold text-blue-400 mb-3">5000+</div>
+                                <h3 className="text-xl font-bold mb-3">Lives Impacted</h3>
+                                <p className="text-gray-400">
+                                    Trained and mentored thousands of young leaders across multiple countries and continents.
+                                </p>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-blue-600/10 to-transparent hover:border-blue-500/30 transition-all"
+                            >
+                                <div className="text-4xl font-bold text-blue-400 mb-3">100%</div>
+                                <h3 className="text-xl font-bold mb-3">Participant Satisfaction</h3>
+                                <p className="text-gray-400">
+                                    Consistently rated as the most immersive and rewarding parliamentary experience.
+                                </p>
+                            </motion.div>
                         </div>
-                    </motion.div>
+                    </div>
+
+                    {/* Call to Action */}
+                    <div className="max-w-4xl mx-auto text-center space-y-8 border-t border-white/10 pt-16">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <h2 className="text-5xl md:text-6xl font-bold mb-6">
+                                Ready to Make History?
+                            </h2>
+                            <p className="text-xl text-gray-400 leading-relaxed mb-12">
+                                Join hundreds of delegates from across the nation in this celebration
+                                of democracy, diplomacy, and meaningful discourse.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                <Button
+                                    as={Link}
+                                    href="/register"
+                                    size="lg"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base"
+                                    endContent={<ArrowRight size={20} />}
+                                >
+                                    Register Now
+                                </Button>
+                                <Button
+                                    as={Link}
+                                    href="/team"
+                                    size="lg"
+                                    variant="bordered"
+                                    className="border-white/20 hover:border-blue-500/50 hover:bg-blue-500/5 text-white font-semibold px-8 h-14 text-base"
+                                >
+                                    Meet the Team
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
         </div>

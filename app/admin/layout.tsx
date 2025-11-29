@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic'; // Always render dynamically
+
 import { useAuth } from "@/lib/auth-context";
 import { Button, User, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 import {

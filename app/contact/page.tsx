@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send, MessageSquare, CheckCircle2 } from "lucide-react";
 import { databases } from "@/lib/appwrite";

@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from "react";
 import { Card, CardBody, Chip, Tabs, Tab, Spinner } from "@nextui-org/react";
 import { Globe, Users, Gavel, MapPin, User } from "lucide-react";

@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardBody, Avatar, Input, Button, Chip, Select, SelectItem, Pagination, Spinner } from "@nextui-org/react";
 import { Search, Filter, MapPin, MessageCircle, Linkedin } from "lucide-react";
