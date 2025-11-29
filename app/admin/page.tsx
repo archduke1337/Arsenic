@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
 import { databases, Query } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { TrendingUp, Users, Calendar, FileText, CheckCircle, AlertCircle, BarChart3, Home } from "lucide-react";
+import { TrendingUp, Users, Calendar, FileText, CheckCircle, AlertCircle, BarChart3, Home, Zap, Activity } from "lucide-react";
 import Link from "next/link";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
@@ -98,101 +98,159 @@ export default function AdminDashboard() {
                 <p className="text-gray-400 text-lg">Welcome back, <span className="text-yellow-400 font-semibold">{user?.name || "Admin"}</span>! Here's your event overview.</p>
             </div>
 
-            {/* Main Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Events */}
-                <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/20">
-                    <CardBody className="p-6">
-                        <div className="flex items-start justify-between">
+            {/* Executive Summary Card */}
+            <Card className="bg-gradient-to-r from-yellow-900/30 via-orange-900/20 to-red-900/30 border border-yellow-500/30 hover:border-yellow-500/50 transition-all">
+                <CardBody className="p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-xl">
+                                <Users size={32} className="text-blue-400" />
+                            </div>
                             <div>
-                                <p className="text-sm text-gray-400 mb-2">Total Events</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-3xl font-bold text-blue-400">{stats.totalEvents}</p>
-                                    <Chip size="sm" color="success" variant="flat">
-                                        {stats.activeEvents} Active
-                                    </Chip>
+                                <p className="text-gray-400 text-sm">Total Registrations</p>
+                                <p className="text-3xl font-bold text-blue-400">{stats.totalRegistrations}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-xl">
+                                <CheckCircle size={32} className="text-green-400" />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Confirmed</p>
+                                <p className="text-3xl font-bold text-green-400">{stats.confirmedRegistrations}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-xl">
+                                <Activity size={32} className="text-purple-400" />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Checked In</p>
+                                <p className="text-3xl font-bold text-purple-400">{stats.checkedInCount}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-orange-500/20 border border-orange-500/30 rounded-xl">
+                                <Calendar size={32} className="text-orange-400" />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Active Events</p>
+                                <p className="text-3xl font-bold text-orange-400">{stats.activeEvents}/{stats.totalEvents}</p>
+                            </div>
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
+
+            {/* Main Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Events */}
+                <div className="group relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-blue-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition-all duration-300" />
+                    <Card className="relative bg-black border border-blue-500/50 hover:border-blue-400 transition-all">
+                        <CardBody className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-400 mb-1">Total Events</p>
+                                    <p className="text-4xl font-black text-blue-400">{stats.totalEvents}</p>
+                                </div>
+                                <div className="p-3 bg-blue-500/20 rounded-xl group-hover:bg-blue-500/30 transition-colors">
+                                    <Calendar size={28} className="text-blue-400" />
                                 </div>
                             </div>
-                            <Calendar size={32} className="text-blue-400 opacity-40" />
-                        </div>
-                    </CardBody>
-                </Card>
+                            <div className="pt-3 border-t border-white/10">
+                                <Chip size="sm" color="success" className="bg-green-500/20 text-green-300">
+                                    {stats.activeEvents} Active
+                                </Chip>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
 
                 {/* Registrations */}
-                <Card className="bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/20">
-                    <CardBody className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm text-gray-400 mb-2">Registrations</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-3xl font-bold text-green-400">{stats.totalRegistrations}</p>
+                <div className="group relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-green-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition-all duration-300" />
+                    <Card className="relative bg-black border border-green-500/50 hover:border-green-400 transition-all">
+                        <CardBody className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-400 mb-1">Registrations</p>
+                                    <p className="text-4xl font-black text-green-400">{stats.totalRegistrations}</p>
                                 </div>
-                                <div className="mt-3 space-y-1">
-                                    <div className="flex justify-between items-center text-xs">
-                                        <span className="text-gray-400">Confirmed</span>
-                                        <span className="text-green-400 font-semibold">{stats.confirmedRegistrations}</span>
-                                    </div>
-                                    <Progress 
-                                        value={confirmationRate} 
-                                        className="h-1" 
-                                        classNames={{ indicator: "bg-green-500" }}
-                                    />
+                                <div className="p-3 bg-green-500/20 rounded-xl group-hover:bg-green-500/30 transition-colors">
+                                    <Users size={28} className="text-green-400" />
                                 </div>
                             </div>
-                            <Users size={32} className="text-green-400 opacity-40" />
-                        </div>
-                    </CardBody>
-                </Card>
+                            <div className="pt-3 border-t border-white/10 space-y-2">
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-gray-400">Confirmation Rate</span>
+                                    <span className="text-green-400 font-bold">{confirmationRate}%</span>
+                                </div>
+                                <Progress 
+                                    value={confirmationRate} 
+                                    className="h-2" 
+                                    classNames={{ indicator: "bg-gradient-to-r from-green-500 to-green-400" }}
+                                />
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
 
                 {/* Check-ins */}
-                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/20">
-                    <CardBody className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm text-gray-400 mb-2">Check-ins</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-3xl font-bold text-purple-400">{stats.checkedInCount}</p>
-                                    <Chip size="sm" variant="flat">
-                                        {checkInRate}%
-                                    </Chip>
+                <div className="group relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-purple-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition-all duration-300" />
+                    <Card className="relative bg-black border border-purple-500/50 hover:border-purple-400 transition-all">
+                        <CardBody className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-400 mb-1">Check-ins</p>
+                                    <p className="text-4xl font-black text-purple-400">{stats.checkedInCount}</p>
                                 </div>
-                                <div className="mt-3 space-y-1">
-                                    <div className="flex justify-between items-center text-xs">
-                                        <span className="text-gray-400">Check-in Rate</span>
-                                    </div>
-                                    <Progress 
-                                        value={checkInRate} 
-                                        className="h-1" 
-                                        classNames={{ indicator: "bg-purple-500" }}
-                                    />
+                                <div className="p-3 bg-purple-500/20 rounded-xl group-hover:bg-purple-500/30 transition-colors">
+                                    <CheckCircle size={28} className="text-purple-400" />
                                 </div>
                             </div>
-                            <CheckCircle size={32} className="text-purple-400 opacity-40" />
-                        </div>
-                    </CardBody>
-                </Card>
+                            <div className="pt-3 border-t border-white/10 space-y-2">
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-gray-400">Check-in Rate</span>
+                                    <span className="text-purple-400 font-bold">{checkInRate}%</span>
+                                </div>
+                                <Progress 
+                                    value={checkInRate} 
+                                    className="h-2" 
+                                    classNames={{ indicator: "bg-gradient-to-r from-purple-500 to-purple-400" }}
+                                />
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
 
                 {/* Team & Sponsors */}
-                <Card className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 hover:border-orange-500/50 transition-all hover:shadow-lg hover:shadow-orange-500/20">
-                    <CardBody className="p-6">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm text-gray-400 mb-4">Organization</p>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-500">Team Members</span>
-                                        <span className="text-lg font-bold text-orange-400">{stats.totalTeamMembers}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-500">Sponsors</span>
-                                        <span className="text-lg font-bold text-orange-400">{stats.totalSponsors}</span>
+                <div className="group relative">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-orange-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition-all duration-300" />
+                    <Card className="relative bg-black border border-orange-500/50 hover:border-orange-400 transition-all">
+                        <CardBody className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-400 mb-1">Organization</p>
+                                    <div className="flex gap-4 mt-2">
+                                        <div>
+                                            <p className="text-xs text-gray-500">Team</p>
+                                            <p className="text-2xl font-bold text-orange-400">{stats.totalTeamMembers}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500">Sponsors</p>
+                                            <p className="text-2xl font-bold text-orange-300">{stats.totalSponsors}</p>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="p-3 bg-orange-500/20 rounded-xl group-hover:bg-orange-500/30 transition-colors">
+                                    <TrendingUp size={28} className="text-orange-400" />
+                                </div>
                             </div>
-                            <BarChart3 size={32} className="text-orange-400 opacity-40" />
-                        </div>
-                    </CardBody>
-                </Card>
+                        </CardBody>
+                    </Card>
+                </div>
             </div>
 
             {/* Quick Actions & Recent Activity */}
