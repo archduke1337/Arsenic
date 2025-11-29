@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send, MessageSquare, CheckCircle2 } from "lucide-react";
+import { databases } from "@/lib/appwrite";
+import { COLLECTIONS } from "@/lib/schema";
+import { toast } from "sonner";
+
+const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function ModernContact() {
     const [formData, setFormData] = useState({
@@ -14,9 +19,10 @@ export default function ModernContact() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: MouseEvent) => {
             setMousePosition({
                 x: (e.clientX / window.innerWidth - 0.5) * 20,
                 y: (e.clientY / window.innerHeight - 0.5) * 20,
@@ -27,17 +33,52 @@ export default function ModernContact() {
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {};
+        
+        if (!formData.name.trim()) newErrors.name = "Name is required";
+        if (!formData.email.trim()) newErrors.email = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email";
+        if (!formData.subject.trim()) newErrors.subject = "Subject is required";
+        if (!formData.message.trim()) newErrors.message = "Message is required";
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            toast.error("Please fill all fields correctly");
+            return;
+        }
+
         setIsSubmitting(true);
         
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        setIsSubmitting(false);
-        setSubmitSuccess(true);
-        setFormData({ name: "", email: "", subject: "", message: "" });
-        
-        setTimeout(() => setSubmitSuccess(false), 5000);
+        try {
+            const response = await databases.createDocument(
+                DATABASE_ID,
+                COLLECTIONS.CONTACT_SUBMISSIONS,
+                "unique()",
+                {
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                    status: "new"
+                }
+            );
+
+            setSubmitSuccess(true);
+            setFormData({ name: "", email: "", subject: "", message: "" });
+            toast.success("Message sent successfully! We'll get back to you soon.");
+            
+            setTimeout(() => setSubmitSuccess(false), 5000);
+        } catch (error) {
+            console.error("Error submitting contact form:", error);
+            toast.error("Failed to send message. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const contactInfo = [
@@ -179,20 +220,32 @@ export default function ModernContact() {
                                             <input
                                                 type="text"
                                                 placeholder="Enter your name"
-                                                className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                className={`w-full px-4 py-3 bg-white/[0.02] border rounded-lg focus:outline-none text-white placeholder-gray-600 transition-all ${
+                                                    errors.name ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-blue-500"
+                                                }`}
                                                 value={formData.name}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, name: e.target.value });
+                                                    if (errors.name) setErrors({ ...errors, name: "" });
+                                                }}
                                             />
+                                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                         </div>
                                         <div>
                                             <label className="block text-sm text-gray-400 mb-2">Email</label>
                                             <input
                                                 type="email"
                                                 placeholder="Enter your email"
-                                                className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                className={`w-full px-4 py-3 bg-white/[0.02] border rounded-lg focus:outline-none text-white placeholder-gray-600 transition-all ${
+                                                    errors.email ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-blue-500"
+                                                }`}
                                                 value={formData.email}
-                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, email: e.target.value });
+                                                    if (errors.email) setErrors({ ...errors, email: "" });
+                                                }}
                                             />
+                                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                                         </div>
                                     </div>
 
@@ -203,11 +256,17 @@ export default function ModernContact() {
                                             <input
                                                 type="text"
                                                 placeholder="What is this regarding?"
-                                                className="w-full pl-12 pr-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 transition-all"
+                                                className={`w-full pl-12 pr-4 py-3 bg-white/[0.02] border rounded-lg focus:outline-none text-white placeholder-gray-600 transition-all ${
+                                                    errors.subject ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-blue-500"
+                                                }`}
                                                 value={formData.subject}
-                                                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFormData({ ...formData, subject: e.target.value });
+                                                    if (errors.subject) setErrors({ ...errors, subject: "" });
+                                                }}
                                             />
                                         </div>
+                                        {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject}</p>}
                                     </div>
 
                                     <div>
@@ -215,10 +274,16 @@ export default function ModernContact() {
                                         <textarea
                                             rows={6}
                                             placeholder="Type your message here..."
-                                            className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-white placeholder-gray-600 resize-none transition-all"
+                                            className={`w-full px-4 py-3 bg-white/[0.02] border rounded-lg focus:outline-none text-white placeholder-gray-600 resize-none transition-all ${
+                                                errors.message ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-blue-500"
+                                            }`}
                                             value={formData.message}
-                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, message: e.target.value });
+                                                if (errors.message) setErrors({ ...errors, message: "" });
+                                            }}
                                         />
+                                        {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
                                     </div>
 
                                     <button
