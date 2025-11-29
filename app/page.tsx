@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Users, MapPin, Trophy, Calendar, ChevronDown } from "lucide-react";
 
 const CountUp = ({ end, duration = 2 }: { end: number; duration?: number }) => {
@@ -254,11 +255,89 @@ export default function ModernHero() {
                             </button>
                         </div>
 
-                        <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-blue-900/20 to-indigo-900/20 flex items-center justify-center">
-                            <div className="text-center space-y-4">
-                                <div className="text-6xl">🎯</div>
-                                <div className="text-white font-bold text-2xl">{eventTypes.find(e => e.id === activeTab)?.label}</div>
-                                <div className="text-gray-300 text-sm">2024 Edition</div>
+                        <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-blue-900/20 to-indigo-900/20">
+                            <Image
+                                src="https://images.unsplash.com/photo-1596720426673-e4e15688cafb?auto=format&fit=crop&q=80&w=800"
+                                alt={eventTypes.find(e => e.id === activeTab)?.label || "Event"}
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                            <div className="absolute inset-0 bg-black/40" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center space-y-4">
+                                    <div className="text-6xl">🎯</div>
+                                    <div className="text-white font-bold text-2xl">{eventTypes.find(e => e.id === activeTab)?.label}</div>
+                                    <div className="text-gray-300 text-sm">2024 Edition</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Featured Events Gallery Section */}
+            <div className="relative z-10 py-32 px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16 space-y-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/10 border border-blue-500/30">
+                            <span className="text-sm font-medium text-blue-300">Gallery</span>
+                        </div>
+                        <h2 className="text-5xl md:text-6xl font-bold">Experience the Magic</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                            Get a glimpse of ARSENIC Summit's most memorable moments and stunning venues
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Indian Parliament Image */}
+                        <div className="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer">
+                            <Image
+                                src="https://images.unsplash.com/photo-1596520774490-5e4f9a4e4e75?auto=format&fit=crop&q=80&w=600"
+                                alt="Parliament Simulation"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all" />
+                            <div className="absolute inset-0 flex items-end p-6">
+                                <div className="text-white">
+                                    <div className="text-2xl font-bold">Parliamentary Debates</div>
+                                    <p className="text-gray-200 text-sm">Live discussions & resolutions</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Delegates Discussion Image */}
+                        <div className="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer">
+                            <Image
+                                src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=600"
+                                alt="Delegates Networking"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all" />
+                            <div className="absolute inset-0 flex items-end p-6">
+                                <div className="text-white">
+                                    <div className="text-2xl font-bold">Networking Events</div>
+                                    <p className="text-gray-200 text-sm">Connect with leaders worldwide</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Award Ceremony Image */}
+                        <div className="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer">
+                            <Image
+                                src="https://images.unsplash.com/photo-1540575467063-178f50902556?auto=format&fit=crop&q=80&w=600"
+                                alt="Award Ceremony"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all" />
+                            <div className="absolute inset-0 flex items-end p-6">
+                                <div className="text-white">
+                                    <div className="text-2xl font-bold">Award Ceremonies</div>
+                                    <p className="text-gray-200 text-sm">Celebrating excellence & achievements</p>
+                                </div>
                             </div>
                         </div>
                     </div>
