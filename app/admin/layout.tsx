@@ -75,16 +75,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className="min-h-screen bg-black text-white flex flex-col">
             {/* Top Navbar */}
             <nav className="bg-gradient-to-r from-zinc-900 via-black to-zinc-900 border-b border-yellow-500/10 sticky top-0 z-40">
-                <div className="flex items-center justify-between px-6 py-4">
-                    {/* Left: Menu Toggle + Logo (Mobile) */}
-                    <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between px-4 sm:px-6 py-4 gap-4">
+                    {/* Left: Menu Toggle + Logo */}
+                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
                         >
                             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
-                        <Link href="/admin" className="flex items-center gap-2 font-bold text-lg">
+                        <Link href="/admin" className="flex items-center gap-2 font-bold text-lg flex-shrink-0">
                             <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg">
                                 <Shield size={20} className="text-black" />
                             </div>
@@ -95,31 +95,32 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                         </Link>
                     </div>
 
-                    {/* Center: Search (Hidden on Mobile) */}
-                    <div className="hidden lg:flex flex-1 max-w-md mx-6">
+                    {/* Center: Search */}
+                    <div className="hidden lg:flex flex-1 max-w-md">
                         <div className="w-full relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-yellow-500/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/30 transition-colors"
+                                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-yellow-500/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/30 transition-colors text-sm"
                             />
                         </div>
                     </div>
 
                     {/* Right: Notifications + User */}
-                    <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors relative">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors relative hidden sm:block" title="Notifications">
                             <Bell size={20} />
                             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <button className="p-2 hover:bg-white/10 rounded-lg transition-colors hidden sm:block" title="Settings">
                             <Settings size={20} />
                         </button>
                         <div className="hidden sm:block w-px h-6 bg-white/10"></div>
                         <button
                             onClick={() => logout()}
-                            className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-red-400 hover:text-red-300"
+                            className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-red-400 hover:text-red-300 flex-shrink-0"
+                            title="Logout"
                         >
                             <LogOut size={20} />
                         </button>
@@ -127,13 +128,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 </div>
             </nav>
 
-            <div className="flex flex-1">
+            <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
-                <aside className={`w-72 border-r border-yellow-500/10 bg-gradient-to-b from-zinc-900/80 to-black fixed h-[calc(100vh-73px)] z-50 overflow-y-auto transition-all duration-300 md:relative md:translate-x-0 ${
+                <aside className={`w-64 lg:w-72 border-r border-yellow-500/10 bg-gradient-to-b from-zinc-900/80 to-black fixed h-[calc(100vh-73px)] overflow-y-auto transition-transform duration-300 md:relative md:translate-x-0 z-50 ${
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                     {/* Navigation */}
-                    <div className="py-8 px-4 space-y-2">
+                    <div className="py-8 px-3 sm:px-4 space-y-1">
                         {menuItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
@@ -141,16 +142,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setSidebarOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                    className={`flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 group text-sm sm:text-base ${
                                         isActive
                                             ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/10 text-yellow-400 border border-yellow-500/30"
                                             : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
                                     }`}
                                 >
-                                    <item.icon size={20} className={isActive ? "text-yellow-400" : "group-hover:text-yellow-400 transition-colors"} />
-                                    <span className="font-medium">{item.label}</span>
+                                    <item.icon size={20} className={`flex-shrink-0 ${isActive ? "text-yellow-400" : "group-hover:text-yellow-400 transition-colors"}`} />
+                                    <span className="font-medium truncate">{item.label}</span>
                                     {isActive && (
-                                        <div className="ml-auto w-2 h-2 rounded-full bg-yellow-400"></div>
+                                        <div className="ml-auto w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></div>
                                     )}
                                 </Link>
                             );
@@ -158,17 +159,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     </div>
 
                     {/* User Section */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-yellow-500/10 bg-gradient-to-t from-black to-transparent space-y-4">
-                        <div className="px-4 py-3 bg-white/5 rounded-xl border border-yellow-500/10">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 border-t border-yellow-500/10 bg-gradient-to-t from-black to-transparent space-y-4">
+                        <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 rounded-xl border border-yellow-500/10">
                             <User
                                 name={user?.name || "Admin"}
                                 description={user?.email}
                                 avatarProps={{
                                     src: `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`,
-                                    className: "w-10 h-10"
+                                    className: "w-9 h-9 sm:w-10 sm:h-10"
                                 }}
                                 classNames={{
-                                    name: "text-white",
+                                    name: "text-white text-sm",
                                     description: "text-gray-400 text-xs"
                                 }}
                             />
@@ -177,8 +178,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 overflow-auto">
-                    <div className="p-6 md:p-8">
+                <main className="flex-1 overflow-auto bg-gradient-to-b from-black via-black to-zinc-900/20">
+                    <div className="p-4 sm:p-6 lg:p-8">
                         <div className="max-w-7xl mx-auto">
                             {children}
                         </div>
