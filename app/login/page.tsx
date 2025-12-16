@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -16,14 +17,21 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!email.trim() || !password.trim()) {
+            toast.error("Please enter both email and password");
+            return;
+        }
+        
         setIsLoading(true);
 
         try {
             await login(email, password);
+            toast.success("Login successful!");
             router.push("/admin");
         } catch (error) {
             console.error("Login error:", error);
-            alert("Invalid email or password");
+            toast.error("Invalid email or password");
         } finally {
             setIsLoading(false);
         }
@@ -31,6 +39,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+            <Toaster richColors position="top-center" />
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-black/60 z-10" />

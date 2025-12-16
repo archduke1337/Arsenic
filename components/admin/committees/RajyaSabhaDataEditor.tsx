@@ -7,6 +7,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Papa from 'papaparse';
+import { toast } from "sonner";
 
 interface PartyAllocation {
     party: string;
@@ -97,7 +98,7 @@ export default function RajyaSabhaDataEditor({
                 setNewParty("");
                 setNewSeats(1);
             } else {
-                alert(`Cannot allocate ${newSeats} seats. Available: ${seatsAvailable - partyAllocation.reduce((sum, p) => sum + p.seats, 0)}`);
+                toast.error(`Cannot allocate ${newSeats} seats. Available: ${seatsAvailable - partyAllocation.reduce((sum, p) => sum + p.seats, 0)}`);
             }
         }
     };

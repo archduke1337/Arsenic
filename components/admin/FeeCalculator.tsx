@@ -3,6 +3,7 @@
 import { Card, CardBody, Input, Button, Chip } from "@nextui-org/react";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface GroupDiscount {
     tier: number;
@@ -34,14 +35,14 @@ export default function FeeCalculator({
             // Check for duplicate tiers
             const existingTier = groupDiscounts.find(d => d.tier === newTier);
             if (existingTier) {
-                alert(`Discount for ${newTier}+ delegates already exists`);
+                toast.error(`Discount for ${newTier}+ delegates already exists`);
                 return;
             }
             onGroupDiscountsChange([...groupDiscounts, { tier: newTier, percentage: newPercentage }]);
             setNewTier(5);
             setNewPercentage(10);
         } else if (newPercentage > 100) {
-            alert("Discount percentage cannot exceed 100%");
+            toast.error("Discount percentage cannot exceed 100%");
         }
     };
 

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -21,8 +22,18 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!formData.name.trim() || !formData.email.trim()) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            toast.error("Password must be at least 8 characters");
+            return;
+        }
+
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match!");
+            toast.error("Passwords don't match!");
             return;
         }
 
@@ -30,10 +41,11 @@ export default function Register() {
 
         try {
             await register(formData.email, formData.password, formData.name);
+            toast.success("Account created successfully!");
             router.push("/admin");
         } catch (err) {
             console.error("Registration failed:", err);
-            alert(`Registration failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+            toast.error(err instanceof Error ? err.message : "Registration failed");
         } finally {
             setIsLoading(false);
         }
@@ -41,6 +53,7 @@ export default function Register() {
 
     return (
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12">
+            <Toaster richColors position="top-center" />
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-black/60 z-10" />

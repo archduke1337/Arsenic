@@ -7,6 +7,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Papa from 'papaparse';
+import { toast } from "sonner";
 
 interface Country {
     name: string;
@@ -149,7 +150,7 @@ export default function MUNDataEditor({
                     onChange([...countries, ...importedCountries]);
                 },
                 error: (error: any) => {
-                    alert(`CSV import failed: ${error.message}`);
+                    toast.error(`CSV import failed: ${error.message}`);
                 }
             });
         }

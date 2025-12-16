@@ -67,11 +67,11 @@ export default function PaymentStep({ data, updateData }: Props) {
             });
 
             const result = await response.json();
-            if (!response.ok || !result.success) {
-                throw new Error(result.error || "Coupon validation failed");
+            if (!response.ok || !result.valid) {
+                throw new Error(result.message || "Coupon validation failed");
             }
 
-            setDiscount(result.discountAmount ?? 0);
+            setDiscount(result.discount ?? 0);
         } catch (err) {
             const message = err instanceof Error ? err.message : "Coupon validation failed";
             setErrorMessage(message);

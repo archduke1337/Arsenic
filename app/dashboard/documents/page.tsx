@@ -6,10 +6,13 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { Button, Card, CardBody, Input, Select, SelectItem } from "@nextui-org/react";
 import { Bold, Italic, List, ListOrdered, Save, Send } from "lucide-react";
 import { useState } from "react";
+import { toast, Toaster } from "sonner";
 
 export default function DocumentSubmission() {
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -30,20 +33,89 @@ export default function DocumentSubmission() {
         return null;
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (!title.trim()) {
+            toast.error("Please enter a title");
+            return;
+        }
+        if (!type) {
+            toast.error("Please select a document type");
+            return;
+        }
+        
         const content = editor.getHTML();
-        console.log("Saving draft:", { title, type, content });
-        alert("Draft saved!");
+        if (!content || content === "<p></p>") {
+            toast.error("Please enter some content");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const response = await fetch("/api/user/documents", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, type, content, isDraft: true }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Failed to save draft");
+            }
+
+            toast.success("Draft saved successfully!");
+        } catch (error) {
+            console.error("Error saving draft:", error);
+            toast.error(error instanceof Error ? error.message : "Failed to save draft");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!title.trim()) {
+            toast.error("Please enter a title");
+            return;
+        }
+        if (!type) {
+            toast.error("Please select a document type");
+            return;
+        }
+        
         const content = editor.getHTML();
-        console.log("Submitting:", { title, type, content });
-        alert("Document submitted successfully!");
+        if (!content || content === "<p></p>") {
+            toast.error("Please enter some content");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch("/api/user/documents", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, type, content, isDraft: false }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Failed to submit document");
+            }
+
+            toast.success("Document submitted successfully!");
+            // Reset form
+            setTitle("");
+            setType("");
+            editor.commands.setContent("");
+        } catch (error) {
+            console.error("Error submitting document:", error);
+            toast.error(error instanceof Error ? error.message : "Failed to submit document");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <div className="space-y-6">
+            <Toaster richColors position="top-center" />
             <div>
                 <h1 className="text-3xl font-bold mb-2">Submit Documents</h1>
                 <p className="text-gray-500">Draft and submit your bills, resolutions, and position papers.</p>
@@ -124,6 +196,8 @@ export default function DocumentSubmission() {
                                     color="primary"
                                     startContent={<Send size={18} />}
                                     onPress={handleSubmit}
+                                    isLoading={isSubmitting}
+                                    isDisabled={isSaving}
                                 >
                                     Submit Document
                                 </Button>
@@ -132,6 +206,8 @@ export default function DocumentSubmission() {
                                     variant="flat"
                                     startContent={<Save size={18} />}
                                     onPress={handleSave}
+                                    isLoading={isSaving}
+                                    isDisabled={isSubmitting}
                                 >
                                     Save Draft
                                 </Button>

@@ -207,8 +207,6 @@ export default function SuccessPage() {
                                     const url = payment?.invoiceUrl || (registrationId ? `/api/payments/receipt?registrationId=${registrationId}&format=pdf` : "");
                                     if (url) {
                                         window.open(url, "_blank");
-                                    } else {
-                                        alert("Receipt generation coming soon.");
                                     }
                                 }}
                             >

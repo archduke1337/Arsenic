@@ -23,6 +23,7 @@ export const COLLECTIONS = {
     FORUM_REPLIES: "forum_replies",
     MERCHANDISE: "merchandise",
     MERCHANDISE_ORDERS: "merchandise_orders",
+    DOCUMENTS: "documents",
 } as const;
 
 // Event Types
@@ -444,6 +445,22 @@ export const merchandiseOrderSchema = z.object({
     deliveryDate: z.string().optional(),
 });
 
+// Document Schema (for resolutions, bills, position papers)
+export const documentSchema = z.object({
+    authorId: z.string(),
+    authorName: z.string(),
+    authorEmail: z.string().email(),
+    title: z.string(),
+    type: z.enum(['resolution', 'position_paper', 'bill', 'amendment']),
+    content: z.string(),
+    status: z.enum(['draft', 'submitted', 'reviewed', 'approved', 'rejected']).default('draft'),
+    feedback: z.string().optional(),
+    committeeId: z.string().optional(),
+    eventId: z.string().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
 // ============================================
 // TYPE EXPORTS
 // ============================================
@@ -479,3 +496,4 @@ export type ForumPost = z.infer<typeof forumPostSchema>;
 export type ForumReply = z.infer<typeof forumReplySchema>;
 export type MerchandiseItem = z.infer<typeof merchandiseItemSchema>;
 export type MerchandiseOrder = z.infer<typeof merchandiseOrderSchema>;
+export type Document = z.infer<typeof documentSchema>;
