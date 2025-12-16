@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { databases, DATABASE_ID } from "@/lib/appwrite";
+import { databases, DATABASE_ID } from "@/lib/server-appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
+import { Query } from "node-appwrite";
 
 export async function GET(
     _request: Request,

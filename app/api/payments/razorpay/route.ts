@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRazorpayOrder, verifyRazorpayPayment } from '@/lib/payment-service';
-import { databases } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import { databases, DATABASE_ID } from '@/lib/server-appwrite';
+import { ID, Query } from 'node-appwrite';
+import { COLLECTIONS } from '@/lib/schema';
 
 /**
  * POST /api/payments/razorpay/create-order
@@ -27,31 +28,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!DATABASE_ID) throw new Error('Database not configured');
+
     // Create Razorpay order
     const order = await createRazorpayOrder(amount, registrationId, email, name);
 
     // Store order in database for verification later
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (databaseId) {
-      try {
-        await databases.createDocument(
-          databaseId,
-          'payments',
-          ID.unique(),
-          {
-            registrationId,
-            orderId: order.orderId,
-            amount,
-            currency: order.currency,
-            status: 'pending',
-            gateway: 'razorpay',
-            createdAt: new Date(),
-          }
-        );
-      } catch (dbError) {
-        console.error('Failed to store order in database:', dbError);
-        // Continue anyway - order is created in Razorpay
-      }
+    try {
+      await databases.createDocument(
+        DATABASE_ID,
+        COLLECTIONS.PAYMENTS,
+        ID.unique(),
+        {
+          registrationId,
+          orderId: order.orderId,
+          amount,
+          currency: order.currency,
+          status: 'pending',
+          gateway: 'razorpay',
+          createdAt: new Date().toISOString(),
+        }
+      );
+    } catch (dbError) {
+      console.error('Failed to store order in database:', dbError);
+      // Continue anyway - order is created in Razorpay
     }
 
     return NextResponse.json({
@@ -86,43 +86,42 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    if (!DATABASE_ID) throw new Error('Database not configured');
+
     // Verify signature
     await verifyRazorpayPayment(orderId, paymentId, signature);
 
     // Update payment status in database
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (databaseId && registrationId) {
+    if (registrationId) {
       try {
         // Find payment document
         const payments = await databases.listDocuments(
-          databaseId,
-          'payments',
-          [
-            `orderId == "${orderId}"`,
-          ]
+          DATABASE_ID,
+          COLLECTIONS.PAYMENTS,
+          [Query.equal('orderId', orderId), Query.limit(1)]
         );
 
         if (payments.documents.length > 0) {
           // Update payment status
           await databases.updateDocument(
-            databaseId,
-            'payments',
+            DATABASE_ID,
+            COLLECTIONS.PAYMENTS,
             payments.documents[0].$id,
             {
               status: 'success',
               transactionId: paymentId,
-              verifiedAt: new Date(),
+              verifiedAt: new Date().toISOString(),
             }
           );
 
           // Update registration payment status
           await databases.updateDocument(
-            databaseId,
-            'registrations',
+            DATABASE_ID,
+            COLLECTIONS.REGISTRATIONS,
             registrationId,
             {
               paymentStatus: 'paid',
-              updatedAt: new Date(),
+              updatedAt: new Date().toISOString(),
             }
           );
         }

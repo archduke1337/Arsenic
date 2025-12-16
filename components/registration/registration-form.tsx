@@ -20,6 +20,10 @@ export type RegistrationData = {
   phone: string;
   institution: string;
   amount: number;
+  couponCode?: string;
+  registrationId?: string;
+  orderId?: string;
+  code?: string;
 };
 
 const initialData: RegistrationData = {
@@ -30,6 +34,8 @@ const initialData: RegistrationData = {
   phone: "",
   institution: "",
   amount: 1500, // Base amount
+  couponCode: "",
+  code: "",
 };
 
 export default function RegistrationForm() {
@@ -102,7 +108,7 @@ export default function RegistrationForm() {
                 <PersonalDetailsStep data={data} updateData={updateData} />
               )}
               {step === 3 && (
-                <PaymentStep data={data} />
+                <PaymentStep data={data} updateData={updateData} />
               )}
             </motion.div>
           </AnimatePresence>

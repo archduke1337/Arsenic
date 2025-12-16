@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import {
-    Card, CardBody, Button, Input, Textarea,
+    Card, CardBody, Button, Input,
     User, Spinner, Tabs, Tab
 } from "@nextui-org/react";
-import { Save, AlertCircle } from "lucide-react";
+import { Save } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Query, ID } from "appwrite";
@@ -42,7 +42,7 @@ export default function ScoringSheet() {
             const response = await databases.listDocuments(
                 DATABASE_ID,
                 COLLECTIONS.REGISTRATIONS,
-                [Query.limit(100)]
+                [Query.orderDesc("$createdAt"), Query.limit(100)]
             );
             
             // Filter by chair's committee when assignment is available
@@ -96,7 +96,33 @@ export default function ScoringSheet() {
             // });
             // await Promise.all(promises);
 
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate
+            const submissions = Object.entries(scores).map(async ([delegateId, scoreData]) => {
+                const total = calculateTotal(delegateId);
+                const delegate = delegates.find(d => d.$id === delegateId);
+
+                if (!delegate) return;
+
+                const payload = {
+                    registrationId: delegateId,
+                    eventId: delegate.eventId,
+                    committeeId: delegate.assignedCommittee || delegate.committeeId || delegate.committee || "general",
+                    score: total,
+                    feedback: remarks[delegateId] || "",
+                };
+
+                const res = await fetch("/api/scoring/leaderboard", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.error || "Failed to submit score");
+                }
+            });
+
+            await Promise.all(submissions);
             toast.success("Scores submitted successfully");
         } catch (error) {
             console.error("Error saving scores:", error);

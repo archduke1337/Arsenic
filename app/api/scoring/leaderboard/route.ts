@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  getLeaderboard,
-  getCommitteeRankings,
-  getScoreStats,
-  submitScore,
-} from '@/lib/scoring-service';
-import { account } from '@/lib/appwrite';
+import { getLeaderboard, submitScore } from '@/lib/scoring-service';
+import { isAdminEmail } from '@/lib/server-auth';
 
 /**
  * POST /api/scoring/submit
@@ -13,11 +8,8 @@ import { account } from '@/lib/appwrite';
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await account.get();
-    
-    // Verify user is admin
-    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim());
-    if (!adminEmails.includes(user.email)) {
+    const adminEmail = await isAdminEmail(request);
+    if (!adminEmail) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 

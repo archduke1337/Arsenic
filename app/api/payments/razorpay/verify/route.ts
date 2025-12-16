@@ -9,7 +9,11 @@ export async function POST(request: NextRequest) {
             razorpay_signature,
         } = await request.json();
 
-        const key_secret = process.env.RAZORPAY_KEY_SECRET || "secret_1234567890";
+        if (!process.env.RAZORPAY_KEY_SECRET) {
+            return NextResponse.json({ error: "Razorpay key not configured" }, { status: 500 });
+        }
+
+        const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 

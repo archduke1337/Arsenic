@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decodeQRCode, validateQRCode } from '@/lib/qrcode-generator';
-import { databases, account } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import { databases, DATABASE_ID } from '@/lib/server-appwrite';
+import { ID, Query } from 'node-appwrite';
+import { COLLECTIONS } from '@/lib/schema';
+import { isAdminEmail } from '@/lib/server-auth';
 
 /**
  * POST /api/checkin/scan
@@ -9,15 +11,9 @@ import { ID } from 'appwrite';
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await account.get();
-    
-    // Only admins can check in participants
-    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim());
-    if (!adminEmails.includes(user.email)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+    const adminEmail = await isAdminEmail(request);
+    if (!adminEmail) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -50,20 +46,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify registration
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (!databaseId) {
-      return NextResponse.json(
-        { error: 'Database not configured' },
-        { status: 500 }
-      );
-    }
-
     const registrations = await databases.listDocuments(
-      databaseId,
-      'registrations',
+      DATABASE_ID,
+      COLLECTIONS.REGISTRATIONS,
       [
-        `code == "${qrContent.code}"`,
-        `eventId == "${eventId}"`,
+        Query.equal('code', qrContent.code),
+        Query.equal('eventId', eventId),
+        Query.limit(1),
       ]
     );
 
@@ -93,10 +82,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Update registration with check-in
-    const checkedInAt = new Date();
+    const checkedInAt = new Date().toISOString();
     await databases.updateDocument(
-      databaseId,
-      'registrations',
+      DATABASE_ID,
+      COLLECTIONS.REGISTRATIONS,
       registration.$id,
       {
         checkedIn: true,
@@ -108,16 +97,16 @@ export async function POST(request: NextRequest) {
     // Create attendance record
     try {
       await databases.createDocument(
-        databaseId,
-        'attendance',
+        DATABASE_ID,
+        COLLECTIONS.ATTENDANCE,
         ID.unique(),
         {
           registrationId: registration.$id,
           eventId,
           checkedInAt: checkedInAt,
-          checkedInBy: user.$id,
+          checkedInBy: adminEmail,
           qrCodeScanned: true,
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         }
       );
     } catch (error) {
@@ -150,15 +139,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await account.get();
-    
-    // Only admins can view stats
-    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim());
-    if (!adminEmails.includes(user.email)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+    const adminEmail = await isAdminEmail(request);
+    if (!adminEmail) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -171,19 +154,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (!databaseId) {
-      return NextResponse.json(
-        { error: 'Database not configured' },
-        { status: 500 }
-      );
-    }
-
     // Get all registrations for event
     const registrations = await databases.listDocuments(
-      databaseId,
-      'registrations',
-      [`eventId == "${eventId}"`]
+      DATABASE_ID,
+      COLLECTIONS.REGISTRATIONS,
+      [Query.equal('eventId', eventId), Query.limit(500)]
     );
 
     // Calculate stats

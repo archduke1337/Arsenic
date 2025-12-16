@@ -1,49 +1,6 @@
 # Appwrite Setup Guide - Complete Step-by-Step
 
-## 🚀 Quick Start (15 minutes)
 
-### 1. Create Appwrite Project
-```bash
-# Go to: https://tor.cloud.appwrite.io
-# Click "Create Project"
-# Enter Project Name: "Arsenic Summit"
-# Region: Choose nearest to your location
-```
-
-**Save These**:
-- Project ID
-- Organization ID
-
-### 2. Create Database
-1. Go to **Databases** tab
-2. Click **Create Database**
-3. Name: `arsenic_db`
-4. Save Database ID
-
-### 3. Generate API Key
-1. Go to **Settings** → **API Keys**
-2. Click **Create API Key**
-3. Key Name: `Backend API`
-4. Select scopes:
-   - ✅ `documents.read`
-   - ✅ `documents.write`
-   - ✅ `files.read`
-   - ✅ `files.write`
-   - ✅ `users.read`
-
-**Save API Key** (shows only once!)
-
-### 4. Configure CORS
-1. Go to **Settings** → **Domains**
-2. Add these domains:
-   ```
-   http://localhost:3000
-   http://127.0.0.1:3000
-   https://arsenic-phi.vercel.app
-   https://www.arsenic-summit.com
-   ```
-
----
 
 ## 📁 Database Collections Setup
 
@@ -353,6 +310,137 @@ Document Rules:
 - Create: Admins only
 - Update: Admins only
 - Delete: Admins only
+```
+
+---
+
+### Collection 15: `speaker_updates`
+**Purpose**: Real-time updates from speakers to committees
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| committeeId | String | ✅ |
+| speakerId | String | ✅ |
+| type | String | ✅ |
+| content | String | ✅ |
+| timestamp | DateTime | ✅ |
+
+**type Enum**: "crisis", "gavel", "mention", "announcement"
+
+---
+
+### Collection 16: `albums`
+**Purpose**: Photo albums organization
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| name | String | ✅ |
+| slug | String | ✅ |
+| eventType | String | ✅ |
+| coverImageUrl | URL | ❌ |
+| description | String | ❌ |
+| year | String | ✅ |
+| displayOrder | Integer | ❌ |
+
+---
+
+### Collection 17: `alumni`
+**Purpose**: Alumni network profiles
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| userId | String | ✅ |
+| name | String | ✅ |
+| email | Email | ✅ |
+| institution | String | ❌ |
+| graduationYear | String | ❌ |
+| eventsAttended | String[] | ✅ |
+| achievements | String[] | ❌ |
+| bio | String | ❌ |
+| profileImageUrl | URL | ❌ |
+| linkedinUrl | URL | ❌ |
+| isActive | Boolean | ✅ |
+| joinedAt | DateTime | ✅ |
+```
+
+---
+
+### Collection 18: `forum_posts`
+**Purpose**: Community forum discussions
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| committeeId | String | ✅ |
+| eventId | String | ✅ |
+| authorId | String | ✅ |
+| authorName | String | ✅ |
+| title | String | ✅ |
+| content | String | ✅ |
+| category | String | ✅ |
+| replies | Integer | ✅ |
+| views | Integer | ✅ |
+| likes | Integer | ✅ |
+| isPinned | Boolean | ✅ |
+| isLocked | Boolean | ✅ |
+| createdAt | DateTime | ✅ |
+| updatedAt | DateTime | ✅ |
+
+**category Enum**: "discussion", "resource", "question", "announcement"
+
+---
+
+### Collection 19: `forum_replies`
+**Purpose**: Replies to forum posts
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| postId | String | ✅ |
+| authorId | String | ✅ |
+| authorName | String | ✅ |
+| content | String | ✅ |
+| likes | Integer | ✅ |
+| isAnswer | Boolean | ✅ |
+| createdAt | DateTime | ✅ |
+| updatedAt | DateTime | ✅ |
+
+---
+
+### Collection 20: `merchandise`
+**Purpose**: Merchandise catalog
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| name | String | ✅ |
+| description | String | ✅ |
+| category | String | ✅ |
+| price | Number | ✅ |
+| quantity | Integer | ✅ |
+| imageUrl | URL | ✅ |
+| sizes | String[] | ❌ |
+| colors | String[] | ❌ |
+| eventId | String | ❌ |
+| isAvailable | Boolean | ✅ |
+
+**category Enum**: "tshirt", "badge", "certificate", "mug", "other"
+
+---
+
+### Collection 21: `merchandise_orders`
+**Purpose**: Merchandise order tracking
+
+| Field Name | Type | Required |
+|-----------|------|----------|
+| userId | String | ✅ |
+| items | String | ✅ |
+| totalAmount | Number | ✅ |
+| shippingAddress | String | ✅ |
+| status | String | ✅ |
+| createdAt | DateTime | ✅ |
+| deliveryDate | DateTime | ❌ |
+
+**items**: JSON String of object array
+**shippingAddress**: JSON String of address object
+**status Enum**: "pending", "processing", "shipped", "delivered"
 ```
 
 ---

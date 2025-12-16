@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Card, Progress, Chip } from '@nextui-org/react';
+// import jsQR from 'jsqr'; // Uncomment and add to deps to enable real scanning
 
 interface QRScannerProps {
   eventId: string;
@@ -78,14 +79,13 @@ export function QRScanner({ eventId, onScanSuccess, onScanError }: QRScannerProp
         canvasRef.current.height
       );
 
-      // QR code detection requires jsQR or similar library
-      // To use: npm install jsqr
+      // Uncomment this block when jsQR is installed
       // const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
       // const code = jsQR(imageData.data, imageData.width, imageData.height);
-      // if (code) {
+      // if (code?.data) {
       //   handleProcessQR(code.data);
       // }
-    }, 100);
+    }, 250);
 
     return () => clearInterval(interval);
   }, [isScanning]);

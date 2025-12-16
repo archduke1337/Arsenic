@@ -2,18 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { databases, DATABASE_ID } from "@/lib/server-appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Query } from "node-appwrite";
-import { account } from "@/lib/appwrite";
+import { isAdminEmail } from "@/lib/server-auth";
 
 export async function GET(request: NextRequest) {
     try {
-        // Get current user
-        const user = await account.get();
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Not authenticated" },
-                { status: 401 }
-            );
+        // NOTE: Without a user session bridge, we rely on admin-only access for now
+        const adminEmail = await isAdminEmail(request);
+        if (!adminEmail) {
+            return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
 
         // Fetch user's registrations

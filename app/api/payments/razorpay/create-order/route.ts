@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
-// Initialize Razorpay
-// In production, these should be in process.env
+// Initialize Razorpay with required env vars (no fallbacks)
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error("Razorpay keys are not configured");
+}
+
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_1234567890",
-    key_secret: process.env.RAZORPAY_KEY_SECRET || "secret_1234567890",
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 export async function POST(request: NextRequest) {

@@ -1,7 +1,7 @@
-import { databases, ID } from '@/lib/appwrite';
+import { databases, DATABASE_ID } from '@/lib/server-appwrite';
 import { COLLECTIONS } from '@/lib/schema';
 import type { Score } from '@/lib/schema';
-import { Query } from 'appwrite';
+import { ID, Query } from 'node-appwrite';
 
 export interface Leaderboard {
   rank: number;
@@ -22,14 +22,11 @@ export async function submitScore(
   score: number,
   feedback?: string
 ): Promise<Score> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) {
-    throw new Error('Database not configured');
-  }
+  if (!DATABASE_ID) throw new Error('Database not configured');
 
   try {
     const scoreDoc = await databases.createDocument(
-      databaseId,
+      DATABASE_ID,
       COLLECTIONS.SCORES,
       ID.unique(),
       {
@@ -67,14 +64,11 @@ export async function updateScore(
   score: number,
   feedback?: string
 ): Promise<Score> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) {
-    throw new Error('Database not configured');
-  }
+  if (!DATABASE_ID) throw new Error('Database not configured');
 
   try {
     const updated = await databases.updateDocument(
-      databaseId,
+      DATABASE_ID,
       COLLECTIONS.SCORES,
       scoreId,
       {
@@ -108,74 +102,73 @@ export async function getLeaderboard(
   committeeId?: string,
   limit: number = 50
 ): Promise<Leaderboard[]> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) {
-    throw new Error('Database not configured');
-  }
+  if (!DATABASE_ID) throw new Error('Database not configured');
 
   try {
-    // Fetch all scores
-    const scoresResponse = await databases.listDocuments(
-      databaseId,
-      COLLECTIONS.SCORES,
-      [
-        Query.equal("eventId", eventId),
-        ...(committeeId ? [Query.equal("committeeId", committeeId)] : []),
-        Query.limit(1000)
-      ]
-    );
+    const filters = [Query.equal("eventId", eventId)];
+    if (committeeId) filters.push(Query.equal("committeeId", committeeId));
+
+    // Fetch all scores with pagination to avoid truncation
+    const scoreDocs: any[] = await fetchAllDocuments(COLLECTIONS.SCORES, filters);
 
     // Group scores by registration and calculate averages
     const scoresByRegistration: Record<
       string,
-      { scores: number[]; committee?: string; name?: string }
+      { scores: number[]; committeeId?: string }
     > = {};
 
-    for (const scoreDoc of scoresResponse.documents) {
+    for (const scoreDoc of scoreDocs) {
       const regId = scoreDoc.registrationId;
       if (!scoresByRegistration[regId]) {
         scoresByRegistration[regId] = { scores: [] };
       }
       scoresByRegistration[regId].scores.push(scoreDoc.score);
-      scoresByRegistration[regId].committee = scoreDoc.committeeId;
+      scoresByRegistration[regId].committeeId = scoreDoc.committeeId;
     }
 
-    // Fetch registration details for names
-    const registrationsResponse = await databases.listDocuments(
-      databaseId,
+    // Fetch registration details for names and committees
+    const registrations = await fetchAllDocuments(
       COLLECTIONS.REGISTRATIONS,
-      [Query.equal("eventId", eventId), Query.limit(1000)]
+      [Query.equal("eventId", eventId)]
     );
-
-    for (const reg of registrationsResponse.documents) {
-      if (scoresByRegistration[reg.$id]) {
-        scoresByRegistration[reg.$id].name = reg.fullName;
-      }
+    const regMap: Record<string, { name: string; committee?: string }> = {};
+    for (const reg of registrations) {
+      regMap[reg.$id] = {
+        name: reg.fullName || 'Unknown',
+        committee: reg.assignedCommittee || reg.committeeId || reg.committee,
+      };
     }
 
-    // Calculate final scores and ranks
+    // Fetch committees for human-readable names
+    const committees = await fetchAllDocuments(COLLECTIONS.COMMITTEES, []);
+    const committeeNameMap: Record<string, string> = {};
+    for (const c of committees) {
+      committeeNameMap[c.$id] = c.name || c.abbreviation || 'Committee';
+    }
+
     const leaderboard: Leaderboard[] = Object.entries(scoresByRegistration)
       .map(([regId, data]) => {
         const avgScore = data.scores.length
-          ? Math.round(
-            (data.scores.reduce((a, b) => a + b, 0) / data.scores.length) * 10
-          ) / 10
+          ? Math.round((data.scores.reduce((a, b) => a + b, 0) / data.scores.length) * 10) / 10
           : 0;
 
+        const regInfo = regMap[regId];
+        const committeeLabel = data.committeeId
+          ? committeeNameMap[data.committeeId] || data.committeeId
+          : regInfo?.committee || 'Unknown';
+
         return {
-          rank: 0, // Will be set after sorting
-          participantName: data.name || 'Unknown',
-          committee: data.committee || 'Unknown',
+          rank: 0, // set after sorting
+          participantName: regInfo?.name || 'Unknown',
+          committee: committeeLabel || 'Unknown',
           score: avgScore,
           totalVotes: data.scores.length,
           trend: 'same' as const,
         };
       })
       .sort((a, b) => b.score - a.score)
-      .map((item, index) => ({
-        ...item,
-        rank: index + 1,
-      }));
+      .slice(0, limit)
+      .map((item, index) => ({ ...item, rank: index + 1 }));
 
     return leaderboard;
   } catch (error) {
@@ -221,12 +214,11 @@ async function getParticipantName(
   registrationId: string,
   eventId: string
 ): Promise<string> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) return 'Unknown';
+  if (!DATABASE_ID) return 'Unknown';
 
   try {
     const reg = await databases.getDocument(
-      databaseId,
+      DATABASE_ID,
       COLLECTIONS.REGISTRATIONS,
       registrationId
     );
@@ -242,15 +234,12 @@ async function getParticipantName(
 export async function getCommitteeRankings(
   eventId: string
 ): Promise<Record<string, Leaderboard[]>> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) {
-    throw new Error('Database not configured');
-  }
+  if (!DATABASE_ID) throw new Error('Database not configured');
 
   try {
     // Get all committees for event
     const committeesResponse = await databases.listDocuments(
-      databaseId,
+      DATABASE_ID,
       COLLECTIONS.COMMITTEES,
       [Query.limit(100)]
     );
@@ -308,18 +297,16 @@ export async function getScoreStats(eventId: string): Promise<{
   totalScores: number;
   participantsScored: number;
 }> {
-  const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-  if (!databaseId) {
+  if (!DATABASE_ID) {
     throw new Error('Database not configured');
   }
 
   try {
-    const scoresResponse = await databases.listDocuments(
-      databaseId,
+    const scoreDocs = await fetchAllDocuments(
       COLLECTIONS.SCORES,
-      [Query.equal("eventId", eventId), Query.limit(1000)]
+      [Query.equal("eventId", eventId)]
     );
-    const scores = scoresResponse.documents.map((doc) => doc.score);
+    const scores = scoreDocs.map((doc) => doc.score as number);
 
     return {
       averageScore:
@@ -339,4 +326,25 @@ export async function getScoreStats(eventId: string): Promise<{
     console.error('Error fetching score stats:', error);
     throw error;
   }
+}
+
+// Helper to fetch all documents with pagination
+async function fetchAllDocuments(collectionId: string, filters: any[], pageSize = 100): Promise<any[]> {
+  const results: any[] = [];
+  let offset = 0;
+
+  while (true) {
+    const page = await databases.listDocuments(
+      DATABASE_ID,
+      collectionId,
+      [...filters, Query.limit(pageSize), Query.offset(offset)]
+    );
+
+    results.push(...page.documents);
+
+    if (page.documents.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return results;
 }

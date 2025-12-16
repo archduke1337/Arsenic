@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createEasebuzzPayment, verifyEasebuzzPayment } from '@/lib/payment-service';
-import { databases } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import { databases, DATABASE_ID } from '@/lib/server-appwrite';
+import { ID, Query } from 'node-appwrite';
+import { COLLECTIONS } from '@/lib/schema';
 
 /**
  * POST /api/payments/easebuzz/create-order
@@ -36,27 +37,26 @@ export async function POST(request: NextRequest) {
       redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/register/success`
     );
 
+    if (!DATABASE_ID) throw new Error('Database not configured');
+
     // Store order in database
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (databaseId) {
-      try {
-        await databases.createDocument(
-          databaseId,
-          'payments',
-          ID.unique(),
-          {
-            registrationId,
-            transactionId: payment.txnId,
-            amount,
-            currency: 'INR',
-            status: 'pending',
-            gateway: 'easebuzz',
-            createdAt: new Date(),
-          }
-        );
-      } catch (dbError) {
-        console.error('Failed to store order in database:', dbError);
-      }
+    try {
+      await databases.createDocument(
+        DATABASE_ID,
+        COLLECTIONS.PAYMENTS,
+        ID.unique(),
+        {
+          registrationId,
+          transactionId: payment.txnId,
+          amount,
+          currency: 'INR',
+          status: 'pending',
+          gateway: 'easebuzz',
+          createdAt: new Date().toISOString(),
+        }
+      );
+    } catch (dbError) {
+      console.error('Failed to store order in database:', dbError);
     }
 
     return NextResponse.json({
@@ -93,35 +93,36 @@ export async function PUT(request: NextRequest) {
     // Verify payment
     await verifyEasebuzzPayment(txnId, amount, status, hash);
 
+    if (!DATABASE_ID) throw new Error('Database not configured');
+
     // Update payment status
-    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-    if (databaseId && registrationId) {
+    if (registrationId) {
       try {
         const payments = await databases.listDocuments(
-          databaseId,
-          'payments',
-          [`transactionId == "${txnId}"`]
+          DATABASE_ID,
+          COLLECTIONS.PAYMENTS,
+          [Query.equal('transactionId', txnId), Query.limit(1)]
         );
 
         if (payments.documents.length > 0) {
           await databases.updateDocument(
-            databaseId,
-            'payments',
+            DATABASE_ID,
+            COLLECTIONS.PAYMENTS,
             payments.documents[0].$id,
             {
               status: status === '0' ? 'success' : 'failed',
-              verifiedAt: new Date(),
+              verifiedAt: new Date().toISOString(),
             }
           );
 
           if (status === '0') {
             await databases.updateDocument(
-              databaseId,
-              'registrations',
+              DATABASE_ID,
+              COLLECTIONS.REGISTRATIONS,
               registrationId,
               {
                 paymentStatus: 'paid',
-                updatedAt: new Date(),
+                updatedAt: new Date().toISOString(),
               }
             );
           }

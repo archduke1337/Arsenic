@@ -18,6 +18,11 @@ export const COLLECTIONS = {
     ATTENDANCE: "attendance",
     COUPONS: "coupons",
     ALUMNI: "alumni",
+    PAYMENTS: "payments",
+    FORUM_POSTS: "forum_posts",
+    FORUM_REPLIES: "forum_replies",
+    MERCHANDISE: "merchandise",
+    MERCHANDISE_ORDERS: "merchandise_orders",
 } as const;
 
 // Event Types
@@ -361,6 +366,84 @@ export const contactSubmissionSchema = z.object({
     status: z.enum(['new', 'read', 'replied', 'archived']).default('new'),
 });
 
+// Payments Schema
+export const paymentSchema = z.object({
+    registrationId: z.string(),
+    amount: z.number(),
+    currency: z.string(),
+    gateway: z.enum(['razorpay', 'easebuzz']),
+    transactionId: z.string(),
+    status: z.enum(['pending', 'success', 'failed', 'refunded']),
+    invoiceUrl: z.string().optional(),
+    createdAt: z.string(),
+});
+
+// Forum Schemas
+export const forumPostSchema = z.object({
+    committeeId: z.string(),
+    eventId: z.string(),
+    authorId: z.string(),
+    authorName: z.string(),
+    title: z.string(),
+    content: z.string(),
+    category: z.enum(['discussion', 'resource', 'question', 'announcement']),
+    replies: z.number().default(0),
+    views: z.number().default(0),
+    likes: z.number().default(0),
+    isPinned: z.boolean().default(false),
+    isLocked: z.boolean().default(false),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+export const forumReplySchema = z.object({
+    postId: z.string(),
+    authorId: z.string(),
+    authorName: z.string(),
+    content: z.string(),
+    likes: z.number().default(0),
+    isAnswer: z.boolean().default(false),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+});
+
+// Merchandise Schemas
+export const merchandiseItemSchema = z.object({
+    name: z.string(),
+    description: z.string(),
+    category: z.enum(['tshirt', 'badge', 'certificate', 'mug', 'other']),
+    price: z.number(),
+    quantity: z.number(),
+    imageUrl: z.string(),
+    sizes: z.array(z.string()).optional(),
+    colors: z.array(z.string()).optional(),
+    eventId: z.string().optional(),
+    isAvailable: z.boolean(),
+});
+
+export const merchandiseOrderSchema = z.object({
+    userId: z.string(),
+    // stored as JSON string in Appwrite usually, but kept object here for type inference if used with transformation
+    items: z.array(z.object({
+        itemId: z.string(),
+        quantity: z.number(),
+        size: z.string().optional(),
+        color: z.string().optional()
+    })),
+    totalAmount: z.number(),
+    // complex object likely stored as JSON string
+    shippingAddress: z.object({
+        street: z.string(),
+        city: z.string(),
+        state: z.string(),
+        pincode: z.string(),
+        phone: z.string()
+    }),
+    status: z.enum(['pending', 'processing', 'shipped', 'delivered']),
+    createdAt: z.string(),
+    deliveryDate: z.string().optional(),
+});
+
 // ============================================
 // TYPE EXPORTS
 // ============================================
@@ -391,3 +474,8 @@ export type Score = z.infer<typeof scoreSchema>;
 export type Attendance = z.infer<typeof attendanceSchema>;
 export type Coupon = z.infer<typeof couponSchema>;
 export type Alumni = z.infer<typeof alumniSchema>;
+export type Payment = z.infer<typeof paymentSchema>;
+export type ForumPost = z.infer<typeof forumPostSchema>;
+export type ForumReply = z.infer<typeof forumReplySchema>;
+export type MerchandiseItem = z.infer<typeof merchandiseItemSchema>;
+export type MerchandiseOrder = z.infer<typeof merchandiseOrderSchema>;

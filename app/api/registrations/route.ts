@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { databases, DATABASE_ID } from "@/lib/appwrite";
+import { databases, DATABASE_ID } from "@/lib/server-appwrite";
 import { COLLECTIONS, registrationSchema } from "@/lib/schema";
-import { ID } from "appwrite";
+import { ID } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
+        // Fill required fields if missing (frontend may be unauthenticated)
+        const enriched = {
+            userId: body.userId || body.email || `guest-${Date.now()}`,
+            eventId: body.eventId || body.eventType || "general",
+            ...body,
+        };
+
         // Validate with Zod schema
-        const validationResult = registrationSchema.safeParse(body);
+        const validationResult = registrationSchema.safeParse(enriched);
 
         if (!validationResult.success) {
             return NextResponse.json(

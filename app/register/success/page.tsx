@@ -1,21 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button, Card, CardBody } from "@nextui-org/react";
 import { motion } from "framer-motion";
-import { CheckCircle, Download, Home } from "lucide-react";
+import { CheckCircle, Download, Home, XCircle } from "lucide-react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
+import { useSearchParams } from "next/navigation";
 
 const randomInRange = (min: number, max: number) => {
     return Math.random() * (max - min) + min;
 };
 
 export default function SuccessPage() {
-    const regCode = "AS-2026-XYZ";
+    const params = useSearchParams();
+    const registrationId = params.get("registrationId") || "";
+    const code = params.get("code") || params.get("regCode") || "";
+    const gateway = params.get("gateway") || "";
+    const orderId = params.get("orderId") || params.get("txnId") || "";
+    const status = params.get("status") || params.get("easebuzzStatus") || "success";
+
+    const isSuccess = useMemo(() => status === "success" || status === "0", [status]);
 
     useEffect(() => {
-        // Fire confetti on mount
+        if (!isSuccess) return;
+        // Fire confetti on success
         const duration = 3 * 1000;
         const animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -41,7 +50,7 @@ export default function SuccessPage() {
         }, 250);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isSuccess]);
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-black">

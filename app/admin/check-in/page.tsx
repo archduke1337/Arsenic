@@ -7,7 +7,7 @@ import {
 import { Scan, Search, Users, CheckCircle, Clock, Undo } from "lucide-react";
 import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { ID, Query } from "appwrite";
+import { Query } from "appwrite";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { validateQRCode } from "@/lib/qrcode-utils";
 import CheckInSuccess from "@/components/admin/check-in/CheckInSuccess";
@@ -58,7 +58,7 @@ export default function CheckInPage() {
             const response = await databases.listDocuments(
                 DATABASE_ID,
                 COLLECTIONS.REGISTRATIONS,
-                [Query.orderDesc("$createdAt"), Query.limit(1000)]
+                [Query.orderDesc("$createdAt"), Query.limit(200)]
             );
             setRegistrations(response.documents as any);
             setRecentCheckIns(response.documents.filter((r: any) => r.checkedIn) as any);
@@ -115,28 +115,34 @@ export default function CheckInPage() {
                 return;
             }
 
-            // Update check-in status
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                registrationId,
-                {
-                    checkedIn: true,
-                    checkedInAt: new Date().toISOString(),
-                }
-            );
+            // Call secure API instead of direct client mutation
+            const res = await fetch('/api/checkin/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    qrData: registration.code,
+                    eventId: registration.eventId,
+                }),
+            });
 
-            // Update local state
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Check-in failed');
+            }
+
+            const data = await res.json();
+
+            // Update local state with API result
             setRegistrations(prev => prev.map(r =>
                 r.$id === registrationId
-                    ? { ...r, checkedIn: true, checkedInAt: new Date().toISOString() }
+                    ? { ...r, checkedIn: true, checkedInAt: data.participant?.checkedInAt || new Date().toISOString() }
                     : r
             ));
 
             setRecentCheckIns(prev => [{
                 ...registration,
                 checkedIn: true,
-                checkedInAt: new Date().toISOString(),
+                checkedInAt: data.participant?.checkedInAt || new Date().toISOString(),
             }, ...prev]);
 
             // Show success animation

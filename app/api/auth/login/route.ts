@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
 
         const session = await account.createEmailPasswordSession(email, password);
 
-        // Create response with auth cookie
-        const response = NextResponse.json({
+        // Note: Appwrite sets its own session cookie; we return basic info only
+        return NextResponse.json({
             success: true,
             message: "Login successful",
             session: {
@@ -24,8 +24,6 @@ export async function POST(request: NextRequest) {
                 email: email,
             },
         });
-
-        return response;
     } catch (error) {
         console.error("Login error:", error);
         return NextResponse.json(

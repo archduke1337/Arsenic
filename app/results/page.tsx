@@ -18,9 +18,7 @@ const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function ResultsPage() {
     const [awards, setAwards] = useState<any[]>([]);
-    const [scores, setScores] = useState<any[]>([]);
-    const [events, setEvents] = useState<any[]>([]);
-    const [registrations, setRegistrations] = useState<any[]>([]);
+    const [leaderboard, setLeaderboard] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedEvent, setSelectedEvent] = useState("ALL");
@@ -30,26 +28,14 @@ export default function ResultsPage() {
     const itemsPerPage = 12;
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchAwards = async () => {
             try {
-                const [awardsRes, scoresRes, eventsRes, regsRes] = await Promise.all([
-                    databases.listDocuments(
-                        DATABASE_ID,
-                        COLLECTIONS.AWARDS,
-                        [Query.equal("isPublished", true), Query.orderDesc("$createdAt"), Query.limit(100)]
-                    ),
-                    databases.listDocuments(
-                        DATABASE_ID,
-                        COLLECTIONS.SCORES,
-                        [Query.orderDesc("score"), Query.limit(500)]
-                    ),
-                    databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(100)]),
-                    databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.limit(500)]),
-                ]);
+                const awardsRes = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTIONS.AWARDS,
+                    [Query.equal("isPublished", true), Query.orderDesc("$createdAt"), Query.limit(100)]
+                );
                 setAwards(awardsRes.documents as unknown as any[]);
-                setScores(scoresRes.documents as unknown as any[]);
-                setEvents(eventsRes.documents as unknown as any[]);
-                setRegistrations(regsRes.documents as unknown as any[]);
             } catch (error) {
                 console.error("Error fetching results:", error);
             } finally {
@@ -57,8 +43,28 @@ export default function ResultsPage() {
             }
         };
 
-        fetchData();
+        fetchAwards();
     }, []);
+
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            if (selectedEvent === "ALL") {
+                setLeaderboard([]);
+                return;
+            }
+            try {
+                const res = await fetch(`/api/scoring/leaderboard?eventId=${selectedEvent}`);
+                if (!res.ok) throw new Error("Failed to load leaderboard");
+                const data = await res.json();
+                setLeaderboard(data.leaderboard || []);
+            } catch (error) {
+                console.error("Error fetching leaderboard:", error);
+                setLeaderboard([]);
+            }
+        };
+
+        fetchLeaderboard();
+    }, [selectedEvent]);
 
     const filteredAwards = useMemo(() => {
         return awards.filter(award => {
@@ -75,23 +81,16 @@ export default function ResultsPage() {
     }, [awards, selectedEvent, searchQuery]);
 
     const filteredScores = useMemo(() => {
-        let result = scores;
-        if (selectedEvent !== "ALL") {
-            result = result.filter(s => s.eventId === selectedEvent);
-        }
+        let result = leaderboard;
         if (searchQuery) {
             const searchLower = searchQuery.toLowerCase();
-            result = result.filter(s => {
-                const reg = registrations.find(r => r.$id === s.registrationId);
-                return reg?.fullName?.toLowerCase().includes(searchLower) || false;
-            });
+            result = result.filter((s) =>
+                s.participantName?.toLowerCase().includes(searchLower) ||
+                s.committee?.toLowerCase().includes(searchLower)
+            );
         }
         return result;
-    }, [scores, selectedEvent, searchQuery, registrations]);
-
-    const getRegistrationName = (registrationId: string) => {
-        return registrations.find(r => r.$id === registrationId)?.fullName || "Unknown";
-    };
+    }, [leaderboard, searchQuery]);
 
     const paginatedLeaderboard = useMemo(() => {
         const start = (page - 1) * itemsPerPage;
@@ -169,13 +168,17 @@ export default function ResultsPage() {
                 >
                     <Tab key="leaderboard" title="Leaderboard">
                         {/* Leaderboard Content */}
-                        {filteredScores.length > 0 ? (
+                        {selectedEvent === "ALL" ? (
+                            <div className="text-center py-12 bg-zinc-900/30 rounded-3xl border border-white/5 mt-6">
+                                <h3 className="text-xl font-bold text-gray-300">Select an event to view the leaderboard</h3>
+                            </div>
+                        ) : filteredScores.length > 0 ? (
                             <div className="space-y-6 mt-6">
                                 {paginatedLeaderboard.map((score, idx) => {
                                     const actualRank = (page - 1) * itemsPerPage + idx + 1;
                                     const medalEmoji = actualRank === 1 ? "🥇" : actualRank === 2 ? "🥈" : actualRank === 3 ? "🥉" : "";
                                     return (
-                                        <Card key={score.$id} className="bg-zinc-900/50 border border-white/10">
+                                        <Card key={`${score.participantName}-${idx}`} className="bg-zinc-900/50 border border-white/10">
                                             <CardBody className="p-6 flex-row justify-between items-center gap-4">
                                                 <div className="flex items-center gap-4 flex-grow">
                                                     <div className="text-3xl font-bold text-yellow-500 w-12 text-center">
@@ -183,10 +186,10 @@ export default function ResultsPage() {
                                                     </div>
                                                     <div className="flex-grow">
                                                         <h3 className="text-lg font-bold text-white">
-                                                            {getRegistrationName(score.registrationId)}
+                                                            {score.participantName || "Unknown"}
                                                         </h3>
                                                         <p className="text-sm text-gray-400">
-                                                            {score.committeeId || "General"}
+                                                            {score.committee || "General"}
                                                         </p>
                                                     </div>
                                                 </div>
