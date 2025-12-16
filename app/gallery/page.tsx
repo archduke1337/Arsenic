@@ -34,8 +34,8 @@ export default function GalleryPage() {
         { name: "Socials", value: "Socials", icon: <PartyPopper size={18} /> },
     ];
 
-    const filteredImages = filter === "all" 
-        ? images 
+    const filteredImages = filter === "all"
+        ? images
         : images.filter(img => img.category === filter);
 
     const handleImageClick = (src: string) => {
@@ -49,19 +49,19 @@ export default function GalleryPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white relative overflow-hidden">
+        <div className="min-h-screen bg-[#020202] text-white selection:bg-rose-500/30 selection:text-white relative overflow-hidden">
             {/* Animated Background Elements */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-800/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-0 left-0 w-96 h-96 bg-[#003366]/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#005A9C]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#003366]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             {/* Hero Section */}
             <div className="relative min-h-[50vh] flex flex-col items-center justify-center overflow-hidden px-6 pt-32 pb-16">
                 {/* Very subtle gradient + grid */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,35,149,0.02)] via-transparent to-[rgba(15,23,42,0.04)] dark:from-[rgba(0,35,149,0.15)] dark:via-[rgba(15,23,42,0.9)] dark:to-black" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,35,149,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,35,149,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/5 via-transparent to-[#020202]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,51,102,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,51,102,0.05)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
                 <div className="relative z-10 text-center max-w-4xl mx-auto">
                     <motion.div
@@ -80,9 +80,9 @@ export default function GalleryPage() {
                             <span className="text-sm font-semibold text-blue-300">Summit Memories</span>
                         </motion.div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-[rgb(0,35,149)] dark:text-white">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
                             Moments of
-                            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[rgb(0,35,149)] via-[rgb(37,99,235)] to-[rgb(59,130,246)] dark:from-[rgb(147,197,253)] dark:via-white dark:to-[rgb(191,219,254)]">
+                            <span className="block mt-2 bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
                                 Excellence
                             </span>
                         </h1>
@@ -99,17 +99,17 @@ export default function GalleryPage() {
                             className="flex items-center justify-center gap-8 pt-8"
                         >
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-blue-400">500+</div>
+                                <div className="text-3xl font-bold text-[#4B9CD3]">500+</div>
                                 <div className="text-sm text-gray-500">Photos</div>
                             </div>
-                            <div className="w-px h-12 bg-gray-800" />
+                            <div className="w-px h-12 bg-white/10" />
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-blue-400">50+</div>
+                                <div className="text-3xl font-bold text-[#4B9CD3]">50+</div>
                                 <div className="text-sm text-gray-500">Events</div>
                             </div>
-                            <div className="w-px h-12 bg-gray-800" />
+                            <div className="w-px h-12 bg-white/10" />
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-blue-400">1000+</div>
+                                <div className="text-3xl font-bold text-[#4B9CD3]">1000+</div>
                                 <div className="text-sm text-gray-500">Delegates</div>
                             </div>
                         </motion.div>
@@ -132,18 +132,17 @@ export default function GalleryPage() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.8 + index * 0.05 }}
-                            className={`group relative px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${
-                                filter === cat.value
-                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-900/50'
-                                    : 'glass-dark hover:glass-blue text-gray-400 hover:text-white border border-white/5 hover:border-blue-500/30'
-                            }`}
+                            className={`group relative px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${filter === cat.value
+                                ? 'bg-[#003366] text-white shadow-lg shadow-blue-900/40'
+                                : 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/5'
+                                }`}
                         >
                             {cat.icon}
                             <span>{cat.name}</span>
                             {filter === cat.value && (
                                 <motion.div
                                     layoutId="activeFilter"
-                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 -z-10"
+                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-[#003366] to-[#004080] -z-10"
                                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 />
                             )}
@@ -169,15 +168,14 @@ export default function GalleryPage() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05, duration: 0.5 }}
-                                className={`relative group overflow-hidden rounded-2xl cursor-pointer ${
-                                    img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
+                                className={`relative group overflow-hidden rounded-2xl cursor-pointer ${img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
                                     img.size === 'medium' ? 'md:row-span-2' : ''
-                                }`}
+                                    }`}
                                 onClick={() => handleImageClick(img.src)}
                             >
                                 {/* Image Container */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 to-black/50 z-0" />
-                                
+
                                 {img.src && (
                                     <Image
                                         alt={img.alt}
@@ -190,12 +188,12 @@ export default function GalleryPage() {
 
                                 {/* Border Glow Effect */}
                                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-500/50 rounded-2xl transition-all duration-300" />
-                                
+
                                 {/* Gradient Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 
                                 {/* Hover Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 to-blue-900/0 group-hover:from-blue-600/30 group-hover:to-blue-900/50 transition-all duration-500 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#003366]/0 to-[#005A9C]/0 group-hover:from-[#003366]/30 group-hover:to-[#005A9C]/50 transition-all duration-500 flex items-center justify-center">
                                     <motion.div
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         whileHover={{ scale: 1, opacity: 1 }}

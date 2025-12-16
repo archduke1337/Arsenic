@@ -66,9 +66,9 @@ const teamMembers = [
 
 export default function TeamPage() {
     return (
-        <div className="min-h-screen bg-white dark:bg-[#020412] text-slate-900 dark:text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen bg-[#020202] text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden">
             {/* Background Gradients */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-600/20 dark:bg-blue-900/20 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-[#003366]/20 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
@@ -80,7 +80,7 @@ export default function TeamPage() {
                         className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-4"
                     >
                         Partnered with most of the <br className="hidden md:block" />
-                        <span className="italic font-serif text-slate-500 dark:text-slate-400">top people at each industry</span>
+                        <span className="italic font-serif text-white/50">top people at each industry</span>
                     </motion.h1>
                 </div>
 
@@ -105,7 +105,7 @@ export default function TeamPage() {
                             />
 
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90 dark:from-[#0a0f2c]/90 dark:via-[#0a0f2c]/40" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#001f3f]/90 via-[#001f3f]/40 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90" />
 
                             {/* Content */}
                             <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -128,13 +128,13 @@ export default function TeamPage() {
 
                 {/* Navigation (Visual only as per reference) */}
                 <div className="flex justify-center items-center gap-12 mt-16 md:mt-24">
-                    <button className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
                         <ArrowLeft size={20} />
                     </button>
-                    <div className="w-48 h-[2px] bg-gray-200 dark:bg-white/10 overflow-hidden">
-                        <div className="w-1/3 h-full bg-slate-900 dark:bg-white" />
+                    <div className="w-48 h-[2px] bg-white/10 overflow-hidden">
+                        <div className="w-1/3 h-full bg-white" />
                     </div>
-                    <button className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
                         <ArrowRight size={20} />
                     </button>
                 </div>

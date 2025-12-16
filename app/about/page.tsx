@@ -40,27 +40,27 @@ export default function About() {
     ];
 
     const offerings = [
-        { 
-            title: "Model UN", 
-            icon: Globe, 
+        {
+            title: "Model UN",
+            icon: Globe,
             desc: "Simulating UN committees to solve global crises through diplomatic negotiations.",
             color: "from-blue-500 to-blue-700"
         },
-        { 
-            title: "Lok Sabha", 
-            icon: Users, 
+        {
+            title: "Lok Sabha",
+            icon: Users,
             desc: "Drafting bills and debating national policy in India's lower house simulation.",
             color: "from-blue-600 to-blue-800"
         },
-        { 
-            title: "Rajya Sabha", 
-            icon: Gavel, 
+        {
+            title: "Rajya Sabha",
+            icon: Gavel,
             desc: "Reviewing legislation with elder statesmanship in upper house proceedings.",
             color: "from-blue-700 to-indigo-800"
         },
-        { 
-            title: "Debate", 
-            icon: Mic, 
+        {
+            title: "Debate",
+            icon: Mic,
             desc: "Clashing ideologies in a competitive battle of wits and rhetoric.",
             color: "from-cyan-600 to-blue-700"
         },
@@ -74,7 +74,7 @@ export default function About() {
     ];
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white" ref={containerRef}>
+        <div className="min-h-screen bg-[#020202] text-white" ref={containerRef}>
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
                 {/* Background Image with very light overlay */}
@@ -113,10 +113,10 @@ export default function About() {
 
                         {/* Main Heading */}
                         <div className="space-y-4">
-                            <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-[rgb(0,35,149)] dark:text-white">
+                            <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white">
                                 About
                             </h1>
-                            <div className="text-6xl md:text-8xl font-bold text-[rgb(0,35,149)] dark:text-[rgb(147,197,253)]">
+                            <div className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
                                 ARSENIC Summit
                             </div>
                         </div>
@@ -414,7 +414,7 @@ export default function About() {
                                     as={Link}
                                     href="/register"
                                     size="lg"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 h-14 text-base"
+                                    className="bg-[#003366] hover:bg-[#004080] text-white font-semibold px-8 h-14 text-base"
                                     endContent={<ArrowRight size={20} />}
                                 >
                                     Register Now
@@ -424,7 +424,7 @@ export default function About() {
                                     href="/team"
                                     size="lg"
                                     variant="bordered"
-                                    className="border-white/20 hover:border-blue-500/50 hover:bg-blue-500/5 text-white font-semibold px-8 h-14 text-base"
+                                    className="border-white/20 hover:border-[#003366]/50 hover:bg-[#003366]/10 text-white font-semibold px-8 h-14 text-base"
                                 >
                                     Meet the Team
                                 </Button>
