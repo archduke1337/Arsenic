@@ -1,209 +1,144 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button, Card, CardBody, Image as NextUIImage, Chip, Spinner } from "@nextui-org/react";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { Linkedin, Twitter, Instagram, Mail, Github } from "lucide-react";
-import Link from "next/link";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, Instagram, Linkedin, Twitter } from "lucide-react";
+import { useState } from "react";
 
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
+const teamMembers = [
+    {
+        id: 1,
+        name: "Yomi Denzel",
+        role: "E-Commerce 2.0",
+        image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1887&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 2,
+        name: "Timothée Moiroux",
+        role: "Investissement Immobilier",
+        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1887&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 3,
+        name: "David Sequiera",
+        role: "Closing",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1887&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 4,
+        name: "Manuel Ravier",
+        role: "Investissement Immobilier",
+        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 5,
+        name: "Sarah Chen",
+        role: "Product Strategy",
+        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 6,
+        name: "Marcus Johnson",
+        role: "Tech Lead",
+        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 7,
+        name: "Elena Rodriguez",
+        role: "Creative Director",
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    },
+    {
+        id: 8,
+        name: "James Wilson",
+        role: "Operations",
+        image: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?q=80&w=1887&auto=format&fit=crop",
+        socials: { twitter: "#", linkedin: "#" }
+    }
+];
 
-interface TeamMember {
-    $id: string;
-    name: string;
-    role: string;
-    position: string;
-    imageUrl?: string;
-    bio?: string;
-    socials?: Record<string, string>;
-}
-
-export default function Team() {
-    const [secretariat, setSecretariat] = useState<TeamMember[]>([]);
-    const [executiveBoard, setExecutiveBoard] = useState<TeamMember[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchTeam();
-    }, []);
-
-    const fetchTeam = async () => {
-        try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.TEAM_MEMBERS,
-                [Query.orderAsc("displayOrder")]
-            );
-
-            const members = response.documents as unknown as TeamMember[];
-            setSecretariat(members.filter(m => m.position === "secretariat"));
-            setExecutiveBoard(members.filter(m => m.position === "executive_board"));
-        } catch (error) {
-            console.error("Error fetching team:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const SocialIcon = ({ type, href }: { type: string, href: string }) => {
-        const icons = {
-            linkedin: Linkedin,
-            twitter: Twitter,
-            instagram: Instagram,
-            mail: Mail,
-            github: Github
-        };
-        const Icon = icons[type as keyof typeof icons];
-        return (
-            <Link href={href} className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full">
-                <Icon size={20} />
-            </Link>
-        );
-    };
-
+export default function TeamPage() {
     return (
-        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white">
-            {/* Hero Section */}
-            <div className="relative py-32 px-6 text-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black z-0" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 z-0" />
+        <div className="min-h-screen bg-white dark:bg-[#020412] text-slate-900 dark:text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden transition-colors duration-300">
+            {/* Background Gradients */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-600/20 dark:bg-blue-900/20 rounded-full blur-[120px] pointer-events-none" />
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="relative z-10"
-                >
-                    <Chip color="primary" variant="dot" className="mb-6 border-white/20">THE MINDS BEHIND THE MAGIC</Chip>
-                    <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                        Meet the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Team</span>
-                    </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        A team of dedicated individuals working tirelessly to bring you the best parliamentary simulation experience.
-                    </p>
-                </motion.div>
-            </div>
-
-            {/* Loading State */}
-            {loading && (
-                <div className="flex justify-center py-20">
-                    <Spinner size="lg" label="Loading team..." color="primary" />
+            <div className="max-w-7xl mx-auto relative z-10">
+                {/* Header */}
+                <div className="text-center mb-16 md:mb-24">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-4"
+                    >
+                        Partnered with most of the <br className="hidden md:block" />
+                        <span className="italic font-serif text-slate-500 dark:text-slate-400">top people at each industry</span>
+                    </motion.h1>
                 </div>
-            )}
 
-            {/* Content */}
-            {!loading && (
-                <div className="max-w-7xl mx-auto px-6 pb-24">
-                    {/* Secretariat Section */}
-                    {secretariat.length > 0 && (
-                        <div className="mb-32">
-                            <h2 className="text-3xl font-bold mb-12 text-center">Secretariat</h2>
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {secretariat.map((member, index) => (
-                                    <motion.div
-                                        key={member.$id}
-                                        initial={{ opacity: 0, y: 30 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.2 }}
-                                    >
-                                        <Card className="bg-zinc-900/50 border border-white/10 backdrop-blur-sm hover:border-blue-500/50 transition-all h-full group">
-                                            <CardBody className="p-0 overflow-hidden relative aspect-[3/4]">
-                                                <Image
-                                                    alt={member.name}
-                                                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                                    src={member.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${member.name}`}
-                                                    fill
-                                                    sizes="(max-width: 768px) 50vw, 25vw"
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
-                                                <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                                    <h3 className="text-2xl font-bold mb-1">{member.name}</h3>
-                                                    <p className="text-blue-400 font-medium mb-3">{member.role}</p>
-                                                    {member.bio && (
-                                                        <p className="text-gray-300 text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                                            {member.bio}
-                                                        </p>
-                                                    )}
-                                                    {member.socials && Object.keys(member.socials).length > 0 && (
-                                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
-                                                            {Object.entries(member.socials).map(([type, href]) => (
-                                                                <SocialIcon key={type} type={type} href={href as string} />
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </CardBody>
-                                        </Card>
-                                    </motion.div>
-                                ))}
+                {/* Team Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {teamMembers.map((member, index) => (
+                        <motion.div
+                            key={member.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1, duration: 0.5 }}
+                            className="group relative h-[400px] rounded-[32px] overflow-hidden cursor-pointer"
+                        >
+                            {/* Image */}
+                            <Image
+                                src={member.image}
+                                alt={member.name}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                            />
+
+                            {/* Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90 dark:from-[#0a0f2c]/90 dark:via-[#0a0f2c]/40" />
+
+                            {/* Content */}
+                            <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                <h3 className="text-2xl font-bold text-white mb-1">{member.name}</h3>
+                                <p className="text-blue-200 text-sm font-medium tracking-wide uppercase mb-4">{member.role}</p>
+
+                                {/* Socials (Reveal on hover) */}
+                                <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 translate-y-4 group-hover:translate-y-0">
+                                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white text-white hover:text-black transition-colors">
+                                        <Twitter size={14} />
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white text-white hover:text-black transition-colors">
+                                        <Linkedin size={14} />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        </motion.div>
+                    ))}
+                </div>
 
-                    {/* Executive Board Section */}
-                    {executiveBoard.length > 0 && (
-                        <div className="mb-20">
-                            <h2 className="text-3xl font-bold mb-12 text-center">Executive Board</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {executiveBoard.map((member, index) => (
-                                    <motion.div
-                                        key={member.$id}
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                    >
-                                        <div className="group relative">
-                                            <div className="relative overflow-hidden rounded-2xl aspect-square mb-4 border border-white/10">
-                                                <Image
-                                                    alt={member.name}
-                                                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    src={member.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${member.name}`}
-                                                    fill
-                                                    sizes="(max-width: 768px) 100vw, 33vw"
-                                                />
-                                            </div>
-                                            <h3 className="text-lg font-bold group-hover:text-blue-400 transition-colors">{member.name}</h3>
-                                            <p className="text-sm text-gray-500">{member.role}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Empty State */}
-                    {!secretariat.length && !executiveBoard.length && (
-                        <div className="text-center py-20">
-                            <p className="text-gray-500 text-lg">No team members added yet.</p>
-                        </div>
-                    )}
-
-                    {/* Join Team CTA */}
-                    <div className="mt-32 relative rounded-3xl overflow-hidden bg-zinc-900 border border-white/10 p-12 text-center">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20" />
-                        <div className="relative z-10">
-                            <h2 className="text-3xl font-bold mb-4">Want to join the team?</h2>
-                            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                                We are always looking for passionate individuals to join our organizing committee.
-                                Applications for the next edition open soon.
-                            </p>
-                            <Button
-                                variant="bordered"
-                                className="text-white border-white/20 hover:bg-white/10"
-                                size="lg"
-                            >
-                                View Open Positions
-                            </Button>
-                        </div>
+                {/* Navigation (Visual only as per reference) */}
+                <div className="flex justify-center items-center gap-12 mt-16 md:mt-24">
+                    <button className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                        <ArrowLeft size={20} />
+                    </button>
+                    <div className="w-48 h-[2px] bg-gray-200 dark:bg-white/10 overflow-hidden">
+                        <div className="w-1/3 h-full bg-slate-900 dark:bg-white" />
                     </div>
+                    <button className="w-12 h-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                        <ArrowRight size={20} />
+                    </button>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
