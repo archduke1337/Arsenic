@@ -44,7 +44,7 @@ export default function ChairLayout({ children }: { children: React.ReactNode })
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     return (
-        <div className="min-h-screen bg-black text-white flex">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex">
             {/* Mobile Sidebar Overlay */}
             <AnimatePresence>
                 {isSidebarOpen && (

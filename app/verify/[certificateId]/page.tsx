@@ -71,7 +71,7 @@ export default function VerifyCertificatePage({ params }: { params: { certificat
     const colors = result ? getAwardTierColor(result.category) : null;
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white p-6 flex flex-col items-center justify-center relative overflow-hidden">
             {/* Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>

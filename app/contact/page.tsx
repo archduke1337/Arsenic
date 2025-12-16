@@ -104,7 +104,7 @@ export default function ModernContact() {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white relative overflow-hidden">
             {/* Animated Background */}
             <div className="absolute inset-0">
                 <div

@@ -86,21 +86,11 @@ export default function ModernHero() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white relative overflow-hidden">
             {/* Video Background Alternative - Animated Gradient */}
             <div className="absolute inset-0 overflow-hidden">
-                {/* Animated Background Video/GIF Style Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-black to-black">
-                    {/* Animated mesh background */}
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `
-                            radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 80%, rgba(129, 140, 248, 0.1) 0%, transparent 50%),
-                            radial-gradient(circle at 40% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)
-                        `,
-                        animation: 'gradient-shift 15s ease-in-out infinite'
-                    }} />
-                </div>
+                {/* Very subtle background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,35,149,0.03)] via-transparent to-[rgba(0,0,0,0.08)] dark:from-[rgba(0,35,149,0.12)] dark:via-[rgba(0,0,0,0.85)] dark:to-black" />
             </div>
 
             {/* Ambient Background */}
@@ -141,7 +131,7 @@ export default function ModernHero() {
 
                     <div className="space-y-4">
                         <h1
-                            className="text-6xl md:text-8xl font-bold tracking-tight opacity-0 animate-fadeInUp"
+                            className="text-6xl md:text-8xl font-bold tracking-tight opacity-0 animate-fadeInUp text-[rgb(0,35,149)] dark:text-white"
                             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
                         >
                             Where Diplomacy
@@ -151,7 +141,7 @@ export default function ModernHero() {
                             style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}
                         >
                             Meets{" "}
-                            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[rgb(0,35,149)] to-[rgb(30,64,175)] dark:from-[rgb(147,197,253)] dark:to-white">
                                 Democracy
                             </span>
                         </h1>

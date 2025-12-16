@@ -60,7 +60,7 @@ export default function Events() {
     });
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white">
             {/* Hero Section */}
             <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black z-0" />

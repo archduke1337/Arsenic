@@ -63,7 +63,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
+            <body className={`${inter.className} bg-white text-slate-900 dark:bg-black dark:text-white`}>
                 <Providers>
                     <div className="flex flex-col min-h-screen relative">
                         <div className="bg-noise" />

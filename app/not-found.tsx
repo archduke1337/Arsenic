@@ -88,7 +88,7 @@ export default function NotFound() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center overflow-hidden relative">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex items-center justify-center overflow-hidden relative">
 
             {/* Nuclear background when nuked */}
             {nuked && (

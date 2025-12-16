@@ -218,7 +218,7 @@ export default function CheckInPage() {
     });
 
     return (
-        <div className="min-h-screen bg-black p-8">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white p-8">
             <Toaster position="top-right" richColors />
 
             {/* Header */}

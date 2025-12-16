@@ -106,14 +106,14 @@ export default function ResultsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
                 <Spinner size="lg" color="warning" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white p-6 md:p-12">
             <div className="max-w-7xl mx-auto space-y-12">
 
                 {/* Hero Section */}

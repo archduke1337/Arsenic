@@ -74,7 +74,7 @@ export default function About() {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white" ref={containerRef}>
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white" ref={containerRef}>
             {/* Subtle Grain Texture */}
             <div className="fixed inset-0 bg-noise opacity-[0.015] pointer-events-none z-50" />
 

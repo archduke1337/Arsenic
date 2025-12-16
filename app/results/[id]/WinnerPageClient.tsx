@@ -26,7 +26,7 @@ interface WinnerPageClientProps {
 export default function WinnerPageClient({ award }: WinnerPageClientProps) {
     if (!award) {
         return (
-            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex flex-col items-center justify-center p-4">
                 <Trophy className="w-16 h-16 text-gray-600 mb-4" />
                 <h1 className="text-2xl font-bold mb-2">Award Not Found</h1>
                 <p className="text-gray-400 mb-6">The award you are looking for does not exist or has been removed.</p>
@@ -42,7 +42,7 @@ export default function WinnerPageClient({ award }: WinnerPageClientProps) {
     const eventName = award.eventType?.replace(/_/g, ' ');
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-12 flex items-center justify-center">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white p-6 md:p-12 flex items-center justify-center">
             <div className="max-w-4xl w-full space-y-8">
 
                 {/* Back Link */}

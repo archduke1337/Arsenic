@@ -33,8 +33,8 @@ export default function Alumni() {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+    return (
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex items-center justify-center">
                 <Spinner size="lg" color="warning" />
             </div>
         );

@@ -56,7 +56,7 @@ export default function SponsorsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white">
             {/* Header */}
             <div className="relative overflow-hidden py-20 bg-gradient-to-b from-purple-900/20 to-black">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />

@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex flex-col">
             {/* Top Navbar */}
             <nav className="bg-gradient-to-r from-zinc-900 via-black to-zinc-900 border-b border-yellow-500/10 sticky top-0 z-40">
                 <div className="flex items-center justify-between px-4 sm:px-6 py-4 gap-4">

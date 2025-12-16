@@ -49,7 +49,7 @@ export default function GalleryPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white relative overflow-hidden">
             {/* Animated Background Elements */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl animate-pulse" />
@@ -57,16 +57,11 @@ export default function GalleryPage() {
                 <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
-            {/* Grain Overlay */}
-            <div className="bg-noise" />
-
             {/* Hero Section */}
             <div className="relative min-h-[50vh] flex flex-col items-center justify-center overflow-hidden px-6 pt-32 pb-16">
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-radial from-blue-900/20 via-transparent to-transparent" />
-                
-                {/* Grid Pattern */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,65,160,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,65,160,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                {/* Very subtle gradient + grid */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,35,149,0.02)] via-transparent to-[rgba(15,23,42,0.04)] dark:from-[rgba(0,35,149,0.15)] dark:via-[rgba(15,23,42,0.9)] dark:to-black" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,35,149,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,35,149,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
                 <div className="relative z-10 text-center max-w-4xl mx-auto">
                     <motion.div
@@ -85,9 +80,9 @@ export default function GalleryPage() {
                             <span className="text-sm font-semibold text-blue-300">Summit Memories</span>
                         </motion.div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-[rgb(0,35,149)] dark:text-white">
                             Moments of
-                            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 animate-gradient-x">
+                            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[rgb(0,35,149)] via-[rgb(37,99,235)] to-[rgb(59,130,246)] dark:from-[rgb(147,197,253)] dark:via-white dark:to-[rgb(191,219,254)]">
                                 Excellence
                             </span>
                         </h1>
