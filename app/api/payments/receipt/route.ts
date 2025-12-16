@@ -3,6 +3,8 @@ import { databases, DATABASE_ID } from "@/lib/server-appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Query } from "node-appwrite";
 import PDFDocument from "pdfkit";
+import path from "path";
+import { promises as fs } from "fs";
 
 export async function GET(request: NextRequest) {
     const registrationId = request.nextUrl.searchParams.get("registrationId") || "";
@@ -118,32 +120,81 @@ async function buildReceiptPdf({ registration, payment }: { registration: any; p
         doc.on("error", (err) => reject(err));
 
         const paid = payment?.status === "success" || registration?.paymentStatus === "paid";
+        const issued = new Date().toLocaleString();
+        const headerColor = "#0ea5e9";
 
-        doc.fontSize(18).text("Arsenic Summit Receipt", { align: "left" });
+        // Optional logo: env path or fallback to /public/logo.png
+        let logoBuffer: Buffer | null = null;
+        const logoPath = process.env.RECEIPT_LOGO_PATH || path.join(process.cwd(), "public", "logo.png");
+        try {
+            logoBuffer = await fs.readFile(logoPath);
+        } catch (err) {
+            console.error("Receipt logo load failed", err);
+        }
+
+        // Header bar
+        doc.rect(36, 36, doc.page.width - 72, 40).fill(headerColor);
+        const textStartX = logoBuffer ? 44 + 40 + 10 : 44;
+        if (logoBuffer) {
+            try {
+                doc.image(logoBuffer, 44, 40, { fit: [32, 32], align: "left" });
+            } catch (err) {
+                console.error("Receipt logo render failed", err);
+            }
+        }
+        doc.fillColor("#fff").fontSize(18).text("Arsenic Summit", textStartX, 46, { align: "left" });
+        doc.fontSize(10).text("Payment Receipt", textStartX, 66, { align: "left" });
+
+        doc.moveDown(2.5);
+        doc.fillColor("#000").fontSize(14).text("Receipt Details", { align: "left" });
         doc.moveDown(0.5);
-        doc.fontSize(10).fillColor("#555").text(`Issued: ${new Date().toLocaleString()}`);
+        doc.fontSize(10).fillColor("#555");
+        doc.text(`Issued: ${issued}`);
         doc.text(`Registration ID: ${registration?.$id ?? ""}`);
-
+        doc.text(`Registration Code: ${registration?.code ?? ""}`);
         doc.moveDown();
-        doc.fillColor("#000").fontSize(12).text("Participant");
-        doc.moveDown(0.25);
+
+        // Participant block
+        doc.fillColor("#000").fontSize(12).text("Participant", { align: "left" });
+        doc.moveDown(0.35);
         doc.fontSize(10).fillColor("#333");
         doc.text(`Name: ${registration?.fullName ?? ""}`);
         doc.text(`Email: ${registration?.email ?? ""}`);
         doc.text(`Phone: ${registration?.phone ?? ""}`);
-        doc.text(`Registration Code: ${registration?.code ?? ""}`);
-
+        doc.text(`Event: ${registration?.eventId ?? ""}`);
         doc.moveDown();
-        doc.fillColor("#000").fontSize(12).text("Payment");
-        doc.moveDown(0.25);
-        doc.fontSize(10).fillColor("#333");
-        doc.text(`Gateway: ${payment?.gateway ?? "—"}`);
-        doc.text(`Order / Txn: ${payment?.orderId || payment?.transactionId || "—"}`);
-        doc.text(`Amount: ₹${payment?.amount ?? registration?.paymentAmount ?? "—"}`);
-        doc.text(`Status: ${paid ? "Paid" : "Pending"}`);
+
+        // Payment summary table
+        doc.fillColor("#000").fontSize(12).text("Payment", { align: "left" });
+        doc.moveDown(0.35);
+        doc.fontSize(10).fillColor("#222");
+
+        const rows: Array<[string, string]> = [
+            ["Gateway", payment?.gateway ?? "—"],
+            ["Order / Txn", payment?.orderId || payment?.transactionId || "—"],
+            ["Amount", `₹${payment?.amount ?? registration?.paymentAmount ?? "—"}`],
+            ["Status", paid ? "Paid" : "Pending"],
+        ];
         if (payment?.verifiedAt) {
-            doc.text(`Verified At: ${payment.verifiedAt}`);
+            rows.push(["Verified At", payment.verifiedAt]);
         }
+
+        const startX = 44;
+        const startY = doc.y + 4;
+        const labelWidth = 140;
+        const valueWidth = doc.page.width - startX - labelWidth - 44;
+        const rowHeight = 18;
+
+        rows.forEach(([label, value], idx) => {
+            const y = startY + idx * rowHeight;
+            doc.fillColor("#f5f5f5").rect(startX - 8, y - 4, labelWidth + valueWidth + 16, rowHeight).fill(idx % 2 === 0 ? "#f9fafb" : "#f1f5f9");
+            doc.fillColor("#555").text(label, startX, y, { width: labelWidth });
+            doc.fillColor("#111").text(value, startX + labelWidth + 8, y, { width: valueWidth });
+        });
+
+        doc.y = startY + rows.length * rowHeight + 12;
+        doc.moveDown();
+        doc.fillColor(paid ? "#157347" : "#b26b00").fontSize(11).text(paid ? "Payment confirmed." : "Payment pending. If you were charged, contact support with this receipt.");
 
         doc.end();
     });

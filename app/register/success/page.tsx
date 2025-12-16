@@ -193,7 +193,7 @@ export default function SuccessPage() {
                                 startContent={<Download size={18} />}
                                 isDisabled={!isSuccess}
                                 onPress={() => {
-                                    const url = payment?.invoiceUrl || (registrationId ? `/api/payments/receipt?registrationId=${registrationId}` : "");
+                                    const url = payment?.invoiceUrl || (registrationId ? `/api/payments/receipt?registrationId=${registrationId}&format=pdf` : "");
                                     if (url) {
                                         window.open(url, "_blank");
                                     } else {
