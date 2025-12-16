@@ -49,19 +49,19 @@ export default function GalleryPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#020202] text-white selection:bg-rose-500/30 selection:text-white relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#020202] text-slate-900 dark:text-white selection:bg-blue-100 dark:selection:bg-rose-500/30 selection:text-blue-900 dark:selection:text-white relative overflow-hidden">
             {/* Animated Background Elements */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-[#003366]/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#005A9C]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#003366]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-0 left-0 w-96 h-96 bg-blue-200/20 dark:bg-[#003366]/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-1/4 right-0 w-96 h-96 bg-indigo-200/20 dark:bg-[#005A9C]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-200/20 dark:bg-[#003366]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             {/* Hero Section */}
             <div className="relative min-h-[50vh] flex flex-col items-center justify-center overflow-hidden px-6 pt-32 pb-16">
                 {/* Very subtle gradient + grid */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/5 via-transparent to-[#020202]" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,51,102,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,51,102,0.05)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-transparent to-slate-50 dark:from-[#003366]/5 dark:to-[#020202]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(0,51,102,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,51,102,0.05)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
                 <div className="relative z-10 text-center max-w-4xl mx-auto">
                     <motion.div
@@ -74,20 +74,20 @@ export default function GalleryPage() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.2, duration: 0.6 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-imperial backdrop-blur-xl border border-blue-500/30"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:glass-imperial backdrop-blur-xl border border-slate-200 dark:border-blue-500/30 shadow-sm"
                         >
-                            <Camera size={16} className="text-blue-400" />
-                            <span className="text-sm font-semibold text-blue-300">Summit Memories</span>
+                            <Camera size={16} className="text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Summit Memories</span>
                         </motion.div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-slate-900 dark:text-white">
                             Moments of
-                            <span className="block mt-2 bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
+                            <span className="block mt-2 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 dark:from-[#003366] dark:via-[#005A9C] dark:to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
                                 Excellence
                             </span>
                         </h1>
 
-                        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg md:text-xl text-slate-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
                             Relive the intensity, diplomacy, and camaraderie of ARSENIC Summit through our curated collection of memorable moments.
                         </p>
 
@@ -99,18 +99,18 @@ export default function GalleryPage() {
                             className="flex items-center justify-center gap-8 pt-8"
                         >
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-[#4B9CD3]">500+</div>
-                                <div className="text-sm text-gray-500">Photos</div>
+                                <div className="text-3xl font-bold text-blue-600 dark:text-[#4B9CD3]">500+</div>
+                                <div className="text-sm text-slate-500 dark:text-gray-500">Photos</div>
                             </div>
-                            <div className="w-px h-12 bg-white/10" />
+                            <div className="w-px h-12 bg-slate-200 dark:bg-white/10" />
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-[#4B9CD3]">50+</div>
-                                <div className="text-sm text-gray-500">Events</div>
+                                <div className="text-3xl font-bold text-blue-600 dark:text-[#4B9CD3]">50+</div>
+                                <div className="text-sm text-slate-500 dark:text-gray-500">Events</div>
                             </div>
-                            <div className="w-px h-12 bg-white/10" />
+                            <div className="w-px h-12 bg-slate-200 dark:bg-white/10" />
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-[#4B9CD3]">1000+</div>
-                                <div className="text-sm text-gray-500">Delegates</div>
+                                <div className="text-3xl font-bold text-blue-600 dark:text-[#4B9CD3]">1000+</div>
+                                <div className="text-sm text-slate-500 dark:text-gray-500">Delegates</div>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -133,8 +133,8 @@ export default function GalleryPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.8 + index * 0.05 }}
                             className={`group relative px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${filter === cat.value
-                                ? 'bg-[#003366] text-white shadow-lg shadow-blue-900/40'
-                                : 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/5'
+                                ? 'bg-blue-600 dark:bg-[#003366] text-white shadow-lg shadow-blue-900/40'
+                                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white dark:border-white/5'
                                 }`}
                         >
                             {cat.icon}
@@ -142,7 +142,7 @@ export default function GalleryPage() {
                             {filter === cat.value && (
                                 <motion.div
                                     layoutId="activeFilter"
-                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-[#003366] to-[#004080] -z-10"
+                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-[#003366] dark:to-[#004080] -z-10"
                                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 />
                             )}
@@ -168,13 +168,13 @@ export default function GalleryPage() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05, duration: 0.5 }}
-                                className={`relative group overflow-hidden rounded-2xl cursor-pointer ${img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
+                                className={`relative group overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl dark:shadow-none transition-shadow duration-300 ${img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
                                     img.size === 'medium' ? 'md:row-span-2' : ''
                                     }`}
                                 onClick={() => handleImageClick(img.src)}
                             >
                                 {/* Image Container */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 to-black/50 z-0" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-blue-950/50 dark:to-black/50 z-0" />
 
                                 {img.src && (
                                     <Image
@@ -190,24 +190,24 @@ export default function GalleryPage() {
                                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-500/50 rounded-2xl transition-all duration-300" />
 
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 
                                 {/* Hover Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#003366]/0 to-[#005A9C]/0 group-hover:from-[#003366]/30 group-hover:to-[#005A9C]/50 transition-all duration-500 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 to-indigo-600/0 dark:from-[#003366]/0 dark:to-[#005A9C]/0 group-hover:from-blue-600/30 group-hover:to-indigo-600/50 dark:group-hover:from-[#003366]/30 dark:group-hover:to-[#005A9C]/50 transition-all duration-500 flex items-center justify-center">
                                     <motion.div
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         whileHover={{ scale: 1, opacity: 1 }}
-                                        className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                                        className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-white/10 backdrop-blur-md rounded-full p-2"
                                     >
-                                        <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-4 mx-auto">
-                                            <ZoomIn className="w-8 h-8 text-white" />
+                                        <div className="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center">
+                                            <ZoomIn className="w-6 h-6 text-white" />
                                         </div>
                                     </motion.div>
                                 </div>
 
                                 {/* Category Badge */}
                                 <div className="absolute top-4 left-4 z-20">
-                                    <div className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white text-sm font-semibold">
+                                    <div className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white text-sm font-semibold shadow-lg">
                                         {img.category}
                                     </div>
                                 </div>
@@ -231,8 +231,8 @@ export default function GalleryPage() {
                         animate={{ opacity: 1 }}
                         className="text-center py-32"
                     >
-                        <Camera className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                        <p className="text-xl text-gray-500">No images found in this category</p>
+                        <Camera className="w-16 h-16 mx-auto mb-4 text-slate-300 dark:text-gray-600" />
+                        <p className="text-xl text-slate-400 dark:text-gray-500">No images found in this category</p>
                     </motion.div>
                 )}
             </div>
@@ -244,9 +244,9 @@ export default function GalleryPage() {
                 size="5xl"
                 backdrop="blur"
                 classNames={{
-                    base: "bg-black/95 backdrop-blur-2xl border border-blue-500/20",
-                    backdrop: "bg-black/80 backdrop-blur-md",
-                    closeButton: "hover:bg-white/10 active:bg-white/20 text-white top-4 right-4 z-50"
+                    base: "bg-white dark:bg-black/95 backdrop-blur-2xl border border-slate-200 dark:border-blue-500/20",
+                    backdrop: "bg-black/50 dark:bg-black/80 backdrop-blur-md",
+                    closeButton: "hover:bg-slate-100 dark:hover:bg-white/10 active:bg-slate-200 dark:active:bg-white/20 text-slate-900 dark:text-white top-4 right-4 z-50 p-2 rounded-full"
                 }}
             >
                 <ModalContent>
@@ -254,7 +254,7 @@ export default function GalleryPage() {
                         <ModalBody className="p-0 overflow-hidden flex items-center justify-center min-h-[80vh] relative">
                             {selectedImage && (
                                 <>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-950/20 to-black/50 z-0" />
+                                    <div className="absolute inset-0 bg-slate-50 dark:bg-gradient-to-br dark:from-blue-950/20 dark:to-black/50 z-0" />
                                     <Image
                                         src={selectedImage}
                                         alt="Gallery Preview"
@@ -262,7 +262,7 @@ export default function GalleryPage() {
                                         fill
                                         sizes="90vw"
                                     />
-                                    <div className="absolute inset-0 pointer-events-none shadow-inner shadow-blue-900/50 z-20" />
+                                    <div className="absolute inset-0 pointer-events-none shadow-inner shadow-slate-200/50 dark:shadow-blue-900/50 z-20" />
                                 </>
                             )}
                         </ModalBody>
