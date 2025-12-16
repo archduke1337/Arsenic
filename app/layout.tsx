@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const bricolage = Bricolage_Grotesque({
+    subsets: ["latin"],
+    variable: "--font-bricolage",
+});
 
 export const viewport: Viewport = {
     width: "device-width",
@@ -68,7 +71,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`${inter.className} bg-white text-slate-900 dark:bg-black dark:text-white`}>
+            <body className={`${bricolage.variable} font-sans bg-white text-slate-900 dark:bg-black dark:text-white`}>
                 <Providers>
                     <div className="flex flex-col min-h-screen relative">
                         <div className="bg-noise" />
