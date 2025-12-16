@@ -6,18 +6,31 @@ import { isAdminEmail } from "@/lib/server-auth";
 
 export async function GET(request: NextRequest) {
     try {
-        // NOTE: Without a user session bridge, we rely on admin-only access for now
-        const adminEmail = await isAdminEmail(request);
-        if (!adminEmail) {
+        // Get user session/auth info
+        const authHeader = request.headers.get("authorization");
+        if (!authHeader) {
             return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
 
-        // Fetch user's registrations
-        const registrations = await databases.listDocuments(
-            DATABASE_ID,
-            COLLECTIONS.REGISTRATIONS,
-            [Query.equal("userId", user.$id)]
+        // In a real scenario, you'd decode the JWT or get user from session
+        // For now, we'll assume the user ID is passed in headers or cookies
+        // Extract from Authorization header or get from session
+        // This is a placeholder - adjust based on your auth implementation
+        
+        // Fetch user's registrations - you'd need to get userId from auth context
+        // Temporarily returning error for proper implementation
+        return NextResponse.json(
+            { error: "User ID extraction not properly implemented" },
+            { status: 501 }
         );
+    } catch (error) {
+        console.error("Allocation fetch failed:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch allocation" },
+            { status: 500 }
+        );
+    }
+}
 
         if (registrations.documents.length === 0) {
             return NextResponse.json({
