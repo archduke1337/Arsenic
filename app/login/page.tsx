@@ -38,91 +38,111 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white flex items-center justify-center px-4 py-12">
             <Toaster richColors position="top-center" />
-            {/* Background */}
-            <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-black/60 z-10" />
-                <div
-                    className="w-full h-full bg-[url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80')] bg-cover bg-center"
-                />
-            </div>
-
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md px-6 relative z-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-[1.2fr,1.3fr] gap-0 rounded-3xl shadow-2xl overflow-hidden bg-white dark:bg-zinc-950"
             >
-                <Card className="bg-black/40 border border-white/10 backdrop-blur-xl shadow-2xl">
-                    <CardBody className="p-8">
-                        <div className="text-center mb-8">
-                            <motion.div
-                                initial={{ y: 10, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.2 }}
-                            >
-                                <h1 className="text-4xl font-bold mb-2 font-display text-white">Welcome Back</h1>
-                                <p className="text-gray-400">Sign in to access your dashboard</p>
-                            </motion.div>
+                {/* Left visual panel */}
+                <div className="relative hidden md:block bg-gradient-to-br from-[rgba(0,35,149,0.9)] via-[rgba(30,64,175,0.9)] to-black">
+                    <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_20%_20%,rgba(147,197,253,0.4),transparent_55%),radial-gradient(circle_at_80%_80%,rgba(59,130,246,0.4),transparent_55%)]" />
+                    <div className="absolute inset-6 rounded-3xl border border-white/20" />
+                    <div className="relative h-full flex flex-col justify-between p-10">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center text-xs tracking-widest font-semibold">
+                                AR
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-white/80">Arsenic Summit</span>
+                                <span className="text-[11px] uppercase tracking-[0.2em] text-white/60">
+                                    Delegate Portal
+                                </span>
+                            </div>
                         </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <Input
-                                type="email"
-                                label="Email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onValueChange={setEmail}
-                                startContent={<Mail className="text-gray-400" size={18} />}
-                                variant="bordered"
-                                autoComplete="email"
-                                classNames={{
-                                    inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
-                                    label: "text-gray-400",
-                                    input: "text-white"
-                                }}
-                                required
-                            />
-
-                            <Input
-                                type="password"
-                                label="Password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onValueChange={setPassword}
-                                startContent={<Lock className="text-gray-400" size={18} />}
-                                variant="bordered"
-                                autoComplete="current-password"
-                                classNames={{
-                                    inputWrapper: "border-white/20 hover:border-white/40 focus-within:!border-blue-500 bg-white/5",
-                                    label: "text-gray-400",
-                                    input: "text-white"
-                                }}
-                                required
-                            />
-
-                            <Button
-                                type="submit"
-                                size="lg"
-                                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 font-bold text-white shadow-lg shadow-blue-500/25"
-                                isLoading={isLoading}
-                                spinner={<Loader2 className="animate-spin" size={20} />}
-                            >
-                                {isLoading ? "Signing in..." : "Sign In"}
-                            </Button>
-                        </form>
-
-                        <div className="mt-8 text-center">
-                            <p className="text-sm text-gray-400">
-                                Don&apos;t have an account?{" "}
-                                <Link href="/register" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
-                                    Register here <ArrowRight size={14} className="ml-1" />
-                                </Link>
+                        <div className="space-y-4">
+                            <h2 className="text-3xl font-semibold text-white">
+                                Welcome back.
+                            </h2>
+                            <p className="text-sm text-blue-100/80 max-w-xs">
+                                Sign in to manage your registrations, view allocations, and stay updated with summit
+                                timelines.
                             </p>
                         </div>
-                    </CardBody>
-                </Card>
+                        <div className="flex items-center gap-3 text-[11px] text-blue-100/70">
+                            <span className="h-px w-8 bg-blue-200/40" />
+                            Secure delegate access • Dark / light mode ready
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right form panel */}
+                <div className="px-6 sm:px-10 py-10 flex flex-col justify-center">
+                    <div className="mb-8">
+                        <p className="text-xs font-medium uppercase tracking-[0.2em] text-gray-500 dark:text-gray-500 mb-2">
+                            Login
+                        </p>
+                        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+                            Log in
+                        </h1>
+                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            Don&apos;t have an account?{" "}
+                            <Link href="/register" className="underline text-[rgb(0,35,149)] dark:text-blue-300">
+                                Create an account
+                            </Link>
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <Input
+                            type="email"
+                            label="Email Address"
+                            placeholder="name@college.edu"
+                            value={email}
+                            onValueChange={setEmail}
+                            startContent={<Mail className="text-gray-400" size={18} />}
+                            variant="bordered"
+                            autoComplete="email"
+                            classNames={{
+                                inputWrapper:
+                                    "bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 hover:border-gray-400 dark:hover:border-zinc-500 focus-within:!border-[rgb(0,35,149)] dark:focus-within:!border-blue-400 shadow-none",
+                                label: "text-gray-500 dark:text-gray-400",
+                                input: "text-slate-900 dark:text-white"
+                            }}
+                            required
+                        />
+
+                        <Input
+                            type="password"
+                            label="Password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onValueChange={setPassword}
+                            startContent={<Lock className="text-gray-400" size={18} />}
+                            variant="bordered"
+                            autoComplete="current-password"
+                            classNames={{
+                                inputWrapper:
+                                    "bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 hover:border-gray-400 dark:hover:border-zinc-500 focus-within:!border-[rgb(0,35,149)] dark:focus-within:!border-blue-400 shadow-none",
+                                label: "text-gray-500 dark:text-gray-400",
+                                input: "text-slate-900 dark:text-white"
+                            }}
+                            required
+                        />
+
+                        <Button
+                            type="submit"
+                            size="lg"
+                            className="w-full mt-2 rounded-full bg-black text-white dark:bg-white dark:text-black font-semibold text-sm tracking-tight py-6"
+                            isLoading={isLoading}
+                            spinner={<Loader2 className="animate-spin" size={20} />}
+                        >
+                            {isLoading ? "Signing in..." : "Log in"}
+                        </Button>
+                    </form>
+                </div>
             </motion.div>
         </div>
     );
