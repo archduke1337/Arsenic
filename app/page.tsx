@@ -150,8 +150,8 @@ export default function Home() {
                             transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                             className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tight leading-[0.95] mix-blend-difference dark:mix-blend-normal text-slate-900 dark:text-white"
                         >
-                            Where <span className="font-serif italic text-slate-600 dark:text-white/80">Diplomacy</span> <br />
-                            Meets <span className="font-serif italic text-slate-600 dark:text-white/80">Democracy</span>
+                            Where <span className="font-serif italic bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">Diplomacy</span> <br />
+                            Meets <span className="font-serif italic bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">Democracy</span>
                         </motion.h1>
                     </div>
 
@@ -171,12 +171,12 @@ export default function Home() {
                         transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="flex flex-col sm:flex-row justify-center gap-6 pt-10"
                     >
-                        <Link href="/register" className="group relative h-14 px-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black font-medium flex items-center justify-center gap-3 overflow-hidden transition-all hover:bg-slate-800 dark:hover:bg-white/90 hover:scale-105">
-                            <span className="relative z-10">Registrati</span>
+                        <Link href="/register" className="group relative h-14 px-8 rounded-full bg-[#003366] text-white font-medium flex items-center justify-center gap-3 overflow-hidden transition-all hover:bg-[#004080] hover:scale-105 hover:shadow-[0_0_20px_rgba(0,80,180,0.4)]">
+                            <span className="relative z-10">Register Now</span>
                             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                         <Link href="/about" className="group relative h-14 px-8 rounded-full border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white font-medium flex items-center justify-center gap-3 overflow-hidden transition-all hover:border-slate-400 dark:hover:border-white/40 hover:bg-slate-50 dark:hover:bg-white/5">
-                            <span className="relative z-10">Scopri di più</span>
+                            <span className="relative z-10">Learn More</span>
                         </Link>
                     </motion.div>
                 </motion.div>
@@ -226,7 +226,7 @@ export default function Home() {
                     <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-medium leading-tight mb-4 text-slate-900 dark:text-white">
-                                Why Choose <span className="font-serif italic text-slate-600 dark:text-white/70">Arsenic?</span>
+                                Why Choose <span className="font-serif italic bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">Arsenic?</span>
                             </h2>
                             <p className="text-slate-600 dark:text-white/50 max-w-sm">
                                 Elevating the standard of student diplomacy through immersive simulations.
