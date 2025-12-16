@@ -1,16 +1,12 @@
 "use client";
 
 import { Link, Button, Input } from "@nextui-org/react";
-import { Mail, MapPin, Phone, Send, Instagram, Twitter, Linkedin, Youtube, ArrowUp } from "lucide-react";
+import { Mail, MapPin, Phone, Send, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
 
     const quickLinks = [
         { name: "About Us", href: "/about" },
@@ -228,17 +224,6 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-
-            {/* Scroll to Top Button */}
-            <motion.button
-                onClick={scrollToTop}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30 flex items-center justify-center hover:shadow-blue-500/50 transition-all z-50"
-                aria-label="Scroll to top"
-            >
-                <ArrowUp size={20} />
-            </motion.button>
         </footer>
     );
 }

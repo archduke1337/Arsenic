@@ -75,25 +75,21 @@ export default function About() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white" ref={containerRef}>
-            {/* Subtle Grain Texture */}
-            <div className="fixed inset-0 bg-noise opacity-[0.015] pointer-events-none z-50" />
-
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-                {/* Background Image with Overlay */}
+                {/* Background Image with very light overlay */}
                 <motion.div
                     style={{ y }}
                     className="absolute inset-0"
                 >
-                    <div className="absolute inset-0 bg-black/70 z-10" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
                     <Image
                         src="https://images.unsplash.com/photo-1596720426673-e4e15688cafb?auto=format&fit=crop&q=80"
                         alt="Parliament"
                         fill
-                        className="object-cover opacity-40"
+                        className="object-cover opacity-30"
                         priority
                     />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,35,149,0.03)] via-transparent to-[rgba(15,23,42,0.06)] dark:from-[rgba(0,35,149,0.15)] dark:via-[rgba(0,0,0,0.85)] dark:to-black" />
                 </motion.div>
 
                 {/* Content */}
@@ -117,10 +113,10 @@ export default function About() {
 
                         {/* Main Heading */}
                         <div className="space-y-4">
-                            <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
+                            <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-[rgb(0,35,149)] dark:text-white">
                                 About
                             </h1>
-                            <div className="text-6xl md:text-8xl font-bold text-blue-500">
+                            <div className="text-6xl md:text-8xl font-bold text-[rgb(0,35,149)] dark:text-[rgb(147,197,253)]">
                                 ARSENIC Summit
                             </div>
                         </div>
