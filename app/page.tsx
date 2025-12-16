@@ -3,10 +3,20 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Users, MapPin, Trophy, Calendar, ChevronDown, CheckCircle2 } from "lucide-react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-
-const CountUp = ({ end, duration = 2 }: { end: number; duration?: number }) => {
+import {
+    ArrowRight,
+    Globe,
+    Award,
+    Mic2,
+    Users,
+    Zap,
+    BookOpen,
+    CheckCircle2,
+    PlayCircle,
+    MoveRight
+} from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
+const CountUp = ({ end, duration = 2.5 }: { end: number; duration?: number }) => {
     const [count, setCount] = useState(0);
     const ref = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
@@ -43,26 +53,60 @@ const CountUp = ({ end, duration = 2 }: { end: number; duration?: number }) => {
     return <span ref={ref}>{count}</span>;
 };
 
+// Luxury Hover Card Component
+const FeatureCard = ({ item, index }: { item: any, index: number }) => {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    const handleMouseMove = ({ currentTarget, clientX, clientY }: React.MouseEvent) => {
+        const { left, top } = currentTarget.getBoundingClientRect();
+        mouseX.set(clientX - left);
+        mouseY.set(clientY - top);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            onMouseMove={handleMouseMove}
+            className="group relative p-10 rounded-[2rem] bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 overflow-hidden hover:shadow-2xl dark:hover:bg-white/[0.06] transition-all duration-500"
+        >
+            <motion.div
+                className="pointer-events-none absolute -inset-px rounded-[2rem] opacity-0 transition duration-500 group-hover:opacity-100"
+                style={{
+                    background: useMotionTemplate`
+                        radial-gradient(
+                            650px circle at ${mouseX}px ${mouseY}px,
+                            rgba(255, 255, 255, 0.1),
+                            transparent 80%
+                        )
+                    `,
+                }}
+            />
+            <div className="relative z-10">
+                <div className="mb-6 flex items-center justify-between">
+                    <div className="p-3 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white">
+                        {item.icon}
+                    </div>
+                    <span className="text-xs font-medium text-slate-400 dark:text-white/40 uppercase tracking-widest font-mono">0{index + 1}</span>
+                </div>
+                <h3 className="text-2xl font-medium text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                <p className="text-slate-600 dark:text-white/50 leading-relaxed font-light">{item.desc}</p>
+            </div>
+        </motion.div>
+    );
+};
+
 export default function Home() {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [activeTab, setActiveTab] = useState("mun");
     const { scrollY } = useScroll();
+    const [activeTab, setActiveTab] = useState("mun");
 
-    // Parallax effects
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
-    const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            const { clientX, clientY } = e;
-            const x = (clientX / window.innerWidth - 0.5) * 20;
-            const y = (clientY / window.innerHeight - 0.5) * 20;
-            setMousePosition({ x, y });
-        };
-        window.addEventListener("mousemove", handleMouseMove);
-        return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+    // Parallax & Fade effects
+    const opacity = useTransform(scrollY, [0, 800], [1, 0]);
+    const scale = useTransform(scrollY, [0, 800], [1, 0.9]);
+    const yText = useTransform(scrollY, [0, 500], [0, 100]);
 
     const eventTypes = [
         { id: "mun", label: "Model UN" },
@@ -72,246 +116,225 @@ export default function Home() {
         { id: "youth-parliament", label: "Youth Parliament" },
     ];
 
-    const statData = [
-        { label: "Delegates", value: 300, suffix: "+", icon: Users },
-        { label: "Committees", value: 12, suffix: "", icon: MapPin },
-        { label: "Awards (₹)", value: 50000, suffix: "+", icon: Trophy },
-        { label: "Days", value: 2, suffix: "", icon: Calendar },
+    const stats = [
+        { label: "Delegates", value: 300, suffix: "+" },
+        { label: "Committees", value: 12, suffix: "" },
+        { label: "Awards Fund", value: 50000, suffix: "₹" },
+        { label: "Nations", value: 50, suffix: "+" },
     ];
 
     return (
-        <div className="min-h-screen bg-white dark:bg-[#020412] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-500">
-            {/* Ambient Background */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <motion.div
-                    animate={{ x: mousePosition.x * 2, y: mousePosition.y * 2 }}
-                    className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px]"
-                />
-                <motion.div
-                    animate={{ x: -mousePosition.x * 2, y: -mousePosition.y * 2 }}
-                    className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-sky-500/10 dark:bg-violet-600/10 rounded-full blur-[120px]"
-                />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-soft-light" />
-            </div>
+        <div className="min-h-screen bg-white dark:bg-[#050505] text-slate-900 dark:text-white selection:bg-rose-500/20 selection:text-rose-600 dark:selection:bg-white/20 dark:selection:text-white relative overflow-x-hidden">
 
             {/* Hero Section */}
-            <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 pt-20">
+            <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
                 <motion.div
-                    style={{ y: y1, opacity }}
-                    className="max-w-5xl mx-auto text-center space-y-10"
+                    style={{ opacity, scale, y: yText }}
+                    className="max-w-7xl mx-auto text-center space-y-12"
                 >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-blue-100 dark:border-white/10 bg-blue-50/50 dark:bg-white/5 backdrop-blur-sm"
+                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex items-center justify-center gap-4 text-xs font-medium tracking-[0.2em] uppercase text-slate-500 dark:text-white/40"
                     >
-                        <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
-                        </span>
-                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-300 tracking-wide uppercase">Registrations Open for 2024</span>
+                        <span>[ DXB ] 12:30 AM</span>
+                        <div className="w-12 h-[1px] bg-slate-300 dark:bg-white/20" />
+                        <span>Arsenic Summit '24</span>
                     </motion.div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <motion.h1
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight text-slate-900 dark:text-white leading-[0.9]"
+                            transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tight leading-[0.95] mix-blend-difference dark:mix-blend-normal text-slate-900 dark:text-white"
                         >
-                            Where Diplomacy <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-                                Meets Democracy
-                            </span>
+                            Where <span className="font-serif italic text-slate-600 dark:text-white/80">Diplomacy</span> <br />
+                            Meets <span className="font-serif italic text-slate-600 dark:text-white/80">Democracy</span>
                         </motion.h1>
                     </div>
 
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
+                        transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-lg md:text-xl text-slate-600 dark:text-white/50 max-w-xl mx-auto font-light leading-relaxed"
                     >
-                        Join the region's largest student parliament simulation. <br className="hidden md:block" />
-                        Debate, deliberate, and decide the future.
+                        Join the region's largest student parliament simulation.
+                        Websites, apps, e-commerce, graphic identities crafted for a distinct digital presence.
                     </motion.p>
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row justify-center gap-5 pt-8"
+                        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex flex-col sm:flex-row justify-center gap-6 pt-10"
                     >
-                        <Link href="/register" className="group relative px-8 py-4 bg-slate-900 dark:bg-white rounded-full font-semibold text-white dark:text-black transition-transform active:scale-95 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl hover:shadow-blue-500/20">
-                            Register Now
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <Link href="/register" className="group relative h-14 px-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black font-medium flex items-center justify-center gap-3 overflow-hidden transition-all hover:bg-slate-800 dark:hover:bg-white/90 hover:scale-105">
+                            <span className="relative z-10">Registrati</span>
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
-                        <Link href="/about" className="px-8 py-4 rounded-full font-semibold text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors border border-slate-200 dark:border-white/10 flex items-center justify-center">
-                            Learn More
+                        <Link href="/about" className="group relative h-14 px-8 rounded-full border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white font-medium flex items-center justify-center gap-3 overflow-hidden transition-all hover:border-slate-400 dark:hover:border-white/40 hover:bg-slate-50 dark:hover:bg-white/5">
+                            <span className="relative z-10">Scopri di più</span>
                         </Link>
                     </motion.div>
                 </motion.div>
 
-                {/* Scroll Indicator */}
+                {/* Bottom Ticker */}
                 <motion.div
-                    style={{ opacity }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2"
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1, duration: 1 }}
+                    className="absolute bottom-12 left-0 right-0 flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-white/30 px-6 text-center"
                 >
-                    <ChevronDown className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                    <span>Trusted by 10+ Institutes</span>
+                    <span>ISO Certified</span>
+                    <span>Global recognition</span>
                 </motion.div>
             </section>
 
-            {/* Stats Section with Glassmorphism */}
-            <section className="relative z-10 py-20 px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-                        {statData.map((stat, index) => {
-                            const IconComponent = stat.icon;
-                            return (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="relative group p-8 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl dark:shadow-none hover:border-blue-500/30 transition-all overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-blue-50/50 dark:bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <IconComponent size={32} className="text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition-transform relative z-10" />
-                                    <div className="text-4xl lg:text-5xl font-bold mb-2 text-slate-900 dark:text-white relative z-10">
-                                        <CountUp end={stat.value} />
-                                        {stat.suffix}
-                                    </div>
-                                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider relative z-10">{stat.label}</div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* Why Join Section */}
-            <section className="relative z-10 py-32 px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-20 space-y-4">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white"
-                        >
-                            Why Join ARSENIC?
-                        </motion.h2>
-                        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-                            Experience unparalleled opportunities to develop, compete, and connect
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {[
-                            { emoji: "🎓", title: "World-Class Learning", desc: "Expert mentorship from seasoned diplomats and debaters" },
-                            { emoji: "🌍", title: "Global Network", desc: "Connect with delegates from 50+ countries" },
-                            { emoji: "🏆", title: "Recognition", desc: "Build your resume with achievements from India's premier summit" },
-                            { emoji: "💡", title: "Innovation", desc: "Cutting-edge parliamentary simulation technology" },
-                            { emoji: "🤝", title: "Community", desc: "Join an alumni network of 5000+ leaders" },
-                            { emoji: "🎯", title: "Growth", desc: "Develop confidence, leadership, and public speaking skills" }
-                        ].map((item, index) => (
+            {/* Stats - Minimalist Row */}
+            <section className="relative z-10 py-20 md:py-32 border-t border-slate-200 dark:border-white/5">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12 lg:gap-20">
+                        {stats.map((stat, i) => (
                             <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group p-8 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300"
+                                transition={{ delay: i * 0.1, duration: 0.8 }}
+                                className="text-center md:text-left group cursor-default"
                             >
-                                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">{item.emoji}</div>
-                                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">{item.title}</h3>
-                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+                                <div className="text-5xl md:text-6xl font-light text-slate-900 dark:text-white mb-2 group-hover:text-slate-700 dark:group-hover:text-white/80 transition-colors">
+                                    <CountUp end={stat.value} />
+                                    <span className="text-slate-400 dark:text-white/40 text-4xl ml-1">{stat.suffix}</span>
+                                </div>
+                                <div className="text-sm font-medium tracking-widest uppercase text-slate-500 dark:text-white/40 group-hover:text-slate-700 dark:group-hover:text-white/60 transition-colors">
+                                    {stat.label}
+                                </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Events Section */}
-            <section className="relative z-10 py-32 px-6 bg-slate-50/50 dark:bg-white/[0.02]">
+            {/* Why Join - Grid */}
+            <section className="relative z-10 py-20 md:py-32 px-6">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-semibold mb-6">
-                            Our Programs
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                        <div>
+                            <h2 className="text-4xl md:text-5xl font-medium leading-tight mb-4 text-slate-900 dark:text-white">
+                                Why Choose <span className="font-serif italic text-slate-600 dark:text-white/70">Arsenic?</span>
+                            </h2>
+                            <p className="text-slate-600 dark:text-white/50 max-w-sm">
+                                Elevating the standard of student diplomacy through immersive simulations.
+                            </p>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Choose Your Arena</h2>
-                        <div className="flex flex-wrap justify-center gap-2">
-                            {eventTypes.map((type) => (
-                                <button
-                                    key={type.id}
-                                    onClick={() => setActiveTab(type.id)}
-                                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${activeTab === type.id
-                                            ? "bg-slate-900 dark:bg-white text-white dark:text-black shadow-lg"
-                                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
-                                        }`}
-                                >
-                                    {type.label}
-                                </button>
-                            ))}
-                        </div>
+                        <Link href="/about" className="text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm uppercase tracking-widest transition-colors pb-2 border-b border-slate-200 dark:border-white/10 hover:border-slate-900 dark:hover:border-white">
+                            View All Features <MoveRight className="w-4 h-4" />
+                        </Link>
                     </div>
 
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="space-y-8"
-                        >
-                            <div className="space-y-4">
-                                <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-                                    Experience the Power of Dialogue
-                                </h3>
-                                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    Step into the shoes of a diplomat, parliamentarian, or journalist.
-                                    Research, debate, and draft resolutions that could change the world.
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {[
+                            { icon: <Award className="w-6 h-6" />, title: "World Class", desc: "Expert mentorship from seasoned diplomats and international debaters." },
+                            { icon: <Globe className="w-6 h-6" />, title: "Global Network", desc: "Connect with like-minded delegates from over 50+ countries." },
+                            { icon: <Zap className="w-6 h-6" />, title: "Innovation", desc: "Cutting-edge parliamentary simulation technology and protocols." },
+                            { icon: <Users className="w-6 h-6" />, title: "Community", desc: "Join an alumni network of 5000+ leaders worldwide." },
+                            { icon: <Mic2 className="w-6 h-6" />, title: "Public Speaking", desc: "Develop confidence, leadership, and persuasive communication." },
+                            { icon: <BookOpen className="w-6 h-6" />, title: "Resources", desc: "Access to comprehensive study guides and research materials." }
+                        ].map((item, i) => (
+                            <FeatureCard key={i} item={item} index={i} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Event Showcase - Horizontal Scroll / Sticky */}
+            <section className="relative z-10 py-20 md:py-40 px-6 bg-slate-50 dark:bg-[#080808] text-slate-900 dark:text-white transition-colors duration-500">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                        <div className="space-y-10">
+                            <div className="space-y-6">
+                                <div className="inline-block px-4 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-[10px] uppercase tracking-widest text-slate-500 dark:text-white/60">
+                                    Our Programs
+                                </div>
+                                <h2 className="text-4xl md:text-6xl font-medium leading-[1.1]">
+                                    <span className="bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
+                                        Choose Your
+                                    </span> <br />
+                                    <span className="font-serif italic text-slate-400 dark:text-white/50">Diplomatic Arena</span>
+                                </h2>
+                                <p className="text-slate-600 dark:text-white/50 text-lg leading-relaxed max-w-md font-light">
+                                    From the intensity of the Security Council to the legislative precision of the Lok Sabha.
                                 </p>
                             </div>
 
-                            <ul className="space-y-4">
-                                {["Professional Executive Board", "High-stakes crisis committees", "International delegate participation", "Networking opportunities"].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                                        <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                        {item}
-                                    </li>
+                            <div className="flex flex-wrap gap-2">
+                                {eventTypes.map((type) => (
+                                    <button
+                                        key={type.id}
+                                        onClick={() => setActiveTab(type.id)}
+                                        className={`px-6 py-3 rounded-full text-sm transition-all duration-300 ${activeTab === type.id
+                                            ? "bg-slate-900 dark:bg-white text-white dark:text-black font-medium"
+                                            : "border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/60 hover:border-slate-400 dark:hover:border-white/30 hover:text-slate-900 dark:hover:text-white"
+                                            }`}
+                                    >
+                                        {type.label}
+                                    </button>
                                 ))}
-                            </ul>
-
-                            <button className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
-                                View Committee Details
-                                <ArrowRight className="w-4 h-4" />
-                            </button>
-                        </motion.div>
-
-                        <motion.div
-                            key={`${activeTab}-img`}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5 }}
-                            className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl"
-                        >
-                            <Image
-                                src="https://images.unsplash.com/photo-1575320181282-9afab399332c?auto=format&fit=crop&q=80&w=1200"
-                                alt="Event"
-                                fill
-                                className="object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                            <div className="absolute bottom-6 left-6 text-white">
-                                <div className="text-2xl font-bold">{eventTypes.find(e => e.id === activeTab)?.label}</div>
-                                <div className="text-white/80">Edition 2024</div>
                             </div>
-                        </motion.div>
+
+                            <div className="pt-8 border-t border-slate-200 dark:border-white/10">
+                                <Link href={`/${activeTab}`} className="inline-flex items-center gap-3 text-slate-900 dark:text-white hover:text-slate-600 dark:hover:text-white/70 transition-colors group">
+                                    <span className="text-lg">View Committee Details</span>
+                                    <div className="w-10 h-10 rounded-full border border-slate-200 dark:border-white/20 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-all">
+                                        <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+
+                        <div className="relative aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-2xl dark:shadow-none">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, scale: 1.1 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.7 }}
+                                className="absolute inset-0"
+                            >
+                                <Image
+                                    src={
+                                        activeTab === 'mun' ? "https://images.unsplash.com/photo-1575320181282-9afab399332c?q=80&w=1200" :
+                                            activeTab === 'lok-sabha' ? "https://images.unsplash.com/photo-1596520774490-5e4f9a4e4e75?q=80&w=1200" :
+                                                "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200"
+                                    }
+                                    alt="Event"
+                                    fill
+                                    className="object-cover opacity-60"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+
+                                <div className="absolute bottom-10 left-10 right-10">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+                                            <PlayCircle className="w-6 h-6" />
+                                        </div>
+                                        <div className="text-white/60 text-sm uppercase tracking-widest">Watch Trailer</div>
+                                    </div>
+                                    <h3 className="text-3xl font-medium text-white mb-2">
+                                        {eventTypes.find(e => e.id === activeTab)?.label}
+                                    </h3>
+                                    <div className="flex items-center gap-4 text-white/50 text-sm">
+                                        <span>2024 Edition</span>
+                                        <span className="w-1 h-1 bg-white/20 rounded-full" />
+                                        <span>Offline & Online</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>

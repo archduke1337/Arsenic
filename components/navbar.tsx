@@ -159,12 +159,9 @@ export default function Navbar() {
                     width: scrolled ? "90%" : "100%",
                     borderRadius: scrolled ? "9999px" : "0px",
                     y: scrolled ? 10 : 0,
-                    backgroundColor: scrolled
-                        ? "rgba(255, 255, 255, 0.8)"
-                        : "transparent",
                 }}
                 className={`mx-auto flex items-center justify-between px-6 py-2 transition-all duration-300 backdrop-blur-xl ${scrolled
-                    ? "dark:bg-black/80 shadow-lg border border-white/20 dark:border-white/10"
+                    ? "bg-white/80 dark:bg-black/80 shadow-lg border border-white/20 dark:border-white/10"
                     : ""
                     }`}
                 style={{
@@ -216,8 +213,8 @@ export default function Navbar() {
                             <Button
                                 disableRipple
                                 className={`px-4 h-9 bg-transparent hover:bg-black/5 dark:hover:bg-white/10 font-medium text-[15px] transition-all rounded-full ${pathname.includes('/mun') || pathname.includes('/sabha')
-                                        ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                                        : scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'
+                                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                                    : scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'
                                     }`}
                                 endContent={
                                     <motion.div
@@ -275,8 +272,8 @@ export default function Navbar() {
                             <Link
                                 href={item.href}
                                 className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-white ${pathname === item.href
-                                        ? 'text-gray-900 dark:text-white font-semibold'
-                                        : scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'
+                                    ? 'text-gray-900 dark:text-white font-semibold'
+                                    : scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'
                                     }`}
                             >
                                 {pathname === item.href && (
