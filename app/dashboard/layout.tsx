@@ -6,7 +6,7 @@ import { LayoutDashboard, FileText, Users, Download, LogOut, Search, Bell, Menu,
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     const { user, logout } = useAuth();
@@ -26,13 +26,34 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <aside
                 className={`${isSidebarOpen ? 'w-64' : 'w-20'} hidden md:flex flex-col border-r border-gray-200 dark:border-white/5 bg-white dark:bg-[#0f0f0f] fixed h-full z-50 transition-all duration-300 ease-in-out`}
             >
-                <div className="p-6 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
-                        <span className="font-bold">A</span>
-                    </div>
-                    {isSidebarOpen && (
-                        <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">ARSENIC</span>
-                    )}
+                <div className="p-6 flex items-center gap-3 overflow-hidden whitespace-nowrap">
+                    <motion.div
+                        layout
+                        className="shrink-0"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/20">
+                            {/* Using the logo.png as requested, falling back to styled A if needed */}
+                            <img
+                                src="/logo.png"
+                                alt="Arsenic Logo"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </motion.div>
+
+                    <AnimatePresence>
+                        {isSidebarOpen && (
+                            <motion.span
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="font-bold text-xl tracking-tight text-slate-900 dark:text-white"
+                            >
+                                ARSENIC
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="flex-1 py-6 px-3 space-y-2">
@@ -43,8 +64,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-                                        ? "bg-slate-900 dark:bg-white text-white dark:text-black shadow-lg shadow-slate-900/10 dark:shadow-white/5"
-                                        : "text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+                                    ? "bg-slate-900 dark:bg-white text-white dark:text-black shadow-lg shadow-slate-900/10 dark:shadow-white/5"
+                                    : "text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
                                     }`}
                             >
                                 <div className="shrink-0">
