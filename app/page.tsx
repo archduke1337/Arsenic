@@ -109,11 +109,41 @@ export default function Home() {
     const yText = useTransform(scrollY, [0, 500], [0, 100]);
 
     const eventTypes = [
-        { id: "mun", label: "Model UN" },
-        { id: "lok-sabha", label: "Lok Sabha" },
-        { id: "rajya-sabha", label: "Rajya Sabha" },
-        { id: "debate", label: "Debate" },
-        { id: "youth-parliament", label: "Youth Parliament" },
+        {
+            id: "mun",
+            label: "Model UN",
+            desc: "The flagship simulation of United Nations committees. Engage in high-stakes diplomacy, drafting resolutions, and solving global crises.",
+            difficulty: "High",
+            size: "300+ Delegates"
+        },
+        {
+            id: "lok-sabha",
+            label: "Lok Sabha",
+            desc: "Experience the heat of Indian parliamentary debate. Discuss national policies, pass bills, and represent the voice of the people.",
+            difficulty: "Moderate",
+            size: "100+ MPs"
+        },
+        {
+            id: "rajya-sabha",
+            label: "Rajya Sabha",
+            desc: "The Council of States. A sophisticated forum for reviewing legislation and debating long-term national policies with expertise.",
+            difficulty: "Advanced",
+            size: "60+ MPs"
+        },
+        {
+            id: "debate",
+            label: "Debate",
+            desc: "A battle of wits and rhetoric. Clash on controversial topics using logic, evidence, and persuasive oratory skills.",
+            difficulty: "Variable",
+            size: "50+ Teams"
+        },
+        {
+            id: "youth-parliament",
+            label: "Youth Parliament",
+            desc: "A dynamic platform for young leaders to understand democracy, voice opinions, and propose solutions for the nation's future.",
+            difficulty: "Beginner Friendly",
+            size: "150+ Icons"
+        },
     ];
 
     const stats = [
@@ -255,54 +285,55 @@ export default function Home() {
             {/* Event Showcase - Horizontal Scroll / Sticky */}
             <section className="relative z-10 py-20 md:py-40 px-6 bg-slate-50 dark:bg-[#080808] text-slate-900 dark:text-white transition-colors duration-500">
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid lg:grid-cols-2 gap-20 items-center">
-                        <div className="space-y-10">
-                            <div className="space-y-6">
+                    <div className="grid lg:grid-cols-12 gap-10 items-start">
+                        {/* Left Side - Vertical Menu */}
+                        <div className="lg:col-span-4 space-y-8 sticky top-32">
+                            <div className="space-y-4">
                                 <div className="inline-block px-4 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-[10px] uppercase tracking-widest text-slate-500 dark:text-white/60">
                                     Our Programs
                                 </div>
-                                <h2 className="text-4xl md:text-6xl font-medium leading-[1.1]">
+                                <h2 className="text-4xl md:text-5xl font-medium leading-[1.1]">
                                     <span className="bg-gradient-to-r from-[#003366] via-[#005A9C] to-[#4B9CD3] bg-clip-text text-transparent bg-[200%_auto] animate-shine">
                                         Choose Your
                                     </span> <br />
                                     <span className="font-serif italic text-slate-400 dark:text-white/50">Diplomatic Arena</span>
                                 </h2>
-                                <p className="text-slate-600 dark:text-white/50 text-lg leading-relaxed max-w-md font-light">
-                                    From the intensity of the Security Council to the legislative precision of the Lok Sabha.
+                                <p className="text-slate-600 dark:text-white/50 text-base leading-relaxed font-light">
+                                    Select a committee to view details, agenda, and difficulty level.
                                 </p>
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-col gap-2">
                                 {eventTypes.map((type) => (
                                     <button
                                         key={type.id}
                                         onClick={() => setActiveTab(type.id)}
-                                        className={`px-6 py-3 rounded-full text-sm transition-all duration-300 ${activeTab === type.id
-                                            ? "bg-slate-900 dark:bg-white text-white dark:text-black font-medium"
-                                            : "border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/60 hover:border-slate-400 dark:hover:border-white/30 hover:text-slate-900 dark:hover:text-white"
+                                        className={`group relative flex items-center justify-between w-full px-6 py-4 rounded-2xl text-left transition-all duration-300 ${activeTab === type.id
+                                            ? "bg-[#003366] text-white shadow-xl shadow-blue-900/20 scale-105"
+                                            : "bg-white dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10"
                                             }`}
                                     >
-                                        {type.label}
+                                        <span className="font-medium text-lg relative z-10">{type.label}</span>
+                                        {activeTab === type.id && (
+                                            <motion.div
+                                                layoutId="active-glow"
+                                                className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#003366] to-[#004080] -z-0"
+                                                transition={{ duration: 0.3 }}
+                                            />
+                                        )}
+                                        <ArrowRight className={`w-4 h-4 transition-transform ${activeTab === type.id ? 'translate-x-1 opacity-100 z-10' : 'opacity-0 -translate-x-2'}`} />
                                     </button>
                                 ))}
                             </div>
-
-                            <div className="pt-8 border-t border-slate-200 dark:border-white/10">
-                                <Link href={`/${activeTab}`} className="inline-flex items-center gap-3 text-slate-900 dark:text-white hover:text-slate-600 dark:hover:text-white/70 transition-colors group">
-                                    <span className="text-lg">View Committee Details</span>
-                                    <div className="w-10 h-10 rounded-full border border-slate-200 dark:border-white/20 flex items-center justify-center group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-all">
-                                        <ArrowRight className="w-4 h-4" />
-                                    </div>
-                                </Link>
-                            </div>
                         </div>
 
-                        <div className="relative aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-2xl dark:shadow-none">
+                        {/* Right Side - Immersive Preview Card */}
+                        <div className="lg:col-span-8 relative aspect-[4/5] md:aspect-[16/10] rounded-[2.5rem] overflow-hidden bg-slate-900 shadow-2xl">
                             <motion.div
                                 key={activeTab}
-                                initial={{ opacity: 0, scale: 1.1 }}
+                                initial={{ opacity: 0, scale: 1.05 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.7 }}
+                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                                 className="absolute inset-0"
                             >
                                 <Image
@@ -313,25 +344,44 @@ export default function Home() {
                                     }
                                     alt="Event"
                                     fill
-                                    className="object-cover opacity-60"
+                                    className="object-cover opacity-80"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/40 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#020202]/80 via-transparent to-transparent" />
 
-                                <div className="absolute bottom-10 left-10 right-10">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
-                                            <PlayCircle className="w-6 h-6" />
+                                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="space-y-6 max-w-2xl"
+                                    >
+                                        <div className="flex flex-wrap gap-3">
+                                            <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-medium text-white uppercase tracking-wider">
+                                                {eventTypes.find(e => e.id === activeTab)?.difficulty} Difficulty
+                                            </div>
+                                            <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-medium text-white uppercase tracking-wider">
+                                                {eventTypes.find(e => e.id === activeTab)?.size}
+                                            </div>
                                         </div>
-                                        <div className="text-white/60 text-sm uppercase tracking-widest">Watch Trailer</div>
-                                    </div>
-                                    <h3 className="text-3xl font-medium text-white mb-2">
-                                        {eventTypes.find(e => e.id === activeTab)?.label}
-                                    </h3>
-                                    <div className="flex items-center gap-4 text-white/50 text-sm">
-                                        <span>2024 Edition</span>
-                                        <span className="w-1 h-1 bg-white/20 rounded-full" />
-                                        <span>Offline & Online</span>
-                                    </div>
+
+                                        <h3 className="text-4xl md:text-6xl font-medium text-white">
+                                            {eventTypes.find(e => e.id === activeTab)?.label}
+                                        </h3>
+
+                                        <p className="text-lg text-white/70 font-light leading-relaxed">
+                                            {eventTypes.find(e => e.id === activeTab)?.desc}
+                                        </p>
+
+                                        <div className="pt-6 flex gap-4">
+                                            <Link href={`/${activeTab}`} className="px-8 py-4 rounded-full bg-white text-black font-medium hover:bg-slate-200 transition-colors">
+                                                View Agenda
+                                            </Link>
+                                            <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all">
+                                                <PlayCircle className="w-6 h-6" />
+                                            </button>
+                                        </div>
+                                    </motion.div>
                                 </div>
                             </motion.div>
                         </div>
