@@ -66,9 +66,9 @@ const teamMembers = [
 
 export default function TeamPage() {
     return (
-        <div className="min-h-screen bg-[#020202] text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#020202] text-slate-900 dark:text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden selection:bg-blue-100 dark:selection:bg-blue-900/30">
             {/* Background Gradients */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-[#003366]/20 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-200/20 dark:bg-[#003366]/20 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
@@ -77,10 +77,10 @@ export default function TeamPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-4"
+                        className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-4 text-slate-900 dark:text-white"
                     >
                         Partnered with most of the <br className="hidden md:block" />
-                        <span className="italic font-serif text-white/50">top people at each industry</span>
+                        <span className="italic font-serif text-slate-500 dark:text-white/50">top people at each industry</span>
                     </motion.h1>
                 </div>
 
@@ -93,7 +93,7 @@ export default function TeamPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
-                            className="group relative h-[400px] rounded-[32px] overflow-hidden cursor-pointer"
+                            className="group relative h-[400px] rounded-[32px] overflow-hidden cursor-pointer shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-300"
                         >
                             {/* Image */}
                             <Image
@@ -104,8 +104,8 @@ export default function TeamPage() {
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                             />
 
-                            {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#001f3f]/90 via-[#001f3f]/40 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90" />
+                            {/* Gradient Overlay - Darker at bottom for text readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent dark:from-[#001f3f]/90 dark:via-[#001f3f]/40 dark:to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90" />
 
                             {/* Content */}
                             <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -128,13 +128,13 @@ export default function TeamPage() {
 
                 {/* Navigation (Visual only as per reference) */}
                 <div className="flex justify-center items-center gap-12 mt-16 md:mt-24">
-                    <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-600 dark:text-white">
                         <ArrowLeft size={20} />
                     </button>
-                    <div className="w-48 h-[2px] bg-white/10 overflow-hidden">
-                        <div className="w-1/3 h-full bg-white" />
+                    <div className="w-48 h-[2px] bg-slate-200 dark:bg-white/10 overflow-hidden">
+                        <div className="w-1/3 h-full bg-slate-900 dark:bg-white" />
                     </div>
-                    <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-600 dark:text-white">
                         <ArrowRight size={20} />
                     </button>
                 </div>
