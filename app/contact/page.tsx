@@ -69,10 +69,10 @@ export default function ModernContact() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 flex items-center justify-center p-6 md:p-12 pt-24 md:pt-32 relative overflow-hidden">
+        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white selection:bg-purple-500/30 flex items-center justify-center p-6 md:p-12 pt-24 md:pt-32 relative overflow-hidden">
             {/* Subtle background glow to keep it not too flat, but close to reference */}
-            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-900/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="max-w-4xl w-full relative z-10">
                 {/* Header */}
@@ -84,7 +84,7 @@ export default function ModernContact() {
                         <span className="font-semibold text-base tracking-tight">Contact Us</span>
                     </div>
 
-                    <div className="hidden md:block text-right text-gray-500 text-sm max-w-xs">
+                    <div className="hidden md:block text-right text-gray-500 dark:text-gray-400 text-sm max-w-xs">
                         Let's start a conversation! Fill out our contact form, and we'll get back to you as soon as possible.
                     </div>
                 </div>
@@ -95,12 +95,12 @@ export default function ModernContact() {
                             <CheckCircle2 size={40} className="text-green-500" />
                         </div>
                         <h2 className="text-3xl md:text-5xl font-bold mb-4">Message Received!</h2>
-                        <p className="text-lg text-gray-400 max-w-lg">
+                        <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg">
                             Thanks for reaching out. We'll get back to you shortly.
                         </p>
                         <button
                             onClick={() => setSubmitSuccess(false)}
-                            className="mt-8 px-6 py-2 rounded-full border border-white/20 hover:bg-white/10 transition-colors text-sm"
+                            className="mt-8 px-6 py-2 rounded-full border border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-sm"
                         >
                             Send another message
                         </button>
@@ -108,20 +108,20 @@ export default function ModernContact() {
                 ) : (
                     <div className="space-y-4 md:space-y-6">
                         <div className="text-4xl md:text-6xl font-bold flex items-center gap-3">
-                            Hello <Smile className="w-10 h-10 md:w-16 md:h-16 text-white" />
+                            Hello <Smile className="w-10 h-10 md:w-16 md:h-16 text-slate-900 dark:text-white" />
                         </div>
 
                         {/* Conversational Form */}
-                        <div className="space-y-6 md:space-y-8 text-xl md:text-3xl leading-relaxed font-medium text-gray-500">
+                        <div className="space-y-6 md:space-y-8 text-xl md:text-3xl leading-relaxed font-medium text-gray-400 dark:text-gray-500">
 
                             {/* Name Input */}
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                                <span className="text-white">My name is</span>
+                                <span className="text-slate-900 dark:text-white">My name is</span>
                                 <div className="relative flex-1 min-w-[200px] group">
                                     <input
                                         type="text"
                                         placeholder="Enter your name"
-                                        className="w-full bg-transparent border-b border-gray-700 focus:border-white text-white py-1 focus:outline-none placeholder:text-gray-700 transition-colors"
+                                        className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-white text-slate-900 dark:text-white py-1 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
                                         value={formData.name}
                                         onChange={(e) => {
                                             setFormData({ ...formData, name: e.target.value });
@@ -134,12 +134,12 @@ export default function ModernContact() {
 
                             {/* Company Input (Mapped to Subject) */}
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                                <span className="text-white">I'm from</span>
+                                <span className="text-slate-900 dark:text-white">I'm from</span>
                                 <div className="relative flex-1 min-w-[200px]">
                                     <input
                                         type="text"
                                         placeholder="Enter your company name"
-                                        className="w-full bg-transparent border-b border-gray-700 focus:border-white text-white py-1 focus:outline-none placeholder:text-gray-700 transition-colors"
+                                        className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-white text-slate-900 dark:text-white py-1 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
                                         value={formData.company}
                                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                                     />
@@ -148,12 +148,12 @@ export default function ModernContact() {
 
                             {/* Email Input */}
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                                <span className="text-white">Here is my email</span>
+                                <span className="text-slate-900 dark:text-white">Here is my email</span>
                                 <div className="relative flex-1 min-w-[200px]">
                                     <input
                                         type="email"
                                         placeholder="Enter your email"
-                                        className="w-full bg-transparent border-b border-gray-700 focus:border-white text-white py-1 focus:outline-none placeholder:text-gray-700 transition-colors"
+                                        className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-white text-slate-900 dark:text-white py-1 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
                                         value={formData.email}
                                         onChange={(e) => {
                                             setFormData({ ...formData, email: e.target.value });
@@ -166,12 +166,12 @@ export default function ModernContact() {
 
                             {/* Message Input */}
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                                <span className="text-white">And message</span>
+                                <span className="text-slate-900 dark:text-white">And message</span>
                                 <div className="relative flex-1 min-w-[200px] w-full">
                                     <input
                                         type="text"
                                         placeholder="Enter your message"
-                                        className="w-full bg-transparent border-b border-gray-700 focus:border-white text-white py-1 focus:outline-none placeholder:text-gray-700 transition-colors"
+                                        className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-white text-slate-900 dark:text-white py-1 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
                                         value={formData.message}
                                         onChange={(e) => {
                                             setFormData({ ...formData, message: e.target.value });
@@ -190,12 +190,12 @@ export default function ModernContact() {
                                 disabled={isSubmitting}
                                 className="group w-full md:h-20 h-16 bg-[#9381ff] hover:bg-[#806bf9] rounded-full flex items-center justify-between px-4 md:px-10 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                <span className="text-2xl md:text-4xl font-medium text-black ml-4">Submit</span>
-                                <div className="w-12 h-12 md:w-16 md:h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span className="text-2xl md:text-4xl font-medium text-black dark:text-white ml-4">Submit</span>
+                                <div className="w-12 h-12 md:w-16 md:h-16 bg-white dark:bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                     {isSubmitting ? (
-                                        <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-slate-900 dark:border-white/30 border-t-transparent dark:border-t-white rounded-full animate-spin" />
                                     ) : (
-                                        <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                                        <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-slate-900 dark:text-white" />
                                     )}
                                 </div>
                             </button>
