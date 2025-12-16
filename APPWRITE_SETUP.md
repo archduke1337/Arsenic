@@ -1,621 +1,764 @@
-# Appwrite Setup Guide - Complete Step-by-Step
+# 🚀 Appwrite Setup Guide for Arsenic Summit
 
-
-
-## 📁 Database Collections Setup
-
-### Collection 1: `users`
-**Purpose**: Store user profiles
-
-**Click**: Databases → `arsenic_db` → Create Collection
-
-| Field Name | Type | Required | Additional |
-|-----------|------|----------|-----------|
-| email | Email | ✅ | Unique |
-| name | String | ✅ | - |
-| role | String | ✅ | Default: "delegate" |
-| institution | String | ❌ | - |
-| phone | String | ❌ | - |
-| city | String | ❌ | - |
-| profileImage | String | ❌ | URL |
-| createdAt | DateTime | ✅ | Auto-set |
-| updatedAt | DateTime | ❌ | Auto-update |
-
-**Permissions**:
-- Read: Everyone
-- Create: Authenticated
-- Update: Self
-- Delete: Admins
+> Complete step-by-step guide to set up your Appwrite backend from scratch.
 
 ---
 
-### Collection 2: `registrations`
-**Purpose**: Event registrations
+## 📋 Table of Contents
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| userId | String | ✅ |
-| eventId | String | ✅ |
-| code | String | ✅ |
-| fullName | String | ✅ |
-| email | Email | ✅ |
-| phone | String | ❌ |
-| institution | String | ❌ |
-| grade | String | ❌ |
-| city | String | ❌ |
-| committeePreferences | String | ❌ |
-| assignedCommittee | String | ❌ |
-| assignedPortfolio | String | ❌ |
-| paymentStatus | String | ✅ |
-| paymentAmount | Number | ❌ |
-| status | String | ✅ |
-| checkedIn | Boolean | ✅ |
-| checkedInAt | DateTime | ❌ |
-| qrCode | String | ❌ |
-| createdAt | DateTime | ✅ |
+1. [Initial Setup](#-initial-setup)
+2. [Database Collections (22 total)](#-database-collections)
+3. [Storage Setup](#-storage-setup)
+4. [Environment Variables](#-environment-variables)
+5. [Permissions Guide](#-permissions-guide)
+6. [Verification & Testing](#-verification--testing)
+7. [Troubleshooting](#-troubleshooting)
 
-**Status Enum Values**: "pending", "confirmed", "cancelled"  
-**Payment Status Enum**: "pending", "paid", "refunded", "failed"
+---
+
+## 🔧 Initial Setup
+
+### Step 1: Create Appwrite Project
+1. Go to [Appwrite Cloud Console](https://cloud.appwrite.io)
+2. Click **Create Project**
+3. Name: `Arsenic Summit`
+4. **Save your Project ID** → `YOUR_PROJECT_ID`
+
+### Step 2: Create Database
+1. Go to **Databases** tab
+2. Click **Create Database**
+3. Name: `arsenic_db`
+4. **Save your Database ID** → `YOUR_DATABASE_ID`
+
+### Step 3: Generate API Key
+1. Go to **Settings** → **API Keys**
+2. Click **Create API Key**
+3. Name: `Server SDK Key`
+4. Select **ALL scopes** (for full access)
+5. **Save your API Key** → `YOUR_API_KEY`
+
+### Step 4: Configure Platforms
+1. Go to **Settings** → **Platforms**
+2. Add Web Platform:
+   - Name: `Arsenic Web`
+   - Hostname: `localhost` (for dev)
+   - Add production domain when deploying
+
+---
+
+## 📁 Database Collections
+
+> Create each collection in order. Total: **22 collections**
+
+---
+
+### Collection 1: `users`
+**Purpose**: User profiles and authentication data
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| email | Email | ✅ | Unique |
+| name | String | ✅ | |
+| role | String | ✅ | Default: `delegate` |
+| institution | String | ❌ | School/College name |
+| phone | String | ❌ | |
+| city | String | ❌ | |
+| profileImage | String | ❌ | URL |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ❌ | |
+
+**role Enum**: `delegate`, `admin`, `speaker`, `chairperson`
+
+---
+
+### Collection 2: `events`
+**Purpose**: Main events (MUN, Lok Sabha, etc.)
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | |
+| type | String | ✅ | Event type |
+| description | String | ❌ | |
+| agenda | String | ❌ | |
+| backgroundGuideUrl | String | ❌ | URL |
+| startDate | DateTime | ✅ | |
+| endDate | DateTime | ✅ | |
+| registrationDeadline | DateTime | ❌ | |
+| portfolioReleaseDate | DateTime | ❌ | |
+| fees | Number | ✅ | Base fee |
+| earlyBirdFee | Number | ❌ | |
+| earlyBirdDeadline | DateTime | ❌ | |
+| capacity | Integer | ❌ | Max participants |
+| venue | String | ❌ | |
+| imageUrl | String | ❌ | URL |
+| isActive | Boolean | ✅ | Default: `true` |
+| theme | String | ❌ | JSON string |
+| feeStructure | String | ❌ | JSON string |
+| paymentConfig | String | ❌ | JSON string |
+| settings | String | ❌ | JSON string |
+| createdAt | DateTime | ✅ | |
+
+**type Enum**: `MUN`, `LOK_SABHA`, `RAJYA_SABHA`, `DEBATE`, `YOUTH_PARLIAMENT`
 
 ---
 
 ### Collection 3: `committees`
-**Purpose**: Committee details
+**Purpose**: Committee details for each event type
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| abbreviation | String | ✅ |
-| type | String | ✅ |
-| eventType | String | ✅ |
-| description | String | ❌ |
-| agenda | String | ❌ |
-| backgroundGuideUrl | URL | ❌ |
-| chairperson | String | ❌ |
-| viceChairperson | String | ❌ |
-| rapporteur | String | ❌ |
-| portfolios | String | ❌ |
-| capacity | Integer | ✅ |
-| imageUrl | URL | ❌ |
-| difficultyTag | String | ❌ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | Full name |
+| abbreviation | String | ✅ | e.g., UNSC |
+| type | String | ✅ | |
+| eventType | String | ✅ | |
+| description | String | ❌ | |
+| agenda | String | ❌ | |
+| backgroundGuideUrl | String | ❌ | URL |
+| chairperson | String | ❌ | Name |
+| viceChairperson | String | ❌ | Name |
+| rapporteur | String | ❌ | Name |
+| portfolios | String | ❌ | JSON array string |
+| capacity | Integer | ✅ | Max delegates |
+| imageUrl | String | ❌ | URL |
+| linkedEventId | String | ❌ | Reference to event |
+| difficultyTag | String | ❌ | |
+| munData | String | ❌ | JSON string |
+| lokSabhaData | String | ❌ | JSON string |
+| rajyaSabhaData | String | ❌ | JSON string |
+| debateData | String | ❌ | JSON string |
+| createdAt | DateTime | ✅ | |
 
-**eventType Enum**: "MUN", "LOK_SABHA", "RAJYA_SABHA", "DEBATE", "YOUTH_PARLIAMENT"
+**eventType Enum**: `MUN`, `LOK_SABHA`, `RAJYA_SABHA`, `DEBATE`, `YOUTH_PARLIAMENT`  
+**difficultyTag Enum**: `beginner`, `intermediate`, `advanced`
 
 ---
 
-### Collection 4: `events`
-**Purpose**: Main events
+### Collection 4: `registrations`
+**Purpose**: Event registration records
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| type | String | ✅ |
-| description | String | ❌ |
-| agenda | String | ❌ |
-| backgroundGuideUrl | URL | ❌ |
-| startDate | DateTime | ✅ |
-| endDate | DateTime | ✅ |
-| registrationDeadline | DateTime | ❌ |
-| fees | Number | ✅ |
-| earlyBirdFee | Number | ❌ |
-| earlyBirdDeadline | DateTime | ❌ |
-| capacity | Integer | ❌ |
-| venue | String | ❌ |
-| imageUrl | URL | ❌ |
-| isActive | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| userId | String | ✅ | Reference to user |
+| eventId | String | ✅ | Reference to event |
+| code | String | ✅ | Unique reg code |
+| fullName | String | ✅ | |
+| email | Email | ✅ | |
+| phone | String | ❌ | |
+| institution | String | ❌ | |
+| grade | String | ❌ | |
+| city | String | ❌ | |
+| age | Integer | ❌ | |
+| committeePreferences | String | ❌ | JSON array string |
+| assignedCommittee | String | ❌ | |
+| assignedPortfolio | String | ❌ | |
+| paymentStatus | String | ✅ | Default: `pending` |
+| paymentAmount | Number | ❌ | |
+| status | String | ✅ | Default: `pending` |
+| checkedIn | Boolean | ✅ | Default: `false` |
+| checkedInAt | DateTime | ❌ | |
+| qrCode | String | ❌ | |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ❌ | |
+
+**status Enum**: `pending`, `confirmed`, `cancelled`  
+**paymentStatus Enum**: `pending`, `paid`, `refunded`, `failed`
 
 ---
 
 ### Collection 5: `awards`
-**Purpose**: Award winners
+**Purpose**: Award winners and certificates
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| eventId | String | ✅ |
-| category | String | ✅ |
-| awardType | String | ✅ |
-| recipientName | String | ✅ |
-| school | String | ❌ |
-| committee | String | ❌ |
-| position | Integer | ❌ |
-| certificateUrl | URL | ❌ |
-| isPublished | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| eventId | String | ✅ | |
+| category | String | ✅ | |
+| awardType | String | ✅ | |
+| recipientName | String | ✅ | |
+| school | String | ❌ | |
+| committee | String | ❌ | |
+| position | Integer | ❌ | Rank |
+| certificateUrl | String | ❌ | URL |
+| isPublished | Boolean | ✅ | Default: `false` |
+| createdAt | DateTime | ✅ | |
 
-**awardType Enum**: "best_delegate", "high_commendation", "special_mention", "best_delegation", "verbal_mention"
+**awardType Enum**: `best_delegate`, `high_commendation`, `special_mention`, `best_delegation`, `verbal_mention`
 
 ---
 
 ### Collection 6: `team_members`
-**Purpose**: Team structure
+**Purpose**: Organizing team hierarchy
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| role | String | ✅ |
-| position | String | ✅ |
-| department | String | ❌ |
-| parentId | String | ❌ |
-| bio | String | ❌ |
-| imageUrl | URL | ❌ |
-| email | Email | ❌ |
-| phone | String | ❌ |
-| socials | String | ❌ |
-| displayOrder | Integer | ❌ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | |
+| role | String | ✅ | Title/designation |
+| position | String | ✅ | Hierarchy level |
+| department | String | ❌ | |
+| parentId | String | ❌ | For hierarchy |
+| bio | String | ❌ | |
+| imageUrl | String | ❌ | URL |
+| email | Email | ❌ | |
+| phone | String | ❌ | |
+| socials | String | ❌ | JSON string |
+| displayOrder | Integer | ❌ | Sort order |
+| createdAt | DateTime | ✅ | |
 
-**position Enum**: "founder", "executive_board", "hod", "secretariat", "subhead", "organizing_committee"
+**position Enum**: `founder`, `executive_board`, `hod`, `secretariat`, `subhead`, `organizing_committee`
 
 ---
 
 ### Collection 7: `sponsors`
-**Purpose**: Sponsorship details
+**Purpose**: Sponsorship information
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| tier | String | ✅ |
-| name | String | ✅ |
-| logoUrl | URL | ✅ |
-| websiteUrl | URL | ❌ |
-| displayOrder | Integer | ❌ |
-| isActive | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| tier | String | ✅ | |
+| name | String | ✅ | |
+| logoUrl | String | ✅ | URL |
+| websiteUrl | String | ❌ | URL |
+| displayOrder | Integer | ❌ | Sort order |
+| isActive | Boolean | ✅ | Default: `true` |
+| createdAt | DateTime | ✅ | |
 
-**tier Enum**: "title", "platinum", "gold", "silver"
+**tier Enum**: `title`, `platinum`, `gold`, `silver`
 
 ---
 
 ### Collection 8: `gallery`
 **Purpose**: Event photos
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| imageUrl | URL | ✅ |
-| thumbnailUrl | URL | ❌ |
-| albumId | String | ❌ |
-| eventType | String | ✅ |
-| conference | String | ❌ |
-| year | String | ✅ |
-| caption | String | ❌ |
-| featured | Boolean | ❌ |
-| uploadedBy | String | ❌ |
-| displayOrder | Integer | ❌ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| imageUrl | String | ✅ | URL |
+| thumbnailUrl | String | ❌ | URL |
+| albumId | String | ❌ | Reference to album |
+| eventType | String | ✅ | |
+| conference | String | ❌ | |
+| year | String | ✅ | e.g., "2024" |
+| caption | String | ❌ | |
+| featured | Boolean | ❌ | Default: `false` |
+| uploadedBy | String | ❌ | |
+| displayOrder | Integer | ❌ | |
+| customTags | String | ❌ | JSON array string |
+| createdAt | DateTime | ✅ | |
 
 ---
 
-### Collection 9: `faqs`
-**Purpose**: FAQ section
+### Collection 9: `albums`
+**Purpose**: Photo album organization
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| category | String | ✅ |
-| question | String | ✅ |
-| answer | String | ✅ |
-| displayOrder | Integer | ❌ |
-| isActive | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
-
----
-
-### Collection 10: `contact_submissions`
-**Purpose**: Contact form submissions
-
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| email | Email | ✅ |
-| subject | String | ✅ |
-| message | String | ✅ |
-| status | String | ✅ |
-| createdAt | DateTime | ✅ |
-
-**status Enum**: "new", "read", "replied", "archived"
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | |
+| slug | String | ✅ | URL-friendly |
+| eventType | String | ✅ | |
+| coverImageUrl | String | ❌ | URL |
+| description | String | ❌ | |
+| year | String | ✅ | |
+| displayOrder | Integer | ❌ | |
+| createdAt | DateTime | ✅ | |
 
 ---
 
-### Collection 11: `scores`
-**Purpose**: Event scoring
+### Collection 10: `faqs`
+**Purpose**: Frequently asked questions
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| registrationId | String | ✅ |
-| eventId | String | ✅ |
-| committeeId | String | ✅ |
-| score | Number | ✅ |
-| feedback | String | ❌ |
-| rank | Integer | ❌ |
-| createdAt | DateTime | ✅ |
-
----
-
-### Collection 12: `attendance`
-**Purpose**: Check-in records
-
-| Field Name | Type | Required |
-|-----------|------|----------|
-| registrationId | String | ✅ |
-| eventId | String | ✅ |
-| checkedInAt | DateTime | ✅ |
-| checkedInBy | String | ❌ |
-| qrCodeScanned | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| category | String | ✅ | |
+| question | String | ✅ | |
+| answer | String | ✅ | |
+| displayOrder | Integer | ❌ | |
+| isActive | Boolean | ✅ | Default: `true` |
+| createdAt | DateTime | ✅ | |
 
 ---
 
-### Collection 13: `coupons`
+### Collection 11: `contact_submissions`
+**Purpose**: Contact form entries
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | |
+| email | Email | ✅ | |
+| subject | String | ✅ | |
+| message | String | ✅ | |
+| status | String | ✅ | Default: `new` |
+| createdAt | DateTime | ✅ | |
+
+**status Enum**: `new`, `read`, `replied`, `archived`
+
+---
+
+### Collection 12: `scores`
+**Purpose**: Delegate scoring and rankings
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| registrationId | String | ✅ | |
+| eventId | String | ✅ | |
+| committeeId | String | ✅ | |
+| score | Number | ✅ | 0-100 |
+| feedback | String | ❌ | |
+| rank | Integer | ❌ | |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ❌ | |
+
+---
+
+### Collection 13: `attendance`
+**Purpose**: Check-in tracking
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| registrationId | String | ✅ | |
+| eventId | String | ✅ | |
+| committeeId | String | ❌ | |
+| checkedInAt | DateTime | ✅ | |
+| checkedInBy | String | ❌ | Admin who checked in |
+| checkOutTime | DateTime | ❌ | |
+| attendanceStatus | String | ✅ | Default: `present` |
+| createdAt | DateTime | ✅ | |
+
+**attendanceStatus Enum**: `present`, `absent`, `late`, `excused`
+
+---
+
+### Collection 14: `coupons`
 **Purpose**: Discount codes
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| code | String | ✅ |
-| discountType | String | ✅ |
-| discountValue | Number | ✅ |
-| eventId | String | ❌ |
-| maxUses | Integer | ❌ |
-| usedCount | Integer | ✅ |
-| expiresAt | DateTime | ❌ |
-| isActive | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| code | String | ✅ | Unique, uppercase |
+| discountType | String | ✅ | |
+| discountValue | Number | ✅ | |
+| eventId | String | ✅ | |
+| maxUses | Integer | ❌ | Null = unlimited |
+| currentUses | Integer | ✅ | Default: `0` |
+| expiryDate | DateTime | ❌ | |
+| isActive | Boolean | ✅ | Default: `true` |
+| createdBy | String | ✅ | Admin ID |
+| createdAt | DateTime | ✅ | |
 
-**discountType Enum**: "percentage", "fixed"
-
----
-
-### Collection 14: `payments`
-**Purpose**: Payment tracking
-
-| Field Name | Type | Required |
-|-----------|------|----------|
-| registrationId | String | ✅ |
-| amount | Number | ✅ |
-| currency | String | ✅ |
-| gateway | String | ✅ |
-| transactionId | String | ✅ |
-| status | String | ✅ |
-| invoiceUrl | URL | ❌ |
-| createdAt | DateTime | ✅ |
-
-**gateway Enum**: "razorpay", "easebuzz"  
-**status Enum**: "pending", "success", "failed", "refunded"
+**discountType Enum**: `percentage`, `fixed`
 
 ---
 
-## 🔐 Setting Up Permissions
+### Collection 15: `payments`
+**Purpose**: Payment transaction records
 
-### For Public Collections (e.g., committees, events)
-```
-Document Rules:
-- Read: Everyone (anyone can view)
-- Create: Admins only
-- Update: Admins only
-- Delete: Admins only
-```
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| registrationId | String | ✅ | |
+| amount | Number | ✅ | |
+| currency | String | ✅ | Default: `INR` |
+| gateway | String | ✅ | |
+| transactionId | String | ✅ | |
+| status | String | ✅ | |
+| invoiceUrl | String | ❌ | URL |
+| createdAt | DateTime | ✅ | |
 
-### For User Collections (e.g., registrations, users)
-```
-Document Rules:
-- Read: Everyone (can view all registrations for stats)
-- Create: Authenticated users
-- Update: Owner or Admins
-- Delete: Admins only
-```
-
-### For Admin Collections (e.g., awards, scores)
-```
-Document Rules:
-- Read: Everyone (for display)
-- Create: Admins only
-- Update: Admins only
-- Delete: Admins only
-```
+**gateway Enum**: `razorpay`, `easebuzz`  
+**status Enum**: `pending`, `success`, `failed`, `refunded`
 
 ---
 
-### Collection 15: `speaker_updates`
-**Purpose**: Real-time updates from speakers to committees
+### Collection 16: `speaker_updates`
+**Purpose**: Real-time updates during sessions
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| committeeId | String | ✅ |
-| speakerId | String | ✅ |
-| type | String | ✅ |
-| content | String | ✅ |
-| timestamp | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| committeeId | String | ✅ | |
+| speakerId | String | ✅ | |
+| type | String | ✅ | |
+| content | String | ✅ | |
+| timestamp | DateTime | ✅ | |
 
-**type Enum**: "crisis", "gavel", "mention", "announcement"
-
----
-
-### Collection 16: `albums`
-**Purpose**: Photo albums organization
-
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| slug | String | ✅ |
-| eventType | String | ✅ |
-| coverImageUrl | URL | ❌ |
-| description | String | ❌ |
-| year | String | ✅ |
-| displayOrder | Integer | ❌ |
+**type Enum**: `crisis`, `gavel`, `mention`, `announcement`
 
 ---
 
 ### Collection 17: `alumni`
 **Purpose**: Alumni network profiles
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| userId | String | ✅ |
-| name | String | ✅ |
-| email | Email | ✅ |
-| institution | String | ❌ |
-| graduationYear | String | ❌ |
-| eventsAttended | String[] | ✅ |
-| achievements | String[] | ❌ |
-| bio | String | ❌ |
-| profileImageUrl | URL | ❌ |
-| linkedinUrl | URL | ❌ |
-| isActive | Boolean | ✅ |
-| joinedAt | DateTime | ✅ |
-```
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| userId | String | ✅ | |
+| name | String | ✅ | |
+| email | Email | ✅ | |
+| institution | String | ❌ | |
+| graduationYear | String | ❌ | |
+| eventsAttended | String | ✅ | JSON array string |
+| achievements | String | ❌ | JSON array string |
+| bio | String | ❌ | |
+| profileImageUrl | String | ❌ | URL |
+| linkedinUrl | String | ❌ | URL |
+| isActive | Boolean | ✅ | Default: `true` |
+| joinedAt | DateTime | ✅ | |
 
 ---
 
 ### Collection 18: `forum_posts`
-**Purpose**: Community forum discussions
+**Purpose**: Community discussions
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| committeeId | String | ✅ |
-| eventId | String | ✅ |
-| authorId | String | ✅ |
-| authorName | String | ✅ |
-| title | String | ✅ |
-| content | String | ✅ |
-| category | String | ✅ |
-| replies | Integer | ✅ |
-| views | Integer | ✅ |
-| likes | Integer | ✅ |
-| isPinned | Boolean | ✅ |
-| isLocked | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
-| updatedAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| committeeId | String | ✅ | |
+| eventId | String | ✅ | |
+| authorId | String | ✅ | |
+| authorName | String | ✅ | |
+| title | String | ✅ | |
+| content | String | ✅ | |
+| category | String | ✅ | |
+| replies | Integer | ✅ | Default: `0` |
+| views | Integer | ✅ | Default: `0` |
+| likes | Integer | ✅ | Default: `0` |
+| isPinned | Boolean | ✅ | Default: `false` |
+| isLocked | Boolean | ✅ | Default: `false` |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ✅ | |
 
-**category Enum**: "discussion", "resource", "question", "announcement"
+**category Enum**: `discussion`, `resource`, `question`, `announcement`
 
 ---
 
 ### Collection 19: `forum_replies`
 **Purpose**: Replies to forum posts
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| postId | String | ✅ |
-| authorId | String | ✅ |
-| authorName | String | ✅ |
-| content | String | ✅ |
-| likes | Integer | ✅ |
-| isAnswer | Boolean | ✅ |
-| createdAt | DateTime | ✅ |
-| updatedAt | DateTime | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| postId | String | ✅ | |
+| authorId | String | ✅ | |
+| authorName | String | ✅ | |
+| content | String | ✅ | |
+| likes | Integer | ✅ | Default: `0` |
+| isAnswer | Boolean | ✅ | Default: `false` |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ✅ | |
 
 ---
 
 ### Collection 20: `merchandise`
 **Purpose**: Merchandise catalog
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| name | String | ✅ |
-| description | String | ✅ |
-| category | String | ✅ |
-| price | Number | ✅ |
-| quantity | Integer | ✅ |
-| imageUrl | URL | ✅ |
-| sizes | String[] | ❌ |
-| colors | String[] | ❌ |
-| eventId | String | ❌ |
-| isAvailable | Boolean | ✅ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| name | String | ✅ | |
+| description | String | ✅ | |
+| category | String | ✅ | |
+| price | Number | ✅ | |
+| quantity | Integer | ✅ | Stock |
+| imageUrl | String | ✅ | URL |
+| sizes | String | ❌ | JSON array string |
+| colors | String | ❌ | JSON array string |
+| eventId | String | ❌ | |
+| isAvailable | Boolean | ✅ | Default: `true` |
+| createdAt | DateTime | ✅ | |
 
-**category Enum**: "tshirt", "badge", "certificate", "mug", "other"
+**category Enum**: `tshirt`, `badge`, `certificate`, `mug`, `other`
 
 ---
 
 ### Collection 21: `merchandise_orders`
 **Purpose**: Merchandise order tracking
 
-| Field Name | Type | Required |
-|-----------|------|----------|
-| userId | String | ✅ |
-| items | String | ✅ |
-| totalAmount | Number | ✅ |
-| shippingAddress | String | ✅ |
-| status | String | ✅ |
-| createdAt | DateTime | ✅ |
-| deliveryDate | DateTime | ❌ |
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| userId | String | ✅ | |
+| items | String | ✅ | JSON string |
+| totalAmount | Number | ✅ | |
+| shippingAddress | String | ✅ | JSON string |
+| status | String | ✅ | Default: `pending` |
+| createdAt | DateTime | ✅ | |
+| deliveryDate | DateTime | ❌ | |
 
-**items**: JSON String of object array
-**shippingAddress**: JSON String of address object
-**status Enum**: "pending", "processing", "shipped", "delivered"
-```
+**status Enum**: `pending`, `processing`, `shipped`, `delivered`
+
+---
+
+### Collection 22: `documents`
+**Purpose**: Delegate document submissions
+
+| Field Name | Type | Required | Notes |
+|-----------|------|----------|-------|
+| authorId | String | ✅ | |
+| authorName | String | ✅ | |
+| authorEmail | Email | ✅ | |
+| title | String | ✅ | |
+| type | String | ✅ | |
+| content | String | ✅ | Document body |
+| status | String | ✅ | Default: `draft` |
+| feedback | String | ❌ | Chair feedback |
+| committeeId | String | ❌ | |
+| eventId | String | ❌ | |
+| createdAt | DateTime | ✅ | |
+| updatedAt | DateTime | ✅ | |
+
+**type Enum**: `resolution`, `position_paper`, `bill`, `amendment`  
+**status Enum**: `draft`, `submitted`, `reviewed`, `approved`, `rejected`
 
 ---
 
 ## 💾 Storage Setup
 
 ### Create Storage Bucket
+
 1. Go to **Storage** tab
 2. Click **Create Bucket**
-3. Name: `arsenic_storage`
-4. File Size Limit: 50 MB
-5. Allowed Extensions: `jpg,jpeg,png,pdf,doc,docx`
+3. Configure:
+   - **Name**: `arsenic_storage`
+   - **Bucket ID**: `arsenic_storage` (or auto-generate)
+   - **File Size Limit**: `50 MB`
+   - **Allowed Extensions**: `jpg`, `jpeg`, `png`, `gif`, `pdf`, `doc`, `docx`
+   - **Encryption**: Enabled
+   - **Antivirus**: Enabled (if available)
 
-**Save Bucket ID**
+4. **Save Bucket ID** → `YOUR_BUCKET_ID`
+
+### Bucket Permissions
+```
+Read: Any
+Create: Users
+Update: Users
+Delete: Users
+```
 
 ---
 
 ## 🔑 Environment Variables
 
-Create `.env.local` in project root:
+Create `.env.local` in your project root:
 
 ```env
-# ===== PUBLIC (Client-side) =====
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://tor.cloud.appwrite.io/v1
-NEXT_PUBLIC_APPWRITE_PROJECT_ID=YOUR_PROJECT_ID_HERE
-NEXT_PUBLIC_APPWRITE_DATABASE_ID=YOUR_DATABASE_ID_HERE
-NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID=YOUR_BUCKET_ID_HERE
+# ═══════════════════════════════════════════════════════════════
+# APPWRITE CONFIGURATION
+# ═══════════════════════════════════════════════════════════════
 
-# ===== PRIVATE (Server-side) =====
-APPWRITE_ENDPOINT=https://tor.cloud.appwrite.io/v1
-APPWRITE_PROJECT_ID=YOUR_PROJECT_ID_HERE
-APPWRITE_API_KEY=YOUR_API_KEY_HERE
+# Public (Client-side) - These are exposed to the browser
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=YOUR_PROJECT_ID
+NEXT_PUBLIC_APPWRITE_DATABASE_ID=YOUR_DATABASE_ID
+NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID=YOUR_BUCKET_ID
 
-# ===== CONFIGURATION =====
+# Private (Server-side only) - NEVER expose these
+APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=YOUR_PROJECT_ID
+APPWRITE_API_KEY=YOUR_API_KEY
+
+# ═══════════════════════════════════════════════════════════════
+# APPLICATION CONFIGURATION
+# ═══════════════════════════════════════════════════════════════
+
+# Admin emails (comma-separated)
 ADMIN_EMAILS=gauravramyadav@gmail.com,admin@example.com
-PORT=3000
+
+# Environment
 NODE_ENV=development
+PORT=3000
+
+# Site URL (for callbacks, emails, etc.)
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ---
 
-## ✅ Verification Checklist
+## 🔐 Permissions Guide
+
+### Public Collections
+> Anyone can view, only admins can modify
+
+**Collections**: `events`, `committees`, `sponsors`, `faqs`, `gallery`, `albums`, `team_members`, `awards`
+
+```
+Read: Any
+Create: Users (with admin role check in API)
+Update: Users (with admin role check in API)
+Delete: Users (with admin role check in API)
+```
+
+### User Collections
+> Users can create/view own, admins can view/modify all
+
+**Collections**: `users`, `registrations`, `documents`, `alumni`
+
+```
+Read: Any
+Create: Users
+Update: Users
+Delete: Users
+```
+
+### Admin Collections
+> Only admins can create/modify, public can view results
+
+**Collections**: `scores`, `attendance`, `coupons`, `payments`, `speaker_updates`
+
+```
+Read: Any
+Create: Users (admin check in API)
+Update: Users (admin check in API)
+Delete: Users (admin check in API)
+```
+
+### Private Collections
+> Admin only access
+
+**Collections**: `contact_submissions`
+
+```
+Read: Users (admin check in API)
+Create: Any (for contact form)
+Update: Users (admin check in API)
+Delete: Users (admin check in API)
+```
+
+---
+
+## ✅ Verification & Testing
+
+### Step 1: Test Environment
 
 ```bash
-# 1. Start dev server
+# Start development server
 npm run dev
-
-# 2. Check if Appwrite is configured
-curl http://localhost:3000/api/health
-
-# 3. Try homepage (should show real stats)
-# Visit http://localhost:3000
-
-# 4. Test registration
-# Go to /register and try signing up
-
-# 5. Check browser console
-# Should NOT show CORS errors if domains configured correctly
 ```
 
----
+### Step 2: Check API Health
 
-## 🐛 Common Issues & Fixes
+Visit: `http://localhost:3000/api/health`
 
-### Issue: "CORS Error"
-```
-Access-Control-Allow-Origin header has value 'https://localhost' 
-which is not equal to the supplied origin
-```
-
-**Fix**:
-1. Go to Appwrite Console → Settings → Domains
-2. Add your domain
-3. Wait 5 minutes
-4. Clear browser cache (Ctrl+Shift+R)
-5. Restart dev server
-
-### Issue: "Collection not found"
-```
-Collection with ID 'users' not found
-```
-
-**Fix**:
-1. Verify collection name in Appwrite console
-2. Match it exactly in `lib/schema.ts`
-3. Check database ID in `.env.local`
-
-### Issue: "API Key Invalid"
-```
-API key invalid. Check that user has access to the requested resource
-```
-
-**Fix**:
-1. Regenerate API key
-2. Ensure all required scopes are selected
-3. Update `.env.local` with new key
-4. Restart server
-
-### Issue: "Unauthorized"
-```
-User not authorized to perform this action
-```
-
-**Fix**:
-1. Check document permissions
-2. Ensure user is authenticated
-3. Verify role/admin status
-
----
-
-## 📊 Sample Data to Add
-
-### Sample Event
+Expected response:
 ```json
 {
-  "name": "Arsenic Summit 2024",
-  "type": "MUN",
-  "description": "Regional MUN conference",
-  "startDate": "2025-02-01T09:00:00Z",
-  "endDate": "2025-02-02T17:00:00Z",
-  "fees": 2500,
-  "capacity": 200,
-  "isActive": true
+  "status": "ok",
+  "database": "connected",
+  "timestamp": "2024-..."
 }
 ```
 
-### Sample Committee
-```json
-{
-  "name": "United Nations Security Council",
-  "abbreviation": "UNSC",
-  "type": "MUN",
-  "eventType": "MUN",
-  "description": "Debate on international security issues",
-  "capacity": 15,
-  "imageUrl": "https://...",
-  "difficultyTag": "advanced"
-}
+### Step 3: Test Pages
+
+| Page | URL | Expected |
+|------|-----|----------|
+| Home | `/` | Shows events, stats |
+| Register | `/register` | Account creation works |
+| Login | `/login` | Authentication works |
+| Events | `/events` | Lists events from DB |
+| Committees | `/committees` | Lists committees |
+
+### Step 4: Admin Access
+
+1. Login with admin email
+2. Visit `/admin`
+3. Verify all admin features load
+
+---
+
+## 🐛 Troubleshooting
+
+### CORS Error
+```
+Access-Control-Allow-Origin header missing
 ```
 
-### Sample Sponsor
-```json
-{
-  "tier": "gold",
-  "name": "XYZ Corporation",
-  "logoUrl": "https://...",
-  "websiteUrl": "https://xyzcorp.com",
-  "isActive": true
-}
+**Fix**:
+1. Appwrite Console → Settings → Platforms
+2. Add `localhost` for development
+3. Add production domain when deploying
+4. Wait 2-5 minutes for propagation
+5. Clear browser cache (Ctrl+Shift+R)
+
+---
+
+### Collection Not Found
+```
+Collection with ID 'xxx' not found
 ```
 
----
-
-## 🚀 Next Steps
-
-1. ✅ Create all collections
-2. ✅ Configure CORS
-3. ✅ Add sample data
-4. ✅ Set up environment variables
-5. ✅ Test API endpoints
-6. ✅ Enable real-time subscriptions (optional)
-7. ✅ Set up backups
-8. ✅ Configure access logs
+**Fix**:
+1. Verify collection name matches exactly in `lib/schema.ts`
+2. Check Database ID in `.env.local`
+3. Ensure collection was created in correct database
 
 ---
 
-## 📚 Additional Resources
+### API Key Invalid
+```
+API key invalid or missing scopes
+```
 
-- **Appwrite Documentation**: https://appwrite.io/docs
-- **Appwrite REST API**: https://appwrite.io/docs/rest
-- **Appwrite Web SDK**: https://appwrite.io/docs/client/web
-- **Schema Validation (Zod)**: https://zod.dev
+**Fix**:
+1. Regenerate API key with ALL scopes
+2. Update `.env.local`
+3. Restart dev server
 
 ---
 
-**Last Updated**: November 28, 2025  
-**Appwrite Version**: Latest Cloud  
-**Status**: Ready for Deployment
+### Unauthorized Error
+```
+User not authorized
+```
+
+**Fix**:
+1. Check if user is logged in
+2. Verify role permissions
+3. Check document-level permissions
+4. Ensure admin email is in `ADMIN_EMAILS`
+
+---
+
+### Session Error
+```
+Session not found or expired
+```
+
+**Fix**:
+1. Clear browser cookies
+2. Re-login
+3. Check session handling in `AuthContext`
+
+---
+
+## 📊 Quick Reference
+
+### Collection Count: **22**
+
+| # | Collection | Purpose |
+|---|------------|---------|
+| 1 | users | User profiles |
+| 2 | events | Main events |
+| 3 | committees | Event committees |
+| 4 | registrations | Event registrations |
+| 5 | awards | Award winners |
+| 6 | team_members | Organizing team |
+| 7 | sponsors | Sponsors |
+| 8 | gallery | Photos |
+| 9 | albums | Photo albums |
+| 10 | faqs | FAQs |
+| 11 | contact_submissions | Contact form |
+| 12 | scores | Delegate scores |
+| 13 | attendance | Check-in records |
+| 14 | coupons | Discount codes |
+| 15 | payments | Payment records |
+| 16 | speaker_updates | Live updates |
+| 17 | alumni | Alumni network |
+| 18 | forum_posts | Forum discussions |
+| 19 | forum_replies | Forum replies |
+| 20 | merchandise | Merch catalog |
+| 21 | merchandise_orders | Merch orders |
+| 22 | documents | Delegate docs |
+
+---
+
+## 📚 Resources
+
+- [Appwrite Documentation](https://appwrite.io/docs)
+- [Appwrite Web SDK](https://appwrite.io/docs/sdks#client-web)
+- [Appwrite Server SDK](https://appwrite.io/docs/sdks#server-node)
+- [Next.js Documentation](https://nextjs.org/docs)
+
+---
+
+**Document Version**: 2.0  
+**Last Updated**: December 16, 2025  
+**Status**: Ready for Fresh Setup

@@ -145,9 +145,7 @@ export default function AdminFAQs() {
                 if (!res.ok) throw new Error('Failed to create FAQ');
                 toast.success("FAQ created successfully");
             }
-                );
-                toast.success("FAQ created successfully");
-            }
+
 
             await fetchFAQs();
             resetForm();
@@ -250,8 +248,8 @@ export default function AdminFAQs() {
                     >
                         {["ALL", ...FAQ_CATEGORIES].map((category) => (
                             <SelectItem key={category} value={category}>
-                                {category === "ALL" 
-                                    ? "All Categories" 
+                                {category === "ALL"
+                                    ? "All Categories"
                                     : `${category} (${faqsByCategory[category as keyof typeof faqsByCategory]?.length || 0})`}
                             </SelectItem>
                         ))}
