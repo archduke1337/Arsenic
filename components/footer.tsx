@@ -37,11 +37,13 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="relative bg-gradient-to-b from-gray-950 via-gray-900 to-black text-gray-300 overflow-hidden">
-            {/* Decorative Elements */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-transparent to-purple-950/20 pointer-events-none" />
-            <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl" />
+        <footer className="relative bg-white dark:bg-black text-slate-900 dark:text-gray-300 overflow-hidden">
+            {/* Decorative Elements - very subtle in light, stronger in dark */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,35,149,0.02)] via-transparent to-[rgba(15,23,42,0.04)] dark:from-[rgba(0,35,149,0.15)] dark:via-[rgba(0,0,0,0.9)] dark:to-black" />
+                <div className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl bg-[rgba(0,35,149,0.04)] dark:bg-[rgba(37,99,235,0.12)]" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl bg-[rgba(88,28,135,0.03)] dark:bg-[rgba(147,51,234,0.15)]" />
+            </div>
 
             <div className="relative max-w-7xl mx-auto px-6 sm:px-8">
                 {/* Main Footer Content */}
@@ -62,28 +64,28 @@ export default function Footer() {
                                 />
                             </motion.div>
                             <div className="flex flex-col">
-                                <span className="text-2xl font-bold text-white tracking-tight">
+                                <span className="text-2xl font-bold text-[rgb(0,35,149)] dark:text-white tracking-tight">
                                     ARSENIC
                                 </span>
-                                <span className="text-xs uppercase tracking-widest text-gray-400 font-medium -mt-1">
+                                <span className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 font-medium -mt-1">
                                     Summit 2024
                                 </span>
                             </div>
                         </Link>
-                        <p className="text-gray-400 leading-relaxed mb-6 max-w-sm">
+                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-sm">
                             Empowering the next generation of leaders through diplomacy, debate, and parliamentary simulations. Join us in shaping tomorrow's changemakers.
                         </p>
 
                         {/* Newsletter */}
                         <div className="space-y-3">
-                            <h4 className="text-white font-semibold text-sm">Stay Updated</h4>
+                            <h4 className="text-[rgb(0,35,149)] dark:text-white font-semibold text-sm">Stay Updated</h4>
                             <div className="flex gap-2">
                                 <Input
                                     type="email"
                                     placeholder="Enter your email"
                                     classNames={{
-                                        input: "bg-gray-800/50 text-white",
-                                        inputWrapper: "bg-gray-800/50 border border-gray-700 hover:border-gray-600 group-data-[focus=true]:bg-gray-800/70",
+                                        input: "bg-gray-100 text-slate-900 dark:bg-gray-800/50 dark:text-white",
+                                        inputWrapper: "bg-gray-100 border border-gray-300 hover:border-gray-400 dark:bg-gray-800/50 dark:border-gray-700 dark:hover:border-gray-600 group-data-[focus=true]:bg-gray-50 dark:group-data-[focus=true]:bg-gray-800/70",
                                     }}
                                     size="sm"
                                 />
@@ -104,7 +106,7 @@ export default function Footer() {
                     <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
                         {/* Quick Links */}
                         <div>
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+                            <h3 className="text-[rgb(0,35,149)] dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
                                 Explore
                             </h3>
                             <ul className="space-y-3">
@@ -112,7 +114,7 @@ export default function Footer() {
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}
-                                            className="text-gray-400 hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
+                                            className="text-gray-600 hover:text-[rgb(0,35,149)] dark:text-gray-400 dark:hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
                                         >
                                             {link.name}
                                         </Link>
@@ -123,7 +125,7 @@ export default function Footer() {
 
                         {/* Events */}
                         <div>
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+                            <h3 className="text-[rgb(0,35,149)] dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
                                 Events
                             </h3>
                             <ul className="space-y-3">
@@ -131,7 +133,7 @@ export default function Footer() {
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}
-                                            className="text-gray-400 hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
+                                            className="text-gray-600 hover:text-[rgb(0,35,149)] dark:text-gray-400 dark:hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
                                         >
                                             {link.name}
                                         </Link>
@@ -142,16 +144,16 @@ export default function Footer() {
 
                         {/* Resources */}
                         <div>
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+                            <h3 className="text-[rgb(0,35,149)] dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
                                 Resources
                             </h3>
                             <ul className="space-y-3">
                                 {resources.map((link) => (
                                     <li key={link.name}>
-                                        <Link
-                                            href={link.href}
-                                            className="text-gray-400 hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
-                                        >
+                                            <Link
+                                                href={link.href}
+                                                className="text-gray-600 hover:text-[rgb(0,35,149)] dark:text-gray-400 dark:hover:text-white hover:translate-x-1 transition-all inline-block text-sm"
+                                            >
                                             {link.name}
                                         </Link>
                                     </li>
@@ -161,23 +163,23 @@ export default function Footer() {
 
                         {/* Contact */}
                         <div>
-                            <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+                            <h3 className="text-[rgb(0,35,149)] dark:text-white font-bold text-sm uppercase tracking-wider mb-4">
                                 Contact
                             </h3>
                             <ul className="space-y-3 text-sm">
-                                <li className="flex items-start gap-2 text-gray-400">
+                                <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
                                     <Mail size={16} className="mt-0.5 flex-shrink-0" />
                                     <a href="mailto:info@arsenicsummit.com" className="hover:text-white transition-colors">
                                         info@arsenicsummit.com
                                     </a>
                                 </li>
-                                <li className="flex items-start gap-2 text-gray-400">
+                                <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
                                     <Phone size={16} className="mt-0.5 flex-shrink-0" />
                                     <a href="tel:+1234567890" className="hover:text-white transition-colors">
                                         +1 (234) 567-890
                                     </a>
                                 </li>
-                                <li className="flex items-start gap-2 text-gray-400">
+                                <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
                                     <MapPin size={16} className="mt-0.5 flex-shrink-0" />
                                     <span>Mumbai, India</span>
                                 </li>
@@ -187,13 +189,13 @@ export default function Footer() {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-gray-800/50" />
+                <div className="border-t border-gray-200 dark:border-gray-800/50" />
 
                 {/* Bottom Section */}
                 <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
                     {/* Copyright */}
-                    <p className="text-sm text-gray-500 text-center md:text-left">
-                        © {currentYear} <span className="text-gray-400 font-semibold">ARSENIC Summit</span>. All rights reserved.
+                    <p className="text-sm text-gray-500 dark:text-gray-500 text-center md:text-left">
+                        © {currentYear} <span className="text-[rgb(0,35,149)] dark:text-gray-400 font-semibold">ARSENIC Summit</span>. All rights reserved.
                     </p>
 
                     {/* Social Links */}
@@ -204,7 +206,7 @@ export default function Footer() {
                                 href={social.href}
                                 whileHover={{ scale: 1.1, y: -2 }}
                                 whileTap={{ scale: 0.95 }}
-                                className={`w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700 flex items-center justify-center text-gray-400 ${social.color} transition-colors`}
+                                className={`w-10 h-10 rounded-full bg-gray-100 border border-gray-300 dark:bg-gray-800/50 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 ${social.color} transition-colors`}
                                 aria-label={social.label}
                             >
                                 {social.icon}
@@ -214,11 +216,11 @@ export default function Footer() {
 
                     {/* Legal Links */}
                     <div className="flex items-center gap-4 text-sm">
-                        <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">
+                        <Link href="/privacy" className="text-gray-500 hover:text-[rgb(0,35,149)] dark:hover:text-white transition-colors">
                             Privacy Policy
                         </Link>
                         <span className="text-gray-700">•</span>
-                        <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">
+                        <Link href="/terms" className="text-gray-500 hover:text-[rgb(0,35,149)] dark:hover:text-white transition-colors">
                             Terms of Service
                         </Link>
                     </div>
