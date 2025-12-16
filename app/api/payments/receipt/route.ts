@@ -137,7 +137,7 @@ async function buildReceiptPdf({ registration, payment }: { registration: any; p
         const textStartX = logoBuffer ? 44 + 40 + 10 : 44;
         if (logoBuffer) {
             try {
-                doc.image(logoBuffer, 44, 40, { fit: [32, 32], align: "left" });
+                doc.image(logoBuffer, 44, 40, { fit: [32, 32] });
             } catch (err) {
                 console.error("Receipt logo render failed", err);
             }
