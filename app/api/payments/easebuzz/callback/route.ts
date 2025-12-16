@@ -72,7 +72,7 @@ async function handleCallback(request: NextRequest) {
                         {
                             status: verified ? "success" : "failed",
                             verifiedAt: new Date().toISOString(),
-                            invoiceUrl: `${request.nextUrl.origin}/api/payments/receipt?registrationId=${regId}`,
+                            invoiceUrl: `${request.nextUrl.origin}/api/payments/receipt?registrationId=${regId}&format=pdf`,
                         }
                     );
                 }
