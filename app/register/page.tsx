@@ -64,10 +64,14 @@ export default function Register() {
                 <div className="relative hidden md:block bg-gradient-to-br from-[rgba(0,35,149,0.9)] via-[rgba(30,64,175,0.9)] to-black">
                     <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_20%_20%,rgba(251,191,36,0.35),transparent_55%),radial-gradient(circle_at_80%_80%,rgba(248,113,113,0.4),transparent_55%)]" />
                     <div className="absolute inset-6 rounded-3xl border border-white/20" />
-                    <div className="relative h-full flex flex-col justify-between p-10">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center text-xs tracking-widest font-semibold">
-                                AR
+                    <div className="relative h-full flex flex-col justify-center p-10">
+                        <div className="flex items-center gap-3 mb-10">
+                            <div className="w-10 h-10 rounded-full overflow-hidden bg-white/10 border border-white/40 flex items-center justify-center">
+                                <img
+                                    src="/logo.png"
+                                    alt="Arsenic Summit Logo"
+                                    className="w-8 h-8 object-contain"
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-sm font-semibold text-white/80">Arsenic Summit</span>
@@ -84,10 +88,6 @@ export default function Register() {
                                 Set up your delegate account in a few steps and get access to registrations, allocations,
                                 and event updates.
                             </p>
-                        </div>
-                        <div className="flex items-center gap-3 text-[11px] text-blue-100/70">
-                            <span className="h-px w-8 bg-blue-200/40" />
-                            Fast registration • Secure • Theme aware
                         </div>
                     </div>
                 </div>
