@@ -4,11 +4,8 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send, MessageSquare, CheckCircle2 } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { toast } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function ModernContact() {
     const [formData, setFormData] = useState({
@@ -57,18 +54,20 @@ export default function ModernContact() {
         setIsSubmitting(true);
         
         try {
-            const response = await databases.createDocument(
-                DATABASE_ID,
-                COLLECTIONS.CONTACT_SUBMISSIONS,
-                "unique()",
-                {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
                     subject: formData.subject,
                     message: formData.message,
-                    status: "new"
-                }
-            );
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit');
+            }
 
             setSubmitSuccess(true);
             setFormData({ name: "", email: "", subject: "", message: "" });

@@ -6,12 +6,7 @@ import {
     User, Spinner, Tabs, Tab
 } from "@nextui-org/react";
 import { Save } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query, ID } from "appwrite";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 // Scoring criteria based on committee type (could be dynamic)
 const CRITERIA = [
@@ -36,21 +31,22 @@ export default function ScoringSheet() {
 
     const fetchDelegates = async () => {
         try {
-            // Get chair's assigned committee from user profile
-            // TODO: Fetch actual committee assignment
-            
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                [Query.orderDesc("$createdAt"), Query.limit(100)]
-            );
-            
-            // Filter by chair's committee when assignment is available
-            setDelegates(response.documents);
+            const res = await fetch("/api/chair/delegates");
+            if (!res.ok) {
+                if (res.status === 403) {
+                    toast.error("You are not authorized as a chairperson");
+                    return;
+                }
+                throw new Error("Failed to fetch delegates");
+            }
+
+            const data = await res.json();
+            setDelegates(data.delegates);
+            setCommitteeName(data.committee?.name || "");
 
             // Initialize scores structure
-            const initialScores: any = {};
-            response.documents.forEach(d => {
+            const initialScores: Record<string, Record<string, number>> = {};
+            data.delegates.forEach((d: any) => {
                 initialScores[d.$id] = {};
                 CRITERIA.forEach(c => {
                     initialScores[d.$id][c.id] = 0;
@@ -84,46 +80,32 @@ export default function ScoringSheet() {
     const saveScores = async () => {
         setSaving(true);
         try {
-            // In production, save to SCORES collection
-            // const promises = Object.entries(scores).map(([delegateId, scoreData]) => {
-            //     return databases.createDocument(DATABASE_ID, COLLECTIONS.SCORES, ID.unique(), {
-            //         delegate: delegateId,
-            //         session: selectedSession,
-            //         scores: JSON.stringify(scoreData),
-            //         total: calculateTotal(delegateId),
-            //         remarks: remarks[delegateId]
-            //     });
-            // });
-            // await Promise.all(promises);
-
-            const submissions = Object.entries(scores).map(async ([delegateId, scoreData]) => {
-                const total = calculateTotal(delegateId);
+            // Build scores array for API
+            const scoresArray = Object.entries(scores).map(([delegateId, criteriaScores]) => {
                 const delegate = delegates.find(d => d.$id === delegateId);
-
-                if (!delegate) return;
-
-                const payload = {
+                return {
                     registrationId: delegateId,
-                    eventId: delegate.eventId,
-                    committeeId: delegate.assignedCommittee || delegate.committeeId || delegate.committee || "general",
-                    score: total,
-                    feedback: remarks[delegateId] || "",
+                    eventId: delegate?.eventId || "",
+                    committeeId: delegate?.assignedCommittee || "",
+                    criteriaScores,
+                    total: calculateTotal(delegateId),
+                    remarks: remarks[delegateId] || "",
                 };
-
-                const res = await fetch("/api/scoring/leaderboard", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!res.ok) {
-                    const data = await res.json().catch(() => ({}));
-                    throw new Error(data.error || "Failed to submit score");
-                }
             });
 
-            await Promise.all(submissions);
-            toast.success("Scores submitted successfully");
+            const res = await fetch("/api/chair/scores", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ scores: scoresArray, session: selectedSession }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to submit scores");
+            }
+
+            const result = await res.json();
+            toast.success(`Scores submitted for ${result.results.length} delegates`);
         } catch (error) {
             console.error("Error saving scores:", error);
             toast.error("Failed to submit scores");
@@ -193,10 +175,10 @@ export default function ScoringSheet() {
                                         <td className="p-4">
                                             <div className="min-w-[200px]">
                                                 <User
-                                                    name={delegate.name}
-                                                    description={delegate.portfolio || "Delegate"}
+                                                    name={delegate.fullName || delegate.name}
+                                                    description={delegate.assignedPortfolio || "Delegate"}
                                                     avatarProps={{
-                                                        name: delegate.name,
+                                                        name: delegate.fullName || delegate.name,
                                                         size: "sm",
                                                         className: "bg-zinc-800 text-white"
                                                     }}

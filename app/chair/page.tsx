@@ -1,15 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, Spinner, Chip, Progress } from "@nextui-org/react";
+import { Card, CardBody, Chip, Progress } from "@nextui-org/react";
 import { Users, ClipboardCheck, Trophy, Calendar, Clock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
 import { CardSkeleton } from "@/components/ui/LoadingSkeleton";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
+import { toast, Toaster } from "sonner";
 
 export default function ChairDashboard() {
     const { user } = useAuth();
@@ -30,30 +26,27 @@ export default function ChairDashboard() {
 
     const fetchDashboardData = async () => {
         try {
-            // Fetch registrations for the chair's assigned committee
-            const registrations = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                [Query.limit(1000)]
-            );
+            const res = await fetch("/api/chair/stats");
+            if (!res.ok) {
+                if (res.status === 403) {
+                    toast.error("You are not authorized as a chairperson");
+                    return;
+                }
+                throw new Error("Failed to fetch stats");
+            }
 
-            // Get committee from user profile or team assignment
-            // Implementation to filter by actual committee assignment
-            const committeeDelegates = registrations.documents;
-
-            // Calculate actual stats from database
-            const presentCount = committeeDelegates.filter(d => d.checkedIn).length;
-            const scoredCount = committeeDelegates.filter(d => d.scoreSubmitted).length;
-
+            const data = await res.json();
             setStats({
-                totalDelegates: committeeDelegates.length,
-                presentToday: presentCount,
-                markedScores: scoredCount,
-                pendingScores: committeeDelegates.length - scoredCount
+                totalDelegates: data.stats.totalDelegates,
+                presentToday: data.stats.presentToday,
+                markedScores: data.stats.scoredDelegates,
+                pendingScores: data.stats.pendingScores
             });
+            setCommitteeName(data.committee.name);
 
         } catch (error) {
             console.error("Error fetching dashboard:", error);
+            toast.error("Failed to load dashboard data");
         } finally {
             setLoading(false);
         }

@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { Button, Input, Select, SelectItem, Card, CardBody } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { toast, Toaster } from "sonner";
 
 export default function EventRegistration() {
     const router = useRouter();
+    const params = useParams();
+    const eventId = params.id as string;
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         fullName: "",
@@ -19,16 +22,39 @@ export default function EventRegistration() {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            const response = await fetch("/api/registrations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    eventId,
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    institution: formData.institution,
+                    grade: formData.grade,
+                    paymentStatus: "pending",
+                }),
+            });
 
-        alert("Registration successful! Check your email for confirmation.");
-        router.push("/events");
-        setIsSubmitting(false);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Registration failed");
+            }
+
+            toast.success("Registration successful! Check your email for confirmation.");
+            router.push(`/register/success?registrationId=${result.registrationId}&code=${result.code}`);
+        } catch (error) {
+            console.error("Registration error:", error);
+            toast.error(error instanceof Error ? error.message : "Registration failed");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <div className="min-h-screen py-12 px-6 bg-gray-50">
+        <div className="min-h-screen py-12 px-6 bg-gray-50 dark:bg-black">
+            <Toaster richColors position="top-center" />
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">

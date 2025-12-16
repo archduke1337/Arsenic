@@ -3,13 +3,10 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, Chip, Button, Spinner, Progress } from "@nextui-org/react";
+import { Card, CardBody, Chip, Button, Spinner } from "@nextui-org/react";
 import { AlertCircle, Download, MapPin, BookOpen, Users, Calendar, Trophy } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { databases } from "@/lib/appwrite";
-import { Query } from "appwrite";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
+import { toast, Toaster } from "sonner";
 
 interface AllocationData {
     committeeId: string;
@@ -34,32 +31,21 @@ export default function DashboardPage() {
 
     const fetchUserData = async () => {
         try {
-            // Fetch registration data
-            const regResponse = await databases.listDocuments(
-                DATABASE_ID,
-                "Registrations",
-                [Query.equal("email", user?.email || "")]
-            );
-
-            if (regResponse.documents.length > 0) {
-                const reg = regResponse.documents[0];
-                setRegistration(reg);
-
-                // Try to fetch allocation if available
-                if (reg.committeeId) {
-                    const allocationData: AllocationData = {
-                        committeeId: reg.committeeId || "",
-                        committee: reg.committee || "TBA",
-                        portfolio: reg.portfolio || "TBA",
-                        event: reg.eventType || "MUN",
-                        status: reg.allocationStatus || "pending",
-                        daysLeft: 5, // Calculate based on event date
-                    };
-                    setAllocation(allocationData);
+            const res = await fetch("/api/user/dashboard");
+            if (!res.ok) {
+                if (res.status === 401) {
+                    // Not logged in - handled by layout
+                    return;
                 }
+                throw new Error("Failed to fetch dashboard");
             }
+
+            const data = await res.json();
+            setRegistration(data.registration);
+            setAllocation(data.allocation);
         } catch (error) {
             console.error("Error fetching user data:", error);
+            toast.error("Failed to load dashboard data");
         } finally {
             setLoading(false);
         }

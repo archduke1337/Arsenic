@@ -6,22 +6,17 @@ import {
     User, Chip
 } from "@nextui-org/react";
 import { Search, CheckCircle, XCircle } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
 import { toast, Toaster } from "sonner";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
 
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
-
 export default function DelegateList() {
-    // Auth is handled by chair layout - user is already authenticated if they can access this page
     const [delegates, setDelegates] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [attendance, setAttendance] = useState<Record<string, boolean>>({});
     const [saving, setSaving] = useState(false);
     const [committeeName, setCommitteeName] = useState<string>("");
+    const [eventId, setEventId] = useState<string>("");
 
     useEffect(() => {
         fetchDelegates();
@@ -29,18 +24,30 @@ export default function DelegateList() {
 
     const fetchDelegates = async () => {
         try {
-            // TODO: Get chair's actual committee assignment from user profile or team table
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                [Query.limit(100)]
-            );
+            const res = await fetch("/api/chair/delegates");
+            if (!res.ok) {
+                if (res.status === 403) {
+                    toast.error("You are not authorized as a chairperson");
+                    return;
+                }
+                throw new Error("Failed to fetch delegates");
+            }
 
-            setDelegates(response.documents);
+            const data = await res.json();
+            setDelegates(data.delegates);
+            setCommitteeName(data.committee?.name || "");
+            
+            // Get eventId from first delegate if available
+            if (data.delegates.length > 0) {
+                setEventId(data.delegates[0].eventId || "");
+            }
 
-            // Fetch today's attendance if exists
-            // This would require querying the attendance collection
-            // For now, we'll start with empty attendance
+            // Initialize attendance from checkedIn status
+            const initialAttendance: Record<string, boolean> = {};
+            data.delegates.forEach((d: any) => {
+                initialAttendance[d.$id] = d.checkedIn === true;
+            });
+            setAttendance(initialAttendance);
         } catch (error) {
             console.error("Error fetching delegates:", error);
             toast.error("Failed to load delegates");
@@ -51,8 +58,8 @@ export default function DelegateList() {
 
     const filteredDelegates = useMemo(() => {
         return delegates.filter(d =>
-            d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            d.portfolio?.toLowerCase().includes(searchQuery.toLowerCase())
+            d.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            d.assignedPortfolio?.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [delegates, searchQuery]);
 
@@ -66,12 +73,28 @@ export default function DelegateList() {
     const saveAttendance = async () => {
         setSaving(true);
         try {
-            // In a real app, you'd create a document in ATTENDANCE collection
-            // containing the date, committee, and list of present delegate IDs
+            // Get list of present delegates
+            const presentIds = Object.entries(attendance)
+                .filter(([_, isPresent]) => isPresent)
+                .map(([id]) => id);
 
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+            const res = await fetch("/api/chair/attendance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    registrationIds: presentIds,
+                    eventId: eventId,
+                    status: "present"
+                }),
+            });
 
-            toast.success("Attendance saved successfully");
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to save attendance");
+            }
+
+            const result = await res.json();
+            toast.success(`Attendance saved for ${result.results.length} delegates`);
         } catch (error) {
             console.error("Error saving attendance:", error);
             toast.error("Failed to save attendance");
@@ -138,20 +161,22 @@ export default function DelegateList() {
                                 <TableRow key={delegate.$id}>
                                     <TableCell>
                                         <User
-                                            name={delegate.name}
+                                            name={delegate.fullName || delegate.name}
                                             description={delegate.email}
                                             avatarProps={{
-                                                name: delegate.name,
+                                                name: delegate.fullName || delegate.name,
                                                 className: "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
                                             }}
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        <div className="font-medium">{delegate.portfolio || "Delegate"}</div>
+                                        <div className="font-medium">{delegate.assignedPortfolio || "Delegate"}</div>
                                     </TableCell>
-                                    <TableCell>{delegate.school || "Independent"}</TableCell>
+                                    <TableCell>{delegate.institution || "Independent"}</TableCell>
                                     <TableCell>
-                                        <Chip size="sm" color="success" variant="flat">Verified</Chip>
+                                        <Chip size="sm" color={delegate.status === "confirmed" ? "success" : "warning"} variant="flat">
+                                            {delegate.status || "Pending"}
+                                        </Chip>
                                     </TableCell>
                                     <TableCell>
                                         <Button

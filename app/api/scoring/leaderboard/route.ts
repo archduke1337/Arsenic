@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getLeaderboard, submitScore } from '@/lib/scoring-service';
-import { isAdminEmail } from '@/lib/server-auth';
+import { isAdminOrChair } from '@/lib/server-auth';
 
 /**
  * POST /api/scoring/submit
- * Submit a score
+ * Submit a score (admin or chairperson)
  */
 export async function POST(request: NextRequest) {
   try {
-    const adminEmail = await isAdminEmail(request);
-    if (!adminEmail) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    const { isAdmin, isChair, user } = await isAdminOrChair();
+    if (!isChair) {
+      return NextResponse.json({ error: 'Unauthorized - Admin or Chair access required' }, { status: 403 });
     }
 
     const body = await request.json();
