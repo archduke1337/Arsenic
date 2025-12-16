@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { Button, Card, CardBody } from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Card, CardBody, Spinner } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { CheckCircle, Download, Home, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -15,12 +15,50 @@ const randomInRange = (min: number, max: number) => {
 export default function SuccessPage() {
     const params = useSearchParams();
     const registrationId = params.get("registrationId") || "";
-    const code = params.get("code") || params.get("regCode") || "";
-    const gateway = params.get("gateway") || "";
-    const orderId = params.get("orderId") || params.get("txnId") || "";
-    const status = params.get("status") || params.get("easebuzzStatus") || "success";
+    const codeFromQuery = params.get("code") || params.get("regCode") || "";
+    const gatewayFromQuery = params.get("gateway") || "";
+    const orderFromQuery = params.get("orderId") || params.get("txnId") || "";
+    const statusFromQuery = params.get("status") || params.get("easebuzzStatus") || "success";
 
-    const isSuccess = useMemo(() => status === "success" || status === "0", [status]);
+    const [registration, setRegistration] = useState<any | null>(null);
+    const [payment, setPayment] = useState<any | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const fetchData = async () => {
+        if (!registrationId) return;
+        setLoading(true);
+        setFetchError(null);
+        try {
+            const res = await fetch(`/api/registrations/${registrationId}`);
+            const json = await res.json();
+            if (!res.ok) {
+                throw new Error(json.error || "Failed to load registration");
+            }
+            setRegistration(json.registration);
+            setPayment(json.latestPayment || null);
+        } catch (err) {
+            setFetchError(err instanceof Error ? err.message : "Failed to load registration");
+        } finally {
+            setLoading(false);
+            setIsRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [registrationId]);
+
+    const paidFromQuery = useMemo(() => statusFromQuery === "success" || statusFromQuery === "0", [statusFromQuery]);
+    const paidFromData = useMemo(() => {
+        return payment?.status === "success" || registration?.paymentStatus === "paid";
+    }, [payment, registration]);
+
+    const isSuccess = paidFromQuery || paidFromData;
+    const gateway = gatewayFromQuery || payment?.gateway || "";
+    const orderId = orderFromQuery || payment?.transactionId || payment?.orderId || "";
+    const code = codeFromQuery || registration?.code || "";
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -66,22 +104,65 @@ export default function SuccessPage() {
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: 0.2, type: "spring" }}
-                            className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6"
+                            className={`w-20 h-20 ${isSuccess ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"} rounded-full flex items-center justify-center mx-auto mb-6`}
                         >
-                            <CheckCircle className="w-10 h-10 text-green-500" />
+                            {isSuccess ? (
+                                <CheckCircle className="w-10 h-10 text-green-500" />
+                            ) : (
+                                <XCircle className="w-10 h-10 text-red-500" />
+                            )}
                         </motion.div>
 
-                        <h1 className="text-3xl font-bold mb-2">Registration Successful!</h1>
+                        <h1 className="text-3xl font-bold mb-2">
+                            {isSuccess ? "Registration Successful!" : "Payment Pending"}
+                        </h1>
                         <p className="text-gray-500 mb-8">
-                            Welcome to Arsenic Summit. Your seat has been confirmed.
+                            {isSuccess
+                                ? "Welcome to Arsenic Summit. Your seat has been confirmed."
+                                : "We could not confirm your payment yet. If you were charged, please contact support with the details below."}
                         </p>
 
-                        <div className="bg-gray-100 dark:bg-zinc-800 p-4 rounded-xl mb-8">
-                            <p className="text-sm text-gray-500 mb-1">Registration Code</p>
-                            <p className="text-3xl font-mono font-bold tracking-wider text-primary">
-                                {regCode}
-                            </p>
+                        <div className="bg-gray-100 dark:bg-zinc-800 p-4 rounded-xl mb-8 space-y-2 text-left">
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Registration ID</span>
+                                <span className="font-mono text-gray-700 dark:text-gray-200">{registrationId || registration?.$id || "—"}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Gateway</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">{gateway || "—"}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Order / Txn</span>
+                                <span className="font-mono text-gray-700 dark:text-gray-200">{orderId || "—"}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Status</span>
+                                <span className={`font-semibold ${isSuccess ? "text-green-600" : "text-amber-500"}`}>
+                                    {isSuccess ? "Paid" : "Pending"}
+                                </span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Amount</span>
+                                <span className="font-semibold text-gray-700 dark:text-gray-200">
+                                    {payment?.amount ? `₹${payment.amount}` : "—"}
+                                </span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>Registration Code</span>
+                                <span className="font-mono text-primary text-lg">
+                                    {code || "Generating..."}
+                                </span>
+                            </div>
                         </div>
+
+                        {fetchError && (
+                            <p className="text-sm text-red-500 mb-4">{fetchError}</p>
+                        )}
+                        {loading && (
+                            <div className="flex items-center justify-center gap-2 mb-4 text-sm text-gray-500">
+                                <Spinner size="sm" /> Loading latest status...
+                            </div>
+                        )}
 
                         <div className="space-y-3">
                             <Button
@@ -94,12 +175,33 @@ export default function SuccessPage() {
                                 Go to Dashboard
                             </Button>
                             <Button
+                                variant="bordered"
+                                size="lg"
+                                className="w-full"
+                                isLoading={isRefreshing}
+                                onPress={() => {
+                                    setIsRefreshing(true);
+                                    fetchData();
+                                }}
+                            >
+                                Refresh status
+                            </Button>
+                            <Button
                                 variant="flat"
                                 size="lg"
                                 className="w-full"
                                 startContent={<Download size={18} />}
+                                isDisabled={!isSuccess}
+                                onPress={() => {
+                                    const url = payment?.invoiceUrl || (registrationId ? `/api/payments/receipt?registrationId=${registrationId}` : "");
+                                    if (url) {
+                                        window.open(url, "_blank");
+                                    } else {
+                                        alert("Receipt generation coming soon.");
+                                    }
+                                }}
                             >
-                                Download Receipt
+                                {isSuccess ? "Download Receipt" : "Receipt unavailable"}
                             </Button>
                             <Button
                                 as={Link}

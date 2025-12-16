@@ -111,6 +111,7 @@ export async function PUT(request: NextRequest) {
               status: 'success',
               transactionId: paymentId,
               verifiedAt: new Date().toISOString(),
+              invoiceUrl: `${request.nextUrl.origin}/api/payments/receipt?registrationId=${registrationId}&format=pdf`,
             }
           );
 
