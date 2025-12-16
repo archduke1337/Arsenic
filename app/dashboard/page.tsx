@@ -3,10 +3,11 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, Chip, Button, Spinner } from "@nextui-org/react";
-import { AlertCircle, Download, MapPin, BookOpen, Users, Calendar, Trophy } from "lucide-react";
+import { Card, CardBody, Chip, Button, Spinner, Progress } from "@nextui-org/react";
+import { AlertCircle, Download, MapPin, BookOpen, Users, Calendar, Trophy, ArrowUpRight, Clock, Fingerprint, RefreshCcw, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface AllocationData {
     committeeId: string;
@@ -34,7 +35,6 @@ export default function DashboardPage() {
             const res = await fetch("/api/user/dashboard");
             if (!res.ok) {
                 if (res.status === 401) {
-                    // Not logged in - handled by layout
                     return;
                 }
                 throw new Error("Failed to fetch dashboard");
@@ -51,199 +51,231 @@ export default function DashboardPage() {
         }
     };
 
-    const getInitials = (name?: string): string => {
-        if (!name) return "D";
-        return name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2);
-    };
-
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <Spinner label="Loading your dashboard..." />
+            <div className="flex items-center justify-center h-full">
+                <Spinner label="Loading details..." color="primary" />
             </div>
         );
     }
 
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold mb-2 dark:text-white">
-                    Welcome back, {user?.name?.split(" ")[0] || "Delegate"}!
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400">
-                    Here&apos;s what&apos;s happening with your participation.
-                </p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold dark:text-white mb-2">Hello, {user?.name?.split(" ")[0] || "Delegate"}!</h1>
+                    <p className="text-slate-500 dark:text-gray-400">Explore your allocation and activity for the conference.</p>
+                </div>
             </div>
 
-            {/* Allocation Card */}
-            {allocation ? (
-                <Card className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-none shadow-xl">
-                    <CardBody className="p-8">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                            <div className="flex-1">
-                                <Chip className="bg-white/20 text-white border-none mb-4" variant="flat">
-                                    {allocation.event}
-                                </Chip>
-                                <h2 className="text-4xl font-bold mb-2">{allocation.portfolio}</h2>
-                                <div className="flex items-center gap-2 text-blue-100 text-lg">
-                                    <MapPin size={20} />
-                                    <span>{allocation.committee}</span>
-                                </div>
-                                {allocation.status === "pending" && (
-                                    <p className="text-blue-100 text-sm mt-3">
-                                        Allocation pending. Check back soon!
-                                    </p>
-                                )}
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[150px] text-center">
-                                <div className="text-3xl font-bold mb-1">{allocation.daysLeft}</div>
-                                <div className="text-xs uppercase tracking-wider opacity-80">Days to Event</div>
-                            </div>
-                        </div>
-                    </CardBody>
-                </Card>
-            ) : (
-                <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-zinc-900 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800">
-                    <CardBody className="p-8 text-center">
-                        <Trophy size={48} className="mx-auto mb-4 text-blue-500 opacity-50" />
-                        <h2 className="text-2xl font-bold mb-2 dark:text-white">Allocation Coming Soon</h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            Your committee and portfolio allocation will appear here once the organizers assign you.
-                            This typically happens after registration closes.
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">
-                            💡 Tip: Check your email for allocation notifications
-                        </p>
-                    </CardBody>
-                </Card>
-            )}
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <StatCard
+                    label="Days Left"
+                    value={allocation?.daysLeft || "0"}
+                    icon={Clock}
+                    trend="On Track"
+                    color="text-blue-600 dark:text-blue-400"
+                />
+                <StatCard
+                    label="Event Status"
+                    value={allocation?.status === "confirmed" ? "Active" : "Pending"}
+                    icon={Trophy}
+                    trend="Verified"
+                    color="text-emerald-600 dark:text-emerald-400"
+                />
+                <StatCard
+                    label="Committee"
+                    value={allocation?.committee.split(" ")[0] || "None"}
+                    icon={Users}
+                    trend="Assigned"
+                    color="text-purple-600 dark:text-purple-400"
+                />
+                <StatCard
+                    label="Payment"
+                    value={registration?.paymentStatus === 'completed' ? "Paid" : "Due"}
+                    icon={RefreshCcw}
+                    trend="Secure"
+                    color="text-indigo-600 dark:text-indigo-400"
+                />
+            </div>
 
-            {/* Registration Status */}
-            {registration && (
-                <Card className="dark:bg-zinc-900">
-                    <CardBody className="p-6">
-                        <h3 className="font-bold text-lg mb-4 dark:text-white flex items-center gap-2">
-                            <Calendar size={20} className="text-primary" />
-                            Registration Status
-                        </h3>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="dark:text-gray-300">Registration Confirmed</span>
-                                <Chip size="sm" color="success" variant="flat">
-                                    ✓ Complete
-                                </Chip>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="dark:text-gray-300">Event: {registration.eventType || "TBA"}</span>
-                                <Chip size="sm" color="primary" variant="flat">
-                                    Selected
-                                </Chip>
-                            </div>
-                            {registration.paymentStatus === "completed" && (
-                                <div className="flex items-center justify-between">
-                                    <span className="dark:text-gray-300">Payment Status</span>
-                                    <Chip size="sm" color="success" variant="flat">
-                                        Paid
-                                    </Chip>
-                                </div>
-                            )}
-                        </div>
-                    </CardBody>
-                </Card>
-            )}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Delegate Pass / Allocation Section */}
+                <div className="lg:col-span-2 space-y-6">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <Fingerprint className="text-blue-500" size={20} />
+                        Delegate Pass
+                    </h2>
 
-            <div className="grid md:grid-cols-2 gap-6">
-                {/* Action Items */}
-                <Card className="dark:bg-zinc-900">
-                    <CardBody className="p-6">
-                        <h3 className="font-bold text-lg mb-4 dark:text-white flex items-center gap-2">
-                            <AlertCircle size={20} className="text-primary" />
-                            Action Items
-                        </h3>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                                    <span className="dark:text-gray-300">Registration Complete</span>
+                    {/* Glassmorphism Credit Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative w-full aspect-[1.8] md:aspect-[2.2] rounded-3xl overflow-hidden shadow-2xl transition-transform hover:scale-[1.01] duration-500"
+                    >
+                        {/* Abstract Background */}
+                        <div className="absolute inset-0 bg-slate-900 dark:bg-black">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-emerald-600/20" />
+                            <div className="absolute top-0 right-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                            <div className="absolute -top-20 -right-20 w-80 h-80 bg-blue-500/30 rounded-full blur-[100px]" />
+                            <div className="absolute bottom-0 left-0 w-60 h-60 bg-emerald-500/20 rounded-full blur-[80px]" />
+                        </div>
+
+                        <div className="relative h-full flex flex-col justify-between p-8 md:p-10 text-white">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <div className="text-white/60 text-sm font-medium tracking-wider mb-1">EVENT PASS</div>
+                                    <div className="text-2xl font-bold tracking-tight">ARSENIC</div>
                                 </div>
-                                <Chip size="sm" color="success" variant="flat">
-                                    Done
-                                </Chip>
+                                <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                                    <Fingerprint size={24} className="text-white/80" />
+                                </div>
                             </div>
-                            {!allocation && (
-                                <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                                        <span className="dark:text-gray-300">Waiting for Allocation</span>
+
+                            <div className="space-y-6">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-8 rounded bg-yellow-400/90 shadow-lg" /> {/* Chip */}
+                                    {allocation?.status === 'confirmed' && <div className="text-emerald-400 font-mono text-sm flex items-center gap-1">● ACTIVE</div>}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <div className="text-3xl md:text-4xl font-mono tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 shadow-sm">
+                                        {allocation?.portfolio || "ALLOCATION PENDING"}
+                                    </div>
+                                    <div className="text-white/60 font-medium flex items-center gap-2">
+                                        <span>{allocation?.committee || "Register for Allocation"}</span>
                                     </div>
                                 </div>
-                            )}
-                            <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                    <span className="dark:text-gray-300">Review Background Guide</span>
+                            </div>
+
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <div className="text-white/40 text-[10px] uppercase tracking-wider mb-1">DELEGATE</div>
+                                    <div className="font-medium text-lg">{user?.name?.toUpperCase()}</div>
                                 </div>
-                                <Button size="sm" color="primary" variant="flat">
-                                    View
-                                </Button>
+                                <div className="text-right">
+                                    <div className="text-white/40 text-[10px] uppercase tracking-wider mb-1">EXPIRY</div>
+                                    <div className="font-mono text-lg">12/25</div>
+                                </div>
                             </div>
                         </div>
-                    </CardBody>
-                </Card>
+                    </motion.div>
 
-                {/* Resources */}
-                <Card className="dark:bg-zinc-900">
-                    <CardBody className="p-6">
-                        <h3 className="font-bold text-lg mb-4 dark:text-white flex items-center gap-2">
-                            <BookOpen size={20} className="text-primary" />
-                            Resources
-                        </h3>
-                        <div className="space-y-3">
-                            <a
-                                href="/faqs"
-                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                    <AlertCircle className="text-blue-600 dark:text-blue-400" size={18} />
-                                </div>
-                                <div>
-                                    <p className="font-medium dark:text-white">FAQs</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Common questions answered</p>
-                                </div>
-                            </a>
-                            <a
-                                href="/committees"
-                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                    <Users className="text-purple-600 dark:text-purple-400" size={18} />
-                                </div>
-                                <div>
-                                    <p className="font-medium dark:text-white">Committees</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Committee details & portfolios</p>
-                                </div>
-                            </a>
-                            <a
-                                href="/contact"
-                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                    <Download className="text-green-600 dark:text-green-400" size={18} />
-                                </div>
-                                <div>
-                                    <p className="font-medium dark:text-white">Contact Us</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Get help & support</p>
-                                </div>
-                            </a>
+                    {/* Quick Activity Stats for Dashboard */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
+                            <div className="text-slate-500 dark:text-gray-400 text-sm mb-2">Registration</div>
+                            <div className="flex items-end gap-2">
+                                <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                    {registration ? "90%" : "0%"}
+                                </span>
+                                <span className="text-emerald-500 text-xs mb-1 font-medium">+ Updated</span>
+                            </div>
+                            <Progress
+                                value={registration ? 90 : 0}
+                                className="mt-3"
+                                color={registration ? "success" : "default"}
+                                size="sm"
+                            />
                         </div>
-                    </CardBody>
-                </Card>
+                        <div className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
+                            <div className="text-slate-500 dark:text-gray-400 text-sm mb-2">Resources</div>
+                            <div className="flex items-end gap-2">
+                                <span className="text-2xl font-bold text-slate-900 dark:text-white">3</span>
+                                <span className="text-blue-500 text-xs mb-1 font-medium">Available</span>
+                            </div>
+                            <Progress value={60} className="mt-3" color="primary" size="sm" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column: Activity Feed & Actions */}
+                <div className="space-y-8">
+                    {/* Action Center */}
+                    <div className="bg-white dark:bg-white/5 p-6 rounded-3xl border border-slate-200 dark:border-white/5">
+                        <h3 className="font-bold text-lg mb-6 dark:text-white flex items-center justify-between">
+                            <span>Activity</span>
+                            <Button size="sm" variant="light" isIconOnly><ArrowUpRight size={18} /></Button>
+                        </h3>
+
+                        <div className="space-y-6">
+                            <ActivityItem
+                                icon={AlertCircle}
+                                color="bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400"
+                                title="Registration Payment"
+                                desc={registration?.paymentStatus === 'completed' ? "Completed on Oct 24" : "Pending Action"}
+                                amount={registration?.paymentStatus === 'completed' ? "Done" : "Due"}
+                            />
+                            <ActivityItem
+                                icon={MapPin}
+                                color="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+                                title="Committee Allocation"
+                                desc={allocation ? "Assigned" : "Waiting for assignment"}
+                                amount={allocation ? "1" : "-"}
+                            />
+                            <ActivityItem
+                                icon={BookOpen}
+                                color="bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
+                                title="Background Guide"
+                                desc="Study material released"
+                                amount="View"
+                            />
+                        </div>
+
+                        <Button className="w-full mt-6 bg-slate-900 dark:bg-white text-white dark:text-black font-semibold" size="lg">
+                            View All Activity
+                        </Button>
+                    </div>
+
+                    {/* Resources Mini */}
+                    <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-6 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <Download size={100} />
+                        </div>
+                        <h3 className="font-bold text-xl mb-2 relative z-10">Need Help?</h3>
+                        <p className="text-emerald-100 mb-6 relative z-10 text-sm">Download the delegate handbook and resources before the event.</p>
+                        <Button className="bg-white text-emerald-600 font-semibold relative z-10" size="sm">
+                            Download Resources
+                        </Button>
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
+
+function StatCard({ label, value, icon: Icon, trend, color }: any) {
+    return (
+        <div className="bg-white dark:bg-white/5 p-5 rounded-2xl border border-slate-200 dark:border-white/5 hover:border-blue-500/20 transition-colors">
+            <div className="flex justify-between items-start mb-4">
+                <div className={`p-2 rounded-lg ${color.replace('text', 'bg')}/10 ${color}`}>
+                    <Icon size={20} />
+                </div>
+                <Chip size="sm" variant="flat" classNames={{ base: "bg-slate-100 dark:bg-white/10", content: "text-slate-500 dark:text-gray-400 text-xs font-semibold" }}>
+                    {trend}
+                </Chip>
+            </div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{value}</div>
+            <div className="text-slate-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{label}</div>
+        </div>
+    )
+}
+
+function ActivityItem({ icon: Icon, color, title, desc, amount }: any) {
+    return (
+        <div className="flex items-center justify-between group cursor-pointer">
+            <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${color} group-hover:scale-110 transition-transform`}>
+                    <Icon size={18} />
+                </div>
+                <div>
+                    <div className="font-semibold text-slate-900 dark:text-white text-sm">{title}</div>
+                    <div className="text-slate-500 dark:text-gray-400 text-xs">{desc}</div>
+                </div>
+            </div>
+            <div className="font-medium text-slate-900 dark:text-white text-sm">{amount}</div>
+        </div>
+    )
+}
+
