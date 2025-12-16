@@ -319,7 +319,7 @@ export async function getScoreStats(eventId: string): Promise<{
       lowestScore: scores.length > 0 ? Math.min(...scores) : 0,
       totalScores: scores.length,
       participantsScored: new Set(
-        scoresResponse.documents.map((doc) => doc.registrationId)
+        scoreDocs.map((doc) => doc.registrationId)
       ).size,
     };
   } catch (error) {

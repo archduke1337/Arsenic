@@ -142,23 +142,18 @@ export default function AdminRegistrations() {
         if (confirm(`Check in ${selectedIds.size} attendees?`)) {
             setLoading(true);
             try {
-                let checkedInCount = 0;
-                for (const id of selectedIds) {
-                    const reg = registrations.find(r => r.$id === id);
-                    if (!reg?.checkedIn) {
-                        await databases.updateDocument(
-                            DATABASE_ID,
-                            COLLECTIONS.REGISTRATIONS,
-                            id,
-                            {
-                                checkedIn: true,
-                                checkedInAt: new Date().toISOString(),
-                            }
-                        );
-                        checkedInCount++;
-                    }
-                }
-                toast.success(`Checked in ${checkedInCount} attendees`);
+                const response = await fetch('/api/admin/bulk-checkin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        registrationIds: Array.from(selectedIds)
+                    })
+                });
+
+                if (!response.ok) throw new Error('Bulk check-in failed');
+                const data = await response.json();
+                
+                toast.success(`Checked in ${data.checkedInCount} attendees`);
                 setSelectedIds(new Set());
                 await fetchRegistrations();
             } catch (error) {
@@ -172,15 +167,14 @@ export default function AdminRegistrations() {
 
     const handleSingleCheckIn = async (id: string) => {
         try {
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                id,
-                {
-                    checkedIn: true,
-                    checkedInAt: new Date().toISOString(),
-                }
-            );
+            const response = await fetch(`/api/admin/checkin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ registrationId: id })
+            });
+
+            if (!response.ok) throw new Error('Check-in failed');
+            
             toast.success("Attendee checked in");
             await fetchRegistrations();
             setViewingDetail(null);

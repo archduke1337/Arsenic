@@ -2,82 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import { databases, DATABASE_ID } from "@/lib/server-appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Query } from "node-appwrite";
-import { isAdminEmail } from "@/lib/server-auth";
 
 export async function GET(request: NextRequest) {
     try {
-        // NOTE: Without a user session bridge, we rely on admin-only access for now
-        const adminEmail = await isAdminEmail(request);
-        if (!adminEmail) {
+        // Get user session/auth info from Authorization header
+        const authHeader = request.headers.get("authorization");
+        if (!authHeader) {
             return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
         }
 
-        // Fetch user's registrations
-        const registrations = await databases.listDocuments(
-            DATABASE_ID,
-            COLLECTIONS.REGISTRATIONS,
-            [Query.equal("userId", user.$id)]
-        );
-
-        if (registrations.documents.length === 0) {
-            return NextResponse.json({
-                success: true,
-                allocation: null,
-                message: "No allocation found",
-            });
-        }
-
-        const registration = registrations.documents[0];
-
-        // If not allocated, return registration info
-        if (!registration.assignedCommittee) {
-            return NextResponse.json({
-                success: true,
-                allocation: null,
-                registration: {
-                    status: registration.status,
-                    paymentStatus: registration.paymentStatus,
-                    code: registration.code,
-                },
-            });
-        }
-
-        // Fetch committee details
-        const committee = await databases.getDocument(
-            DATABASE_ID,
-            COLLECTIONS.COMMITTEES,
-            registration.assignedCommittee
-        );
-
-        return NextResponse.json({
-            success: true,
-            allocation: {
-                committee: committee.name,
-                portfolio: registration.assignedPortfolio,
-                event: "Arsenic Summit 2024",
-                daysLeft: calculateDaysLeft(),
-                registration: {
-                    status: registration.status,
-                    checkedIn: registration.checkedIn,
-                },
-            },
-        });
-    } catch (error) {
-        console.error("Get allocation error:", error);
+        // TODO: Extract user ID from auth context/session
+        // For now, returning a placeholder response
         return NextResponse.json(
             {
-                error: "Failed to fetch allocation",
-                message: error instanceof Error ? error.message : String(error),
+                error: "User ID extraction not yet implemented",
+                message: "Please implement user session handling",
             },
+            { status: 501 }
+        );
+    } catch (error) {
+        console.error("Allocation fetch failed:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch allocation" },
             { status: 500 }
         );
     }
-}
-
-function calculateDaysLeft(): number {
-    const eventDate = new Date("2025-02-01"); // Update with actual event date
-    const today = new Date();
-    const diffTime = eventDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(diffDays, 0);
 }

@@ -5,9 +5,10 @@ import { Query } from "node-appwrite";
 
 export async function GET(
     _request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const registrationId = params.id;
+    const { id } = await params;
+    const registrationId = id;
 
     if (!registrationId) {
         return NextResponse.json({ error: "Registration ID is required" }, { status: 400 });

@@ -166,15 +166,15 @@ export default function CheckInPage() {
 
         if (confirm(`Undo check-in for ${lastCheckIn.name}?`)) {
             try {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.REGISTRATIONS,
-                    lastCheckIn.$id,
-                    {
-                        checkedIn: false,
-                        checkedInAt: null,
-                    }
-                );
+                const response = await fetch(`/api/checkin/undo`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ registrationId: lastCheckIn.$id })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to undo check-in");
+                }
 
                 setRegistrations(prev => prev.map(r =>
                     r.$id === lastCheckIn.$id
