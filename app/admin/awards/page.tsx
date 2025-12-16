@@ -8,9 +8,7 @@ import {
     Autocomplete, AutocompleteItem, Avatar
 } from "@nextui-org/react";
 import { Trophy, Search, Plus, Download, Trash2, Edit, Award, Share2 } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";
-import { Query, ID } from "appwrite";
+import { EVENT_TYPES } from "@/lib/schema";
 import { toast, Toaster } from "sonner";
 import {
     getAwardCategoriesForEvent,
@@ -23,8 +21,6 @@ import { downloadBlob } from "@/lib/export-utils";
 import CertificatePreviewModal from "@/components/admin/awards/CertificatePreviewModal";
 import Papa from "papaparse";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminAwards() {
     const [awards, setAwards] = useState<any[]>([]);
@@ -54,20 +50,12 @@ export default function AdminAwards() {
     const fetchData = async () => {
         try {
             const [awardsRes, registrationsRes] = await Promise.all([
-                databases.listDocuments(
-                    DATABASE_ID,
-                    COLLECTIONS.AWARDS,
-                    [Query.orderDesc("$createdAt")]
-                ),
-                databases.listDocuments(
-                    DATABASE_ID,
-                    COLLECTIONS.REGISTRATIONS,
-                    [Query.limit(1000)] // Fetch enough for autocomplete
-                )
+                fetch('/api/admin/awards').then(r => r.json()),
+                fetch('/api/admin/registrations').then(r => r.json())
             ]);
 
-            setAwards(awardsRes.documents);
-            setRegistrations(registrationsRes.documents);
+            setAwards(awardsRes.documents || awardsRes);
+            setRegistrations(registrationsRes.documents || registrationsRes);
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error("Failed to fetch awards data");
@@ -115,20 +103,20 @@ export default function AdminAwards() {
             };
 
             if (editingAward) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.AWARDS,
-                    editingAward.$id,
-                    payload
-                );
+                const response = await fetch('/api/admin/awards', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingAward.$id, ...payload })
+                });
+                if (!response.ok) throw new Error('Update failed');
                 toast.success("Award updated successfully");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.AWARDS,
-                    ID.unique(),
-                    payload
-                );
+                const response = await fetch('/api/admin/awards', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error('Create failed');
                 toast.success("Award assigned successfully");
             }
 
@@ -144,11 +132,8 @@ export default function AdminAwards() {
     const handleDeleteAward = async (id: string) => {
         if (confirm("Are you sure you want to delete this award?")) {
             try {
-                await databases.deleteDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.AWARDS,
-                    id
-                );
+                const response = await fetch(`/api/admin/awards?id=${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Delete failed');
                 toast.success("Award deleted");
                 fetchData();
             } catch (error) {
@@ -238,20 +223,19 @@ export default function AdminAwards() {
                         const reg = registrations.find(r => r.email?.toLowerCase() === row.email.toLowerCase());
                         if (!reg) continue;
 
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            COLLECTIONS.AWARDS,
-                            ID.unique(),
-                            {
+                        const response = await fetch('/api/admin/awards', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
                                 eventType: row.eventType,
                                 category: row.category,
                                 registration: reg.$id,
                                 remarks: row.remarks || "",
                                 published: true,
                                 awardedAt: new Date().toISOString(),
-                            }
-                        );
-                        successCount++;
+                            })
+                        });
+                        if (response.ok) successCount++;
                     }
 
                     toast.success(`Successfully imported ${successCount} awards`);

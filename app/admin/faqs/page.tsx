@@ -5,15 +5,11 @@ import {
     Card, CardBody, Button, Input, Select, SelectItem, Textarea
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, GripVertical, HelpCircle } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 const FAQ_CATEGORIES = ['GENERAL', 'REGISTRATION', 'PAYMENT', 'EVENT', 'ACCOMMODATION'] as const;
 
@@ -107,12 +103,10 @@ export default function AdminFAQs() {
 
     const fetchFAQs = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.FAQS,
-                [Query.orderAsc("displayOrder")]
-            );
-            setFaqs(response.documents as any);
+            const res = await fetch('/api/admin/faqs');
+            if (!res.ok) throw new Error('Failed to fetch FAQs');
+            const data = await res.json();
+            setFaqs(data.faqs || []);
         } catch (error) {
             console.error("Error fetching FAQs:", error);
             toast.error("Failed to fetch FAQs");
@@ -135,19 +129,22 @@ export default function AdminFAQs() {
             };
 
             if (editingFAQ) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.FAQS,
-                    editingFAQ.$id!,
-                    faqData
-                );
+                const res = await fetch('/api/admin/faqs', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingFAQ.$id, ...faqData }),
+                });
+                if (!res.ok) throw new Error('Failed to update FAQ');
                 toast.success("FAQ updated successfully");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.FAQS,
-                    ID.unique(),
-                    faqData
+                const res = await fetch('/api/admin/faqs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(faqData),
+                });
+                if (!res.ok) throw new Error('Failed to create FAQ');
+                toast.success("FAQ created successfully");
+            }
                 );
                 toast.success("FAQ created successfully");
             }
@@ -165,7 +162,8 @@ export default function AdminFAQs() {
     const handleDelete = async (faqId: string) => {
         if (confirm("Delete this FAQ?")) {
             try {
-                await databases.deleteDocument(DATABASE_ID, COLLECTIONS.FAQS, faqId);
+                const res = await fetch(`/api/admin/faqs?id=${faqId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete FAQ');
                 toast.success("FAQ deleted");
                 await fetchFAQs();
             } catch (error) {
@@ -207,12 +205,11 @@ export default function AdminFAQs() {
 
             try {
                 for (let i = 0; i < reordered.length; i++) {
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        COLLECTIONS.FAQS,
-                        reordered[i].$id!,
-                        { displayOrder: i }
-                    );
+                    await fetch('/api/admin/faqs', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: reordered[i].$id, displayOrder: i }),
+                    });
                 }
                 toast.success("FAQ order updated");
             } catch (error) {

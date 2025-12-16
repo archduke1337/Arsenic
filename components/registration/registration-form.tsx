@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardBody, Button, Progress } from "@nextui-org/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Check } from "lucide-react";
 import EventSelectionStep from "./steps/event-selection";
 import PersonalDetailsStep from "./steps/personal-details";
 import PaymentStep from "./steps/payment";
+import { useAuth } from "@/lib/auth-context";
 
 export type RegistrationData = {
   eventType: string;
+  eventId?: string;
   conference: string;
   committee?: string;
   country?: string;
@@ -24,10 +26,12 @@ export type RegistrationData = {
   registrationId?: string;
   orderId?: string;
   code?: string;
+  userId?: string;
 };
 
 const initialData: RegistrationData = {
   eventType: "",
+  eventId: "",
   conference: "",
   fullName: "",
   email: "",
@@ -36,12 +40,25 @@ const initialData: RegistrationData = {
   amount: 1500, // Base amount
   couponCode: "",
   code: "",
+  userId: "",
 };
 
 export default function RegistrationForm() {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<RegistrationData>(initialData);
   const [direction, setDirection] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      setData((prev) => ({
+        ...prev,
+        userId: user.$id,
+        email: prev.email || user.email || "",
+        fullName: prev.fullName || user.name || "",
+      }));
+    }
+  }, [user]);
 
   const nextStep = () => {
     setDirection(1);

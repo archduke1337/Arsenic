@@ -5,16 +5,10 @@ import {
     Card, CardBody, Button, Input, Select, SelectItem, Chip
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, GripVertical, Building2, Upload } from "lucide-react";
-import { databases, storage } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
-const BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || "";
 
 const SPONSOR_TIERS = ['TITLE', 'PLATINUM', 'GOLD', 'SILVER', 'BRONZE'] as const;
 
@@ -147,12 +141,10 @@ export default function AdminSponsors() {
 
     const fetchSponsors = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.SPONSORS,
-                [Query.orderAsc("displayOrder")]
-            );
-            setSponsors(response.documents as any);
+            const response = await fetch('/api/admin/sponsors');
+            if (!response.ok) throw new Error('Failed to fetch sponsors');
+            const data = await response.json();
+            setSponsors(data.documents || data);
         } catch (error) {
             console.error("Error fetching sponsors:", error);
             toast.error("Failed to fetch sponsors");
@@ -173,9 +165,15 @@ export default function AdminSponsors() {
         if (!logoFile) return "";
 
         try {
-            const fileId = ID.unique();
-            const response = await storage.createFile(BUCKET_ID, fileId, logoFile);
-            return storage.getFileView(BUCKET_ID, response.$id).toString();
+            const formData = new FormData();
+            formData.append('file', logoFile);
+            const response = await fetch('/api/admin/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
+            return data.url;
         } catch (error) {
             console.error("Logo upload error:", error);
             throw error;
@@ -206,20 +204,20 @@ export default function AdminSponsors() {
             };
 
             if (editingSponsor) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.SPONSORS,
-                    editingSponsor.$id!,
-                    sponsorData
-                );
+                const response = await fetch('/api/admin/sponsors', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingSponsor.$id, ...sponsorData })
+                });
+                if (!response.ok) throw new Error('Update failed');
                 toast.success("Sponsor updated successfully");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.SPONSORS,
-                    ID.unique(),
-                    sponsorData
-                );
+                const response = await fetch('/api/admin/sponsors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sponsorData)
+                });
+                if (!response.ok) throw new Error('Create failed');
                 toast.success("Sponsor created successfully");
             }
 
@@ -236,7 +234,8 @@ export default function AdminSponsors() {
     const handleDelete = async (sponsorId: string) => {
         if (confirm("Delete this sponsor?")) {
             try {
-                await databases.deleteDocument(DATABASE_ID, COLLECTIONS.SPONSORS, sponsorId);
+                const response = await fetch(`/api/admin/sponsors?id=${sponsorId}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Delete failed');
                 toast.success("Sponsor deleted");
                 await fetchSponsors();
             } catch (error) {
@@ -283,12 +282,12 @@ export default function AdminSponsors() {
             // Update display orders in database
             try {
                 for (let i = 0; i < reordered.length; i++) {
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        COLLECTIONS.SPONSORS,
-                        reordered[i].$id!,
-                        { displayOrder: i }
-                    );
+                    const response = await fetch('/api/admin/sponsors', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: reordered[i].$id, displayOrder: i })
+                    });
+                    if (!response.ok) throw new Error('Update order failed');
                 }
                 toast.success("Sponsor order updated");
             } catch (error) {

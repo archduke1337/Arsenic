@@ -8,12 +8,7 @@ import {
     Progress
 } from "@nextui-org/react";
 import { Download, Edit, Trash2, TrendingUp } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminScores() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -40,15 +35,18 @@ export default function AdminScores() {
         try {
             setLoading(true);
             const [eventsRes, regsRes, comRes] = await Promise.all([
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(100)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.limit(500)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.COMMITTEES, [Query.limit(100)]),
+                fetch('/api/admin/events').then(r => r.json()),
+                fetch('/api/admin/registrations').then(r => r.json()),
+                fetch('/api/admin/committees').then(r => r.json()),
             ]);
-            setEvents(eventsRes.documents);
-            setRegistrations(regsRes.documents);
-            setCommittees(comRes.documents);
-            if (eventsRes.documents.length > 0) {
-                setSelectedEvent(eventsRes.documents[0].$id);
+            const eventsData = eventsRes.documents || eventsRes;
+            const regsData = regsRes.documents || regsRes;
+            const comData = comRes.documents || comRes;
+            setEvents(eventsData);
+            setRegistrations(regsData);
+            setCommittees(comData);
+            if (eventsData.length > 0) {
+                setSelectedEvent(eventsData[0].$id);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -60,12 +58,10 @@ export default function AdminScores() {
 
     const fetchScoresForEvent = async (eventId: string) => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.SCORES,
-                [Query.equal("eventId", eventId), Query.orderDesc("score"), Query.limit(500)]
-            );
-            setScores(response.documents);
+            const response = await fetch(`/api/admin/scores?eventId=${eventId}`);
+            if (!response.ok) throw new Error('Failed to fetch scores');
+            const data = await response.json();
+            setScores(data.documents || data);
         } catch (error) {
             console.error("Error fetching scores:", error);
             toast.error("Failed to load scores");
@@ -87,7 +83,8 @@ export default function AdminScores() {
     const deleteScore = async (scoreId: string) => {
         if (!confirm("Are you sure you want to delete this score?")) return;
         try {
-            await databases.deleteDocument(DATABASE_ID, COLLECTIONS.SCORES, scoreId);
+            const response = await fetch(`/api/admin/scores?id=${scoreId}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Delete failed');
             toast.success("Score deleted");
             if (selectedEvent) fetchScoresForEvent(selectedEvent);
         } catch (error) {

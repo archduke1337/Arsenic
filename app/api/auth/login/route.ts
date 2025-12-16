@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { account } from "@/lib/appwrite";
+import { Client, Account } from "node-appwrite";
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,9 +13,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Create a new client for this request
+        const client = new Client()
+            .setEndpoint(process.env.APPWRITE_ENDPOINT || "")
+            .setProject(process.env.APPWRITE_PROJECT_ID || "");
+        
+        const account = new Account(client);
+        
+        // Create email password session
         const session = await account.createEmailPasswordSession(email, password);
 
-        // Note: Appwrite sets its own session cookie; we return basic info only
+        // Set session cookie
+        const cookieStore = await cookies();
+        cookieStore.set("appwrite-session", session.secret, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            path: "/",
+        });
+
         return NextResponse.json({
             success: true,
             message: "Login successful",

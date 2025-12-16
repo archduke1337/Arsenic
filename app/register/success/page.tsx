@@ -174,6 +174,17 @@ export default function SuccessPage() {
                             >
                                 Go to Dashboard
                             </Button>
+                            {!isSuccess && (
+                                <Button
+                                    as={Link}
+                                    href="/register"
+                                    color="warning"
+                                    size="lg"
+                                    className="w-full font-bold"
+                                >
+                                    Retry payment
+                                </Button>
+                            )}
                             <Button
                                 variant="bordered"
                                 size="lg"

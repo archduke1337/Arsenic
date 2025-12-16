@@ -7,12 +7,7 @@ import {
     Spinner, Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 } from "@nextui-org/react";
 import { Download, Filter, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminAttendance() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -39,13 +34,15 @@ export default function AdminAttendance() {
         try {
             setLoading(true);
             const [eventsRes, regsRes] = await Promise.all([
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(100)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.limit(500)]),
+                fetch('/api/admin/events').then(r => r.json()),
+                fetch('/api/admin/registrations').then(r => r.json()),
             ]);
-            setEvents(eventsRes.documents);
-            setRegistrations(regsRes.documents);
-            if (eventsRes.documents.length > 0) {
-                setSelectedEvent(eventsRes.documents[0].$id);
+            const eventsData = eventsRes.documents || eventsRes;
+            const regsData = regsRes.documents || regsRes;
+            setEvents(eventsData);
+            setRegistrations(regsData);
+            if (eventsData.length > 0) {
+                setSelectedEvent(eventsData[0].$id);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -57,12 +54,10 @@ export default function AdminAttendance() {
 
     const fetchAttendanceForEvent = async (eventId: string) => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.ATTENDANCE,
-                [Query.equal("eventId", eventId), Query.orderDesc("checkedInAt"), Query.limit(500)]
-            );
-            setAttendance(response.documents);
+            const response = await fetch(`/api/admin/attendance?eventId=${eventId}`);
+            if (!response.ok) throw new Error('Failed to fetch attendance');
+            const data = await response.json();
+            setAttendance(data.documents || data);
         } catch (error) {
             console.error("Error fetching attendance:", error);
             toast.error("Failed to load attendance");

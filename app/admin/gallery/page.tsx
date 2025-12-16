@@ -5,17 +5,13 @@ import {
     Card, CardBody, Button, Select, SelectItem, Tabs, Tab, Chip, Checkbox
 } from "@nextui-org/react";
 import { Plus, Image as ImageIcon, Trash2, Eye, Edit, Star } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";
-import { ID, Query } from "appwrite";
+import { EVENT_TYPES } from "@/lib/schema";
 import BulkGalleryUpload from "@/components/admin/gallery/BulkGalleryUpload";
 import AlbumManager from "@/components/admin/gallery/AlbumManager";
 import ImageCaptionEditor from "@/components/admin/gallery/ImageCaptionEditor";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminGallery() {
     const [activeTab, setActiveTab] = useState("upload");
@@ -42,12 +38,10 @@ export default function AdminGallery() {
 
     const fetchAlbums = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.ALBUMS,
-                [Query.orderDesc("$createdAt")]
-            );
-            setAlbums(response.documents as unknown as any[]);
+            const response = await fetch('/api/admin/albums');
+            if (!response.ok) throw new Error('Failed to fetch albums');
+            const data = await response.json();
+            setAlbums(data.documents || data);
         } catch (error) {
             console.error("Error fetching albums:", error);
             toast.error("Failed to fetch albums");
@@ -56,12 +50,10 @@ export default function AdminGallery() {
 
     const fetchGalleryImages = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.GALLERY,
-                [Query.orderDesc("$createdAt"), Query.limit(100)]
-            );
-            setGalleryImages(response.documents as unknown as any[]);
+            const response = await fetch('/api/admin/gallery');
+            if (!response.ok) throw new Error('Failed to fetch gallery');
+            const data = await response.json();
+            setGalleryImages(data.documents || data);
         } catch (error) {
             console.error("Error fetching gallery:", error);
             toast.error("Failed to fetch gallery images");
@@ -72,12 +64,12 @@ export default function AdminGallery() {
         setLoading(true);
         try {
             for (const imageData of uploadedImages) {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.GALLERY,
-                    ID.unique(),
-                    imageData
-                );
+                const response = await fetch('/api/admin/gallery', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(imageData)
+                });
+                if (!response.ok) throw new Error('Create failed');
             }
 
             toast.success(`${uploadedImages.length} images uploaded successfully!`);
@@ -101,7 +93,8 @@ export default function AdminGallery() {
     const handleDeleteImage = async (imageId: string) => {
         if (confirm("Delete this image permanently?")) {
             try {
-                await databases.deleteDocument(DATABASE_ID, COLLECTIONS.GALLERY, imageId);
+                const response = await fetch(`/api/admin/gallery?id=${imageId}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Delete failed');
                 await fetchGalleryImages();
                 toast.success("Image deleted successfully");
             } catch (error) {
@@ -137,7 +130,8 @@ export default function AdminGallery() {
             setLoading(true);
             try {
                 for (const imageId of selectedImages) {
-                    await databases.deleteDocument(DATABASE_ID, COLLECTIONS.GALLERY, imageId);
+                    const response = await fetch(`/api/admin/gallery?id=${imageId}`, { method: 'DELETE' });
+                    if (!response.ok) throw new Error('Delete failed');
                 }
                 toast.success(`${selectedImages.size} images deleted`);
                 setSelectedImages(new Set());
@@ -158,12 +152,12 @@ export default function AdminGallery() {
         setLoading(true);
         try {
             for (const imageId of selectedImages) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.GALLERY,
-                    imageId,
-                    { albumId: targetAlbumId }
-                );
+                const response = await fetch('/api/admin/gallery', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: imageId, albumId: targetAlbumId })
+                });
+                if (!response.ok) throw new Error('Update failed');
             }
             toast.success(`${selectedImages.size} images moved to album`);
             setSelectedImages(new Set());
@@ -185,12 +179,12 @@ export default function AdminGallery() {
 
     const handleSaveCaption = async (imageId: string, caption: string, altText?: string) => {
         try {
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.GALLERY,
-                imageId,
-                { caption, altText }
-            );
+            const response = await fetch('/api/admin/gallery', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: imageId, caption, altText })
+            });
+            if (!response.ok) throw new Error('Update failed');
             toast.success("Image details updated");
             await fetchGalleryImages();
         } catch (error) {
@@ -202,12 +196,12 @@ export default function AdminGallery() {
     // Set Album Cover
     const handleSetAlbumCover = async (albumId: string, imageUrl: string) => {
         try {
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.ALBUMS,
-                albumId,
-                { coverImageUrl: imageUrl }
-            );
+            const response = await fetch('/api/admin/albums', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: albumId, coverImageUrl: imageUrl })
+            });
+            if (!response.ok) throw new Error('Update failed');
             toast.success("Album cover set successfully");
             await fetchAlbums();
         } catch (error) {

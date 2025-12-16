@@ -3,12 +3,9 @@
 import { Card, CardBody, Spinner, Button, Chip, Progress } from "@nextui-org/react";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
-import { databases, Query } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { TrendingUp, Users, Calendar, FileText, CheckCircle, AlertCircle, BarChart3, Home, Zap, Activity } from "lucide-react";
 import Link from "next/link";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminDashboard() {
     const { user } = useAuth();
@@ -31,30 +28,40 @@ export default function AdminDashboard() {
 
     const fetchStats = async () => {
         try {
-            const [events, registrations, team, sponsors] = await Promise.all([
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.EVENTS, [Query.limit(100)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.REGISTRATIONS, [Query.orderDesc("$createdAt"), Query.limit(100)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.TEAM_MEMBERS, [Query.limit(100)]),
-                databases.listDocuments(DATABASE_ID, COLLECTIONS.SPONSORS, [Query.limit(100)]),
+            const [eventsRes, registrationsRes, teamRes, sponsorsRes] = await Promise.all([
+                fetch('/api/admin/events'),
+                fetch('/api/admin/registrations'),
+                fetch('/api/admin/team'),
+                fetch('/api/admin/sponsors'),
             ]);
 
-            const confirmedRegs = registrations.documents.filter((r: any) => r.status === "confirmed").length;
-            const pendingRegs = registrations.documents.filter((r: any) => r.status === "pending").length;
-            const checkedIn = registrations.documents.filter((r: any) => r.checkedIn).length;
-            const activeEventsCount = events.documents.filter((e: any) => e.isActive).length;
+            const events = await eventsRes.json();
+            const registrations = await registrationsRes.json();
+            const team = await teamRes.json();
+            const sponsors = await sponsorsRes.json();
+
+            const eventsList = events.events || [];
+            const regsList = registrations.registrations || [];
+            const teamList = team.team || [];
+            const sponsorsList = sponsors.sponsors || [];
+
+            const confirmedRegs = regsList.filter((r: any) => r.status === "confirmed").length;
+            const pendingRegs = regsList.filter((r: any) => r.status === "pending").length;
+            const checkedIn = regsList.filter((r: any) => r.checkedIn).length;
+            const activeEventsCount = eventsList.filter((e: any) => e.isActive).length;
 
             setStats({
-                totalEvents: events.total,
+                totalEvents: eventsList.length,
                 activeEvents: activeEventsCount,
-                totalRegistrations: registrations.total,
+                totalRegistrations: regsList.length,
                 confirmedRegistrations: confirmedRegs,
                 pendingRegistrations: pendingRegs,
-                totalTeamMembers: team.total,
-                totalSponsors: sponsors.total,
+                totalTeamMembers: teamList.length,
+                totalSponsors: sponsorsList.length,
                 checkedInCount: checkedIn,
             });
 
-            setRecentRegistrations(registrations.documents.slice(0, 5));
+            setRecentRegistrations(regsList.slice(0, 5));
         } catch (error) {
             console.error("Error fetching stats:", error);
         } finally {

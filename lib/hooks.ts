@@ -1,62 +1,88 @@
 import { useQuery } from "@tanstack/react-query";
-import { databases, DATABASE_ID } from "./appwrite";
 import { COLLECTIONS } from "./schema";
 
-// Generic hook for fetching Appwrite collections
-export function useCollection<T>(collectionName: string, queryKey: string[]) {
+// Generic hook for fetching via API
+async function fetchFromAPI<T>(endpoint: string): Promise<T[]> {
+    const res = await fetch(endpoint);
+    if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
+    const data = await res.json();
+    return data[Object.keys(data).find(k => Array.isArray(data[k])) as string] || [];
+}
+
+// Specific hooks for each collection (public data via API)
+export function useEvents() {
     return useQuery({
-        queryKey,
-        queryFn: async () => {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                collectionName
-            );
-            return response.documents as T[];
-        },
+        queryKey: ["events"],
+        queryFn: () => fetchFromAPI("/api/admin/events"),
     });
 }
 
-// Specific hooks for each collection
-export function useEvents() {
-    return useCollection(COLLECTIONS.EVENTS, ["events"]);
-}
-
 export function useCommittees() {
-    return useCollection(COLLECTIONS.COMMITTEES, ["committees"]);
+    return useQuery({
+        queryKey: ["committees"],
+        queryFn: () => fetchFromAPI("/api/admin/committees"),
+    });
 }
 
 export function useRegistrations() {
-    return useCollection(COLLECTIONS.REGISTRATIONS, ["registrations"]);
+    return useQuery({
+        queryKey: ["registrations"],
+        queryFn: () => fetchFromAPI("/api/admin/registrations"),
+    });
 }
 
 export function useTeamMembers() {
-    return useCollection(COLLECTIONS.TEAM_MEMBERS, ["team-members"]);
+    return useQuery({
+        queryKey: ["team-members"],
+        queryFn: () => fetchFromAPI("/api/admin/team"),
+    });
 }
 
 export function useSponsors() {
-    return useCollection(COLLECTIONS.SPONSORS, ["sponsors"]);
+    return useQuery({
+        queryKey: ["sponsors"],
+        queryFn: () => fetchFromAPI("/api/admin/sponsors"),
+    });
 }
 
 export function useGallery() {
-    return useCollection(COLLECTIONS.GALLERY, ["gallery"]);
+    return useQuery({
+        queryKey: ["gallery"],
+        queryFn: () => fetchFromAPI("/api/admin/gallery"),
+    });
 }
 
 export function useFAQs() {
-    return useCollection(COLLECTIONS.FAQS, ["faqs"]);
+    return useQuery({
+        queryKey: ["faqs"],
+        queryFn: () => fetchFromAPI("/api/admin/faqs"),
+    });
 }
 
 export function useContactSubmissions() {
-    return useCollection(COLLECTIONS.CONTACT_SUBMISSIONS, ["contact-submissions"]);
+    return useQuery({
+        queryKey: ["contact-submissions"],
+        queryFn: () => fetchFromAPI("/api/admin/contact"),
+    });
 }
 
 export function useAwards() {
-    return useCollection(COLLECTIONS.AWARDS, ["awards"]);
+    return useQuery({
+        queryKey: ["awards"],
+        queryFn: () => fetchFromAPI("/api/admin/awards"),
+    });
 }
 
 export function useAlumni() {
-    return useCollection(COLLECTIONS.ALUMNI, ["alumni"]);
+    return useQuery({
+        queryKey: ["alumni"],
+        queryFn: () => fetchFromAPI("/api/admin/alumni"),
+    });
 }
 
 export function useCoupons() {
-    return useCollection(COLLECTIONS.COUPONS, ["coupons"]);
+    return useQuery({
+        queryKey: ["coupons"],
+        queryFn: () => fetchFromAPI("/api/admin/coupons"),
+    });
 }

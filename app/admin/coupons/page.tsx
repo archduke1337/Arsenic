@@ -8,12 +8,8 @@ import {
     Spinner, Switch
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, Copy, CheckCircle, AlertCircle } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, couponSchema } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 interface CouponFormData {
     code: string;
@@ -55,12 +51,10 @@ export default function AdminCoupons() {
     const fetchCoupons = async () => {
         try {
             setLoading(true);
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.COUPONS,
-                [Query.orderDesc("$createdAt"), Query.limit(100)]
-            );
-            setCoupons(response.documents);
+            const res = await fetch('/api/admin/coupons');
+            if (!res.ok) throw new Error('Failed to fetch coupons');
+            const data = await res.json();
+            setCoupons(data.coupons || []);
         } catch (error) {
             console.error("Error fetching coupons:", error);
             toast.error("Failed to load coupons");
@@ -71,12 +65,10 @@ export default function AdminCoupons() {
 
     const fetchEvents = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.EVENTS,
-                [Query.limit(100)]
-            );
-            setEvents(response.documents);
+            const res = await fetch('/api/admin/events');
+            if (!res.ok) throw new Error('Failed to fetch events');
+            const data = await res.json();
+            setEvents(data.events || []);
         } catch (error) {
             console.error("Error fetching events:", error);
         }
@@ -129,25 +121,23 @@ export default function AdminCoupons() {
                 currentUses: formData.currentUses,
                 expiryDate: formData.expiryDate,
                 isActive: formData.isActive,
-                createdBy: "admin@arsenic.com",
-                createdAt: editingCoupon ? editingCoupon.createdAt : new Date().toISOString(),
             };
 
             if (editingCoupon) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.COUPONS,
-                    editingCoupon.$id,
-                    couponData
-                );
+                const res = await fetch('/api/admin/coupons', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingCoupon.$id, ...couponData }),
+                });
+                if (!res.ok) throw new Error('Failed to update coupon');
                 toast.success("Coupon updated successfully");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.COUPONS,
-                    ID.unique(),
-                    couponData
-                );
+                const res = await fetch('/api/admin/coupons', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(couponData),
+                });
+                if (!res.ok) throw new Error('Failed to create coupon');
                 toast.success("Coupon created successfully");
             }
 
@@ -165,11 +155,8 @@ export default function AdminCoupons() {
         if (!confirm("Are you sure you want to delete this coupon?")) return;
 
         try {
-            await databases.deleteDocument(
-                DATABASE_ID,
-                COLLECTIONS.COUPONS,
-                id
-            );
+            const res = await fetch(`/api/admin/coupons?id=${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete coupon');
             toast.success("Coupon deleted");
             fetchCoupons();
         } catch (error) {
@@ -180,12 +167,12 @@ export default function AdminCoupons() {
 
     const handleToggleActive = async (coupon: any) => {
         try {
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.COUPONS,
-                coupon.$id,
-                { isActive: !coupon.isActive }
-            );
+            const res = await fetch('/api/admin/coupons', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: coupon.$id, isActive: !coupon.isActive }),
+            });
+            if (!res.ok) throw new Error('Failed to update coupon status');
             toast.success(`Coupon ${!coupon.isActive ? "activated" : "deactivated"}`);
             fetchCoupons();
         } catch (error) {

@@ -7,12 +7,7 @@ import {
     useDisclosure, Avatar, Chip
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, User, Upload } from "lucide-react";
-import { databases, storage } from "@/lib/appwrite";
-import { COLLECTIONS, TeamMember } from "@/lib/schema";
-import { ID, Query } from "appwrite";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
-const BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || "";
+import { TeamMember } from "@/lib/schema";
 
 export default function AdminTeam() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -28,12 +23,10 @@ export default function AdminTeam() {
 
     const fetchTeam = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.TEAM_MEMBERS,
-                [Query.orderAsc("displayOrder")]
-            );
-            setTeam(response.documents as unknown as any[]);
+            const response = await fetch('/api/admin/team');
+            if (!response.ok) throw new Error('Failed to fetch team');
+            const data = await response.json();
+            setTeam(data.documents || data);
         } catch (error) {
             console.error("Error fetching team:", error);
         } finally {
@@ -57,12 +50,15 @@ export default function AdminTeam() {
         if (!imageFile) return null;
 
         try {
-            const response = await storage.createFile(
-                BUCKET_ID,
-                ID.unique(),
-                imageFile
-            );
-            return storage.getFileView(BUCKET_ID, response.$id).toString();
+            const formData = new FormData();
+            formData.append('file', imageFile);
+            const response = await fetch('/api/admin/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
+            return data.url;
         } catch (error) {
             console.error("Error uploading image:", error);
             return null;
@@ -97,19 +93,19 @@ export default function AdminTeam() {
 
         try {
             if (editingMember) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.TEAM_MEMBERS,
-                    editingMember.$id,
-                    teamMemberData
-                );
+                const response = await fetch('/api/admin/team', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingMember.$id, ...teamMemberData })
+                });
+                if (!response.ok) throw new Error('Update failed');
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.TEAM_MEMBERS,
-                    ID.unique(),
-                    teamMemberData
-                );
+                const response = await fetch('/api/admin/team', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(teamMemberData)
+                });
+                if (!response.ok) throw new Error('Create failed');
             }
 
             fetchTeam();
@@ -125,7 +121,8 @@ export default function AdminTeam() {
         if (!confirm("Are you sure you want to delete this team member?")) return;
 
         try {
-            await databases.deleteDocument(DATABASE_ID, COLLECTIONS.TEAM_MEMBERS, id);
+            const response = await fetch(`/api/admin/team?id=${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Delete failed');
             fetchTeam();
         } catch (error) {
             console.error("Error deleting team member:", error);

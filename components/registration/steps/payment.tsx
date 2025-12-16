@@ -5,6 +5,7 @@ import { Button, Card, CardBody, Divider, Input, Tab, Tabs } from "@nextui-org/r
 import { RegistrationData } from "../registration-form";
 import { CreditCard, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Toaster, toast } from "sonner";
 
 type RazorpayHandlerResponse = {
     razorpay_payment_id: string;
@@ -216,8 +217,8 @@ export default function PaymentStep({ data, updateData }: Props) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    userId: data.email, // fallback id handled server-side
-                    eventId: data.eventType,
+                    userId: data.userId || data.email, // prefer authenticated user id
+                    eventId: data.eventId || data.eventType,
                     eventType: data.eventType,
                     fullName: data.fullName,
                     email: data.email,
@@ -257,6 +258,7 @@ export default function PaymentStep({ data, updateData }: Props) {
             console.error("Payment error:", error);
             const message = error instanceof Error ? error.message : "Unknown error";
             setErrorMessage(message);
+            toast.error(message);
         } finally {
             setIsProcessing(false);
         }
@@ -264,6 +266,7 @@ export default function PaymentStep({ data, updateData }: Props) {
 
     return (
         <div className="space-y-6">
+            <Toaster richColors position="top-center" />
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-white">Payment</h2>
                 <p className="text-gray-400">Securely complete your registration.</p>

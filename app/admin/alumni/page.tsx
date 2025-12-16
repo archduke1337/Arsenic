@@ -8,12 +8,7 @@ import {
     Spinner
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, Award } from "lucide-react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 interface AlumniFormData {
     name: string;
@@ -54,12 +49,10 @@ export default function AdminAlumni() {
     const fetchAlumni = async () => {
         try {
             setLoading(true);
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.ALUMNI,
-                [Query.orderDesc("joinedAt"), Query.limit(100)]
-            );
-            setAlumni(response.documents);
+            const response = await fetch('/api/admin/alumni');
+            if (!response.ok) throw new Error('Failed to fetch alumni');
+            const data = await response.json();
+            setAlumni(data.documents || data);
         } catch (error) {
             console.error("Error fetching alumni:", error);
             toast.error("Failed to load alumni");
@@ -122,23 +115,20 @@ export default function AdminAlumni() {
             };
 
             if (editingAlumni) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.ALUMNI,
-                    editingAlumni.$id,
-                    alumniData
-                );
+                const response = await fetch('/api/admin/alumni', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingAlumni.$id, ...alumniData })
+                });
+                if (!response.ok) throw new Error('Update failed');
                 toast.success("Alumni updated successfully");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.ALUMNI,
-                    ID.unique(),
-                    {
-                        ...alumniData,
-                        userId: ID.unique(),
-                    }
-                );
+                const response = await fetch('/api/admin/alumni', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(alumniData)
+                });
+                if (!response.ok) throw new Error('Create failed');
                 toast.success("Alumni added successfully");
             }
 
@@ -156,11 +146,8 @@ export default function AdminAlumni() {
         if (!confirm("Are you sure you want to delete this alumni record?")) return;
 
         try {
-            await databases.deleteDocument(
-                DATABASE_ID,
-                COLLECTIONS.ALUMNI,
-                id
-            );
+            const response = await fetch(`/api/admin/alumni?id=${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Delete failed');
             toast.success("Alumni deleted");
             fetchAlumni();
         } catch (error) {

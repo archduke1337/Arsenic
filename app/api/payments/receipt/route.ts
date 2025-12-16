@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         }
 
         const pdfBuffer = await buildReceiptPdf({ registration, payment });
-        return new NextResponse(pdfBuffer, {
+        return new NextResponse(new Uint8Array(pdfBuffer), {
             status: 200,
             headers: {
                 "Content-Type": "application/pdf",
@@ -114,6 +114,15 @@ async function buildReceiptPdf({ registration, payment }: { registration: any; p
     const doc = new PDFDocument({ margin: 36, size: "A4" });
     const chunks: Buffer[] = [];
 
+    // Optional logo: env path or fallback to /public/logo.png
+    let logoBuffer: Buffer | null = null;
+    const logoPath = process.env.RECEIPT_LOGO_PATH || path.join(process.cwd(), "public", "logo.png");
+    try {
+        logoBuffer = await fs.readFile(logoPath);
+    } catch (err) {
+        console.error("Receipt logo load failed", err);
+    }
+
     return new Promise<Buffer>((resolve, reject) => {
         doc.on("data", (chunk) => chunks.push(chunk as Buffer));
         doc.on("end", () => resolve(Buffer.concat(chunks)));
@@ -122,15 +131,6 @@ async function buildReceiptPdf({ registration, payment }: { registration: any; p
         const paid = payment?.status === "success" || registration?.paymentStatus === "paid";
         const issued = new Date().toLocaleString();
         const headerColor = "#0ea5e9";
-
-        // Optional logo: env path or fallback to /public/logo.png
-        let logoBuffer: Buffer | null = null;
-        const logoPath = process.env.RECEIPT_LOGO_PATH || path.join(process.cwd(), "public", "logo.png");
-        try {
-            logoBuffer = await fs.readFile(logoPath);
-        } catch (err) {
-            console.error("Receipt logo load failed", err);
-        }
 
         // Header bar
         doc.rect(36, 36, doc.page.width - 72, 40).fill(headerColor);
@@ -170,6 +170,7 @@ async function buildReceiptPdf({ registration, payment }: { registration: any; p
         doc.fontSize(10).fillColor("#222");
 
         const rows: Array<[string, string]> = [
+            ["Description", "Event registration"],
             ["Gateway", payment?.gateway ?? "—"],
             ["Order / Txn", payment?.orderId || payment?.transactionId || "—"],
             ["Amount", `₹${payment?.amount ?? registration?.paymentAmount ?? "—"}`],

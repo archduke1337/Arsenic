@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Card, Progress, Chip } from '@nextui-org/react';
-// import jsQR from 'jsqr'; // Uncomment and add to deps to enable real scanning
+import jsQR from 'jsqr';
 
 interface QRScannerProps {
   eventId: string;
@@ -79,12 +79,11 @@ export function QRScanner({ eventId, onScanSuccess, onScanError }: QRScannerProp
         canvasRef.current.height
       );
 
-      // Uncomment this block when jsQR is installed
-      // const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
-      // const code = jsQR(imageData.data, imageData.width, imageData.height);
-      // if (code?.data) {
-      //   handleProcessQR(code.data);
-      // }
+      const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code?.data) {
+        handleProcessQR(code.data);
+      }
     }, 250);
 
     return () => clearInterval(interval);

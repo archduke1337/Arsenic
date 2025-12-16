@@ -5,15 +5,11 @@ import {
     Card, CardBody, Button, Input, Chip, Switch
 } from "@nextui-org/react";
 import { Scan, Search, Users, CheckCircle, Clock, Undo } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
-import { Query } from "appwrite";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { validateQRCode } from "@/lib/qrcode-utils";
 import CheckInSuccess from "@/components/admin/check-in/CheckInSuccess";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function CheckInPage() {
     const [registrations, setRegistrations] = useState<any[]>([]);
@@ -55,13 +51,12 @@ export default function CheckInPage() {
 
     const fetchRegistrations = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                [Query.orderDesc("$createdAt"), Query.limit(200)]
-            );
-            setRegistrations(response.documents as any);
-            setRecentCheckIns(response.documents.filter((r: any) => r.checkedIn) as any);
+            const res = await fetch('/api/admin/registrations');
+            if (!res.ok) throw new Error('Failed to fetch registrations');
+            const data = await res.json();
+            const regs = data.registrations || [];
+            setRegistrations(regs);
+            setRecentCheckIns(regs.filter((r: any) => r.checkedIn));
         } catch (error) {
             console.error("Error fetching registrations:", error);
             toast.error("Failed to fetch registrations");

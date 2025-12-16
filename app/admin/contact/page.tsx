@@ -2,12 +2,9 @@
 
 import { Card, CardBody, Button, Chip, Input, Select, SelectItem } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import { databases, Query } from "@/lib/appwrite";
 import { COLLECTIONS } from "@/lib/schema";
 import { Trash2, Mail, Clock } from "lucide-react";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminContact() {
     const [submissions, setSubmissions] = useState<any[]>([]);
@@ -21,12 +18,10 @@ export default function AdminContact() {
 
     const fetchSubmissions = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.CONTACT_SUBMISSIONS,
-                [Query.orderDesc("$createdAt"), Query.limit(100)]
-            );
-            setSubmissions(response.documents as any);
+            const res = await fetch('/api/admin/contact');
+            if (!res.ok) throw new Error('Failed to fetch submissions');
+            const data = await res.json();
+            setSubmissions(data.submissions || []);
         } catch (error) {
             console.error("Error fetching submissions:", error);
             toast.error("Failed to fetch contact submissions");
@@ -37,12 +32,12 @@ export default function AdminContact() {
 
     const handleStatusChange = async (submissionId: string, newStatus: string) => {
         try {
-            await databases.updateDocument(
-                DATABASE_ID,
-                COLLECTIONS.CONTACT_SUBMISSIONS,
-                submissionId,
-                { status: newStatus }
-            );
+            const res = await fetch('/api/admin/contact', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: submissionId, status: newStatus }),
+            });
+            if (!res.ok) throw new Error('Failed to update status');
             toast.success("Status updated");
             await fetchSubmissions();
         } catch (error) {
@@ -54,11 +49,8 @@ export default function AdminContact() {
     const handleDelete = async (submissionId: string) => {
         if (confirm("Delete this submission permanently?")) {
             try {
-                await databases.deleteDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.CONTACT_SUBMISSIONS,
-                    submissionId
-                );
+                const res = await fetch(`/api/admin/contact?id=${submissionId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete submission');
                 toast.success("Submission deleted");
                 await fetchSubmissions();
             } catch (error) {

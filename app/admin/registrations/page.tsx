@@ -6,16 +6,12 @@ import {
     Chip, Button, Pagination, Spinner, Checkbox
 } from "@nextui-org/react";
 import { Search, Eye, CheckCircle, QrCode, Users, DollarSign, Clock } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";
-import { Query } from "appwrite";
 import RegistrationFilters from "@/components/admin/registrations/RegistrationFilters";
 import ExportMenu from "@/components/admin/registrations/ExportMenu";
 import QRCodeDisplay from "@/components/admin/registrations/QRCodeDisplay";
 import RegistrationDetailModal from "@/components/admin/registrations/RegistrationDetailModal";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminRegistrations() {
     const [registrations, setRegistrations] = useState<any[]>([]);
@@ -44,12 +40,10 @@ export default function AdminRegistrations() {
 
     const fetchRegistrations = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.REGISTRATIONS,
-                [Query.orderDesc("$createdAt"), Query.limit(1000)]
-            );
-            setRegistrations(response.documents as any);
+            const res = await fetch('/api/admin/registrations');
+            if (!res.ok) throw new Error('Failed to fetch registrations');
+            const data = await res.json();
+            setRegistrations(data.registrations || []);
         } catch (error) {
             console.error("Error fetching registrations:", error);
             toast.error("Failed to fetch registrations");

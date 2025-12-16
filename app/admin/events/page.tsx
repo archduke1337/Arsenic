@@ -7,17 +7,13 @@ import {
     useDisclosure, Chip, Switch, Tabs, Tab, Divider
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, Calendar, Palette, Copy } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES, EVENT_TYPE_LABELS } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import ColorPicker from "@/components/admin/ColorPicker";
 import FeeCalculator from "@/components/admin/FeeCalculator";
 import MultiImageUpload from "@/components/admin/MultiImageUpload";
 import EventSettingsToggles from "@/components/admin/EventSettingsToggles";
 import PaymentGatewayToggles from "@/components/admin/PaymentGatewayToggles";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 interface EventFormData {
     name: string;
@@ -108,12 +104,10 @@ export default function AdminEvents() {
 
     const fetchEvents = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.EVENTS,
-                [Query.orderDesc("$createdAt")]
-            );
-            setEvents(response.documents as unknown as any[]);
+            const res = await fetch('/api/admin/events');
+            if (!res.ok) throw new Error('Failed to fetch events');
+            const data = await res.json();
+            setEvents(data.events || []);
         } catch (error) {
             console.error("Error fetching events:", error);
         }
@@ -234,19 +228,19 @@ export default function AdminEvents() {
             };
 
             if (editingEvent) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.EVENTS,
-                    editingEvent.$id,
-                    dataToSubmit
-                );
+                const res = await fetch('/api/admin/events', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingEvent.$id, ...dataToSubmit }),
+                });
+                if (!res.ok) throw new Error('Failed to update event');
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.EVENTS,
-                    ID.unique(),
-                    dataToSubmit
-                );
+                const res = await fetch('/api/admin/events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSubmit),
+                });
+                if (!res.ok) throw new Error('Failed to create event');
             }
 
             await fetchEvents();
@@ -254,7 +248,7 @@ export default function AdminEvents() {
             resetForm();
         } catch (error) {
             console.error("Error saving event:", error);
-            alert("Error saving event. Please try again.");
+            toast.error("Error saving event. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -263,7 +257,8 @@ export default function AdminEvents() {
     const handleDelete = async (eventId: string) => {
         if (confirm("Are you sure you want to delete this event?")) {
             try {
-                await databases.deleteDocument(DATABASE_ID, COLLECTIONS.EVENTS, eventId);
+                const res = await fetch(`/api/admin/events?id=${eventId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete event');
                 await fetchEvents();
             } catch (error) {
                 console.error("Error deleting event:", error);
@@ -284,18 +279,18 @@ export default function AdminEvents() {
             duplicate.name = `${duplicate.name} (Copy)`;
             duplicate.isActive = false;
 
-            await databases.createDocument(
-                DATABASE_ID,
-                COLLECTIONS.EVENTS,
-                ID.unique(),
-                duplicate
-            );
+            const res = await fetch('/api/admin/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(duplicate),
+            });
+            if (!res.ok) throw new Error('Failed to duplicate event');
 
             await fetchEvents();
-            alert("Event duplicated successfully!");
+            toast.success("Event duplicated successfully!");
         } catch (error) {
             console.error("Error duplicating event:", error);
-            alert("Error duplicating event.");
+            toast.error("Error duplicating event.");
         }
     };
 

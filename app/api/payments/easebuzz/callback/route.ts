@@ -53,7 +53,8 @@ async function handleCallback(request: NextRequest) {
     try {
         const amount = Number(amountStr) || 0;
         await verifyEasebuzzPayment(txnId, amount, status, hash);
-        verified = status === "0";
+        const normalizedStatus = String(status).toLowerCase();
+        verified = normalizedStatus === "0" || normalizedStatus === "success" || normalizedStatus === "completed";
 
         if (DATABASE_ID) {
             // Update payment document

@@ -7,16 +7,12 @@ import {
     useDisclosure, Chip, Tabs, Tab
 } from "@nextui-org/react";
 import { Plus, Edit, Trash2, Users } from "lucide-react";
-import { databases } from "@/lib/appwrite";
 import { COLLECTIONS, EVENT_TYPES } from "@/lib/schema";
-import { ID, Query } from "appwrite";
 import MUNDataEditor from "@/components/admin/committees/MUNDataEditor";
 import LokSabhaDataEditor from "@/components/admin/committees/LokSabhaDataEditor";
 import RajyaSabhaDataEditor from "@/components/admin/committees/RajyaSabhaDataEditor";
 import DebateDataEditor from "@/components/admin/committees/DebateDataEditor";
 import { toast, Toaster } from "sonner";
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
 
 export default function AdminCommittees() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -51,12 +47,10 @@ export default function AdminCommittees() {
 
     const fetchCommittees = async () => {
         try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.COMMITTEES,
-                [Query.orderDesc("$createdAt")]
-            );
-            setCommittees(response.documents as unknown as any[]);
+            const res = await fetch('/api/admin/committees');
+            if (!res.ok) throw new Error('Failed to fetch committees');
+            const data = await res.json();
+            setCommittees(data.committees || []);
         } catch (error) {
             console.error("Error fetching committees:", error);
             toast.error("Failed to fetch committees");
@@ -134,20 +128,20 @@ export default function AdminCommittees() {
             };
 
             if (editingCommittee) {
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.COMMITTEES,
-                    editingCommittee.$id,
-                    dataToSubmit
-                );
+                const res = await fetch('/api/admin/committees', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: editingCommittee.$id, ...dataToSubmit }),
+                });
+                if (!res.ok) throw new Error('Failed to update committee');
                 toast.success("Committee updated successfully!");
             } else {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COLLECTIONS.COMMITTEES,
-                    ID.unique(),
-                    dataToSubmit
-                );
+                const res = await fetch('/api/admin/committees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSubmit),
+                });
+                if (!res.ok) throw new Error('Failed to create committee');
                 toast.success("Committee created successfully!");
             }
 
@@ -165,7 +159,8 @@ export default function AdminCommittees() {
     const handleDelete = async (committeeId: string) => {
         if (confirm("Are you sure you want to delete this committee?")) {
             try {
-                await databases.deleteDocument(DATABASE_ID, COLLECTIONS.COMMITTEES, committeeId);
+                const res = await fetch(`/api/admin/committees?id=${committeeId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete committee');
                 await fetchCommittees();
                 toast.success("Committee deleted successfully!");
             } catch (error) {
