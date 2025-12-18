@@ -1,4 +1,3 @@
-```
 "use client";
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +8,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ZoomIn, X, Camera, Award, Users, Mic, PartyPopper, Sparkles } from "lucide-react";
 import { databases, DATABASE_ID } from "@/lib/appwrite";
-import { COLLECTIONS, Query } from "@/lib/appwrite"; // Assuming COLLECTIONS is exported from appwrite.ts or schema.ts
+import { Query } from "@/lib/appwrite";
+import { COLLECTIONS } from "@/lib/schema";
 
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export default function GalleryPage() {
                     COLLECTIONS.GALLERY, // Using COLLECTIONS.GALLERY as per instruction's comment
                     [Query.orderDesc("$createdAt"), Query.limit(100)]
                 );
-                
+
                 const mappedImages = res.documents.map(doc => ({
                     src: doc.imageUrl,
                     category: doc.eventType || "General", // Using eventType as category
@@ -158,11 +158,10 @@ export default function GalleryPage() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.8 + index * 0.05 }}
-                            className={`group relative px - 6 py - 3 rounded - full font - semibold text - sm transition - all duration - 300 flex items - center gap - 2 ${
-    filter === cat.value
-        ? 'bg-blue-600 dark:bg-[#003366] text-white shadow-lg shadow-blue-900/40'
-        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white dark:border-white/5'
-} `}
+                            className={`group relative px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${filter === cat.value
+                                ? 'bg-blue-600 dark:bg-[#003366] text-white shadow-lg shadow-blue-900/40'
+                                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white dark:border-white/5'
+                                }`}
                         >
                             {cat.icon}
                             <span>{cat.name}</span>
@@ -191,14 +190,13 @@ export default function GalleryPage() {
                     >
                         {filteredImages.map((img, index) => (
                             <motion.div
-                                key={`${ filter } -${ index } `}
+                                key={`${filter}-${index}`}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05, duration: 0.5 }}
-                                className={`relative group overflow - hidden rounded - 2xl cursor - pointer shadow - sm hover: shadow - xl dark: shadow - none transition - shadow duration - 300 ${
-    img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
-        img.size === 'medium' ? 'md:row-span-2' : ''
-} `}
+                                className={`relative group overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl dark:shadow-none transition-shadow duration-300 ${img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
+                                    img.size === 'medium' ? 'md:row-span-2' : ''
+                                    }`}
                                 onClick={() => handleImageClick(img.src)}
                             >
                                 {/* Image Container */}
