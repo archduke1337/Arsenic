@@ -19,7 +19,7 @@ import {
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
 import { useState, useEffect } from "react";
-import { ChevronDown, Menu, Globe, Landmark, ScrollText, Mic2, Users } from "lucide-react";
+import { ChevronDown, Menu, Globe, Landmark, ScrollText, Mic2, Users, Calendar } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -140,6 +140,7 @@ export default function Navbar() {
         { key: "rajya-sabha", name: "Rajya Sabha", icon: <ScrollText size={18} />, description: "Upper house legislative proceedings" },
         { key: "debate", name: "Debate", icon: <Mic2 size={18} />, description: "Competitive argumentation forums" },
         { key: "youth-parliament", name: "Youth Parliament", icon: <Users size={18} />, description: "Democratic youth engagement" },
+        { key: "events", name: "Events Calendar", icon: <Calendar size={18} />, description: "Full schedule of upcoming summits" },
     ];
 
     return (
@@ -212,7 +213,9 @@ export default function Navbar() {
                         >
                             <Button
                                 disableRipple
-                                className={`px-4 h-9 bg-transparent hover:bg-black/5 dark:hover:bg-white/10 font-medium text-[15px] transition-all rounded-full ${pathname.includes('/mun') || pathname.includes('/sabha')
+                                as={Link}
+                                href="/events"
+                                className={`px-4 h-9 bg-transparent hover:bg-black/5 dark:hover:bg-white/10 font-medium text-[15px] transition-all rounded-full ${pathname.includes('/mun') || pathname.includes('/sabha') || pathname === '/events'
                                     ? 'text-blue-600 dark:text-blue-400 font-semibold'
                                     : scrolled ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'
                                     }`}

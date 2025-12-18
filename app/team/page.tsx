@@ -3,68 +3,63 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Instagram, Linkedin, Twitter } from "lucide-react";
-import { useState } from "react";
-
-const teamMembers = [
-    {
-        id: 1,
-        name: "Yomi Denzel",
-        role: "E-Commerce 2.0",
-        image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1887&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 2,
-        name: "Timothée Moiroux",
-        role: "Investissement Immobilier",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1887&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 3,
-        name: "David Sequiera",
-        role: "Closing",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1887&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 4,
-        name: "Manuel Ravier",
-        role: "Investissement Immobilier",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 5,
-        name: "Sarah Chen",
-        role: "Product Strategy",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 6,
-        name: "Marcus Johnson",
-        role: "Tech Lead",
-        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 7,
-        name: "Elena Rodriguez",
-        role: "Creative Director",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    },
-    {
-        id: 8,
-        name: "James Wilson",
-        role: "Operations",
-        image: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?q=80&w=1887&auto=format&fit=crop",
-        socials: { twitter: "#", linkedin: "#" }
-    }
-];
+import { useState, useEffect } from "react";
+import { databases, DATABASE_ID, Query } from "@/lib/appwrite";
 
 export default function TeamPage() {
+    const [teamMembers, setTeamMembers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTeam = async () => {
+            try {
+                const res = await databases.listDocuments(
+                    DATABASE_ID,
+                    "team_members",
+                    [Query.limit(100)]
+                );
+
+                // Custom sort logic: Founders first, then by displayOrder
+                const sortedTeam = res.documents.sort((a, b) => {
+                    const roleOrder: Record<string, number> = {
+                        "founder": 0,
+                        "executive_board": 1,
+                        "secretariat": 2,
+                        "hod": 3,
+                        "subhead": 4,
+                        "organizing_committee": 5
+                    };
+
+                    const roleA = roleOrder[a.position] ?? 99;
+                    const roleB = roleOrder[b.position] ?? 99;
+
+                    if (roleA !== roleB) return roleA - roleB;
+                    return (a.displayOrder || 99) - (b.displayOrder || 99);
+                });
+
+                const mappedTeam = sortedTeam.map(doc => ({
+                    id: doc.$id,
+                    name: doc.name,
+                    role: doc.role,
+                    image: doc.imageUrl || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1887&auto=format&fit=crop", // Fallback
+                    socials: {
+                        twitter: doc.socials?.twitter || "#",
+                        linkedin: doc.socials?.linkedin || "#"
+                    },
+                    ...doc
+                }));
+
+                setTeamMembers(mappedTeam);
+            } catch (error) {
+                console.error("Error fetching team:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTeam();
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#020202] text-slate-900 dark:text-white pt-24 pb-20 px-6 md:px-12 relative overflow-hidden selection:bg-blue-100 dark:selection:bg-blue-900/30">
             {/* Background Gradients */}
@@ -139,6 +134,6 @@ export default function TeamPage() {
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

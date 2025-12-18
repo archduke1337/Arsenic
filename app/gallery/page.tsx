@@ -1,29 +1,55 @@
+```
 "use client";
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, ModalContent, ModalBody } from "@nextui-org/react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ZoomIn, X, Camera, Award, Users, Mic, PartyPopper, Sparkles } from "lucide-react";
+import { databases, DATABASE_ID } from "@/lib/appwrite";
+import { COLLECTIONS, Query } from "@/lib/appwrite"; // Assuming COLLECTIONS is exported from appwrite.ts or schema.ts
 
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [filter, setFilter] = useState<string>("all");
+    const [images, setImages] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const images = [
-        { src: "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?auto=format&fit=crop&q=80", category: "Committees", size: "large", alt: "MUN Committee session in progress" },
-        { src: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&q=80", category: "Delegates", size: "medium", alt: "Delegates discussing during conference" },
-        { src: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&q=80", category: "Awards", size: "small", alt: "Awards ceremony at summit" },
-        { src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80", category: "Socials", size: "medium", alt: "Social event networking" },
-        { src: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80", category: "Closing", size: "large", alt: "Closing ceremony celebration" },
-        { src: "https://images.unsplash.com/photo-1475721027767-4d529c145769?auto=format&fit=crop&q=80", category: "Speakers", size: "small", alt: "Guest speaker addressing audience" },
-        { src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80", category: "Committees", size: "medium", alt: "Committee deliberations" },
-        { src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80", category: "Delegates", size: "small", alt: "Delegate networking break" },
-        { src: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80", category: "Awards", size: "large", alt: "Award winners celebration" },
-    ];
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const res = await databases.listDocuments(
+                    DATABASE_ID,
+                    COLLECTIONS.GALLERY, // Using COLLECTIONS.GALLERY as per instruction's comment
+                    [Query.orderDesc("$createdAt"), Query.limit(100)]
+                );
+                
+                const mappedImages = res.documents.map(doc => ({
+                    src: doc.imageUrl,
+                    category: doc.eventType || "General", // Using eventType as category
+                    size: doc.displayOrder === 1 ? "large" : doc.displayOrder === 2 ? "medium" : "small", // Simple logic for size mapping based on order or random
+                    alt: doc.caption || "Gallery Image",
+                    ...doc
+                }));
+                // Fallback for size if displayOrder is not set used for grid layout
+                const sizedImages = mappedImages.map((img, i) => ({
+                    ...img,
+                    size: img.size || (i % 6 === 0 ? "large" : i % 3 === 0 ? "medium" : "small")
+                }));
+
+                setImages(sizedImages);
+            } catch (error) {
+                console.error("Error fetching gallery images:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImages();
+    }, []);
 
     const categories = [
         { name: "All", value: "all", icon: <Camera size={18} /> },
@@ -132,10 +158,11 @@ export default function GalleryPage() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.8 + index * 0.05 }}
-                            className={`group relative px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 ${filter === cat.value
-                                ? 'bg-blue-600 dark:bg-[#003366] text-white shadow-lg shadow-blue-900/40'
-                                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white dark:border-white/5'
-                                }`}
+                            className={`group relative px - 6 py - 3 rounded - full font - semibold text - sm transition - all duration - 300 flex items - center gap - 2 ${
+    filter === cat.value
+        ? 'bg-blue-600 dark:bg-[#003366] text-white shadow-lg shadow-blue-900/40'
+        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white dark:border-white/5'
+} `}
                         >
                             {cat.icon}
                             <span>{cat.name}</span>
@@ -164,13 +191,14 @@ export default function GalleryPage() {
                     >
                         {filteredImages.map((img, index) => (
                             <motion.div
-                                key={`${filter}-${index}`}
+                                key={`${ filter } -${ index } `}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05, duration: 0.5 }}
-                                className={`relative group overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl dark:shadow-none transition-shadow duration-300 ${img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
-                                    img.size === 'medium' ? 'md:row-span-2' : ''
-                                    }`}
+                                className={`relative group overflow - hidden rounded - 2xl cursor - pointer shadow - sm hover: shadow - xl dark: shadow - none transition - shadow duration - 300 ${
+    img.size === 'large' ? 'md:col-span-2 md:row-span-2' :
+        img.size === 'medium' ? 'md:row-span-2' : ''
+} `}
                                 onClick={() => handleImageClick(img.src)}
                             >
                                 {/* Image Container */}

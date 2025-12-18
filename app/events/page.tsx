@@ -1,214 +1,99 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
+import { useRef } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import EventCard from "@/components/events/event-card";
 
-import { Button, Card, CardBody, CardFooter, Chip, Input, Tab, Tabs, Spinner } from "@nextui-org/react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, Calendar, MapPin, Users, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { databases } from "@/lib/appwrite";
-import { COLLECTIONS, EVENT_TYPE_LABELS } from "@/lib/schema";
-import { Query } from "appwrite";
+const EVENTS = [
+    { id: 1, name: "The Diplomatia Summit", date: "25-26 April", venue: "Maharaj Agrasen College", footFallMin: 450, footFallMax: 1400 },
+    { id: 2, name: "Arsenic Summit × DWPS MUN", date: "2-3 May", venue: "DWPS KP3", footFallMin: 350, footFallMax: 700 },
+    { id: 3, name: "Ariestiea MUN", date: "16-17 May", venue: "NLU / Hindu college", footFallMin: 600, footFallMax: 1600 },
+    { id: 4, name: "The Indian Conclave", date: "13-14 June", venue: "Online", footFallMin: 500, footFallMax: 1200 },
+    { id: 5, name: "Aquarius Summit", date: "19-20 June", venue: "DU NC", footFallMin: 400, footFallMax: 900 },
+    { id: 6, name: "Arsenic Summit × Manthan MUN", date: "10-11 July", venue: "The Manthan School", footFallMin: 350, footFallMax: 650 },
+    { id: 7, name: "Krishna Yuva Sansad", date: "18-19 July", venue: "DU NC", footFallMin: 750, footFallMax: 1600 },
+    { id: 8, name: "Atman Youth Conclave", date: "25-26 July", venue: "DU NC", footFallMin: 750, footFallMax: 1600 },
+    { id: 9, name: "Samvadhya MUN", date: "1-2 August", venue: "DU NC", footFallMin: 750, footFallMax: 1600 },
+    { id: 10, name: "Arsenic Summit × Paramount MUN", date: "13-14 August", venue: "Paramount School Dwarka", footFallMin: 350, footFallMax: 550 },
+    { id: 11, name: "Arsenic Summit - the Occurrence", date: "22-23 August", venue: "Satyawati Bhawan", footFallMin: 900, footFallMax: 1600 },
+    { id: 12, name: "Arsenic Summit × GDGIS MUN", date: "3-4 October", venue: "GDGIS Noida Extension", footFallMin: 550, footFallMax: 900 },
+    { id: 13, name: "Arsenic Summit × Panchayat", date: "10-11 October", venue: "DU NC", footFallMin: 750, footFallMax: 1600 },
+    { id: 14, name: "Arsenic Summit × Gagan Public School MUN", date: "17-18 October", venue: "GPS Noida Extension", footFallMin: 300, footFallMax: 650 },
+    { id: 15, name: "DWPS Intra MUN", date: "24-25 October", venue: "DWPS KP3", footFallMin: 250, footFallMax: 400 },
+    { id: 16, name: "The Indian Conclave - Offline Edition", date: "24-25 October", venue: "DU NC", footFallMin: 800, footFallMax: 1600 },
+    { id: 17, name: "Arsenic Summit × East Point School MUN", date: "7-8 November", venue: "EPS ; Vasundhara Enclave", footFallMin: 250, footFallMax: 400 },
+    { id: 18, name: "Agnira MUN", date: "14-15 November", venue: "DU NC", footFallMin: 750, footFallMax: 1600 },
+    { id: 19, name: "Richmond", date: "May", venue: "Richmond School", footFallMin: 350, footFallMax: 600 },
+    { id: 20, name: "Sapphire", date: "November", venue: "Sapphire International, Noida", footFallMin: 400, footFallMax: 600 },
+];
 
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || "";
+export default function EventsPage() {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const headerRef = useRef<HTMLDivElement>(null);
 
-interface EventDoc {
-    $id: string;
-    id?: string;
-    name: string;
-    type: string;
-    description: string;
-    date?: string;
-    venue?: string;
-    image?: string;
-    category?: string;
-    title?: string;
-    delegates?: number;
-}
+    useGSAP(() => {
+        const tl = gsap.timeline();
 
-export default function Events() {
-    const [filter, setFilter] = useState("all");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [events, setEvents] = useState<EventDoc[]>([]);
-    const [loading, setLoading] = useState(true);
+        // Header Animation
+        tl.from(headerRef.current, {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out"
+        });
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
+        // Cards Staggered Animation
+        tl.from(".event-card-wrapper", {
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out"
+        }, "-=0.5");
 
-    const fetchEvents = async () => {
-        try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTIONS.EVENTS,
-                [Query.equal("isActive", true), Query.orderDesc("$createdAt")]
-            );
-            setEvents(response.documents as unknown as EventDoc[]);
-        } catch (error) {
-            console.error("Error fetching events:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const filteredEvents = events.filter(event => {
-        const matchesFilter = filter === "all" || event.type === filter;
-        const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
+    }, { scope: containerRef });
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black text-slate-900 dark:text-white">
-            {/* Hero Section */}
-            <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-black z-0" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 z-0" />
+        <div ref={containerRef} className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-black relative overflow-hidden">
 
-                <div className="relative z-10 text-center px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <Chip color="secondary" variant="flat" className="mb-4">2024 EDITION</Chip>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Committees</span>
-                        </h1>
-                        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                            Explore the diverse range of committees and simulations designed to challenge and inspire.
-                        </p>
-                    </motion.div>
-                </div>
-            </div>
+            {/* Background Ambience */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-            {/* Filter & Search Section */}
-            <div className="max-w-7xl mx-auto px-6 mb-12">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-                    <Tabs
-                        aria-label="Filter Events"
-                        color="secondary"
-                        variant="light"
-                        selectedKey={filter}
-                        onSelectionChange={(key) => setFilter(key.toString())}
-                        classNames={{
-                            tabList: "bg-transparent",
-                            cursor: "bg-white/10",
-                            tab: "text-gray-400 data-[selected=true]:text-white"
-                        }}
-                    >
-                        <Tab key="all" title="All Events" />
-                        <Tab key="international" title="International" />
-                        <Tab key="national" title="National" />
-                        <Tab key="debate" title="Debate" />
-                    </Tabs>
-
-                    <Input
-                        classNames={{
-                            base: "max-w-xs",
-                            mainWrapper: "h-full",
-                            input: "text-small",
-                            inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-                        }}
-                        placeholder="Search committees..."
-                        size="sm"
-                        startContent={<Search size={18} />}
-                        type="search"
-                        value={searchQuery}
-                        onValueChange={setSearchQuery}
-                    />
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div ref={headerRef} className="text-center mb-20 relative z-10">
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold tracking-wide mb-4">
+                        2025 CALENDAR
+                    </span>
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 dark:text-white">
+                        Upcoming <span className="text-blue-600 dark:text-blue-500">Events</span>
+                    </h1>
+                    <p className="max-w-2xl mx-auto text-xl text-gray-600 dark:text-gray-400 mb-8">
+                        Join us at the most prestigious diplomatic simulations and youth conferences across the nation.
+                    </p>
+                    {/* Chrome Subheading as requested */}
+                    <h2 className="text-3xl font-bold text-chrome tracking-wide uppercase">
+                        Experience The Legacy
+                    </h2>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <Spinner size="lg" color="secondary" label="Loading events..." />
-                    </div>
-                ) : (
-                    <motion.div
-                        layout
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    >
-                    <AnimatePresence mode="popLayout">
-                        {filteredEvents.map((event) => (
-                            <motion.div
-                                key={event.$id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <Card className="bg-zinc-900 border border-white/10 hover:border-purple-500/50 transition-all h-full group">
-                                    <div className="relative h-48 overflow-hidden">
-                                        {event.image && (
-                                            <Image
-                                                alt={event.title || "Event image"}
-                                                className="z-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                                                src={event.image}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-                                        <Chip
-                                            className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md border border-white/20 text-white"
-                                            size="sm"
-                                        >
-                                            {event.category?.toUpperCase()}
-                                        </Chip>
-                                    </div>
-                                    <CardBody className="p-6">
-                                        <h3 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">{event.title}</h3>
-                                        <p className="text-gray-400 text-sm mb-6 line-clamp-2">
-                                            {event.description}
-                                        </p>
-                                        <div className="space-y-3 text-sm text-gray-300">
-                                            <div className="flex items-center gap-3">
-                                                <Calendar size={16} className="text-purple-500" />
-                                                {event.date}
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <MapPin size={16} className="text-purple-500" />
-                                                {event.venue}
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <Users size={16} className="text-purple-500" />
-                                                {event.delegates} Delegates
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                    <CardFooter className="p-6 pt-0">
-                                        <Button
-                                            as={Link}
-                                            href={`/register?event=${event.$id}`}
-                                            className="w-full bg-white/5 hover:bg-purple-600 hover:text-white text-white border border-white/10 transition-all"
-                                            endContent={<ArrowRight size={16} />}
-                                        >
-                                            Register Now
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                </motion.div>
-                )}
+                {/* Events Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {EVENTS.map((event, index) => (
+                        <div key={event.id} className="event-card-wrapper">
+                            <EventCard event={event} index={index} />
+                        </div>
+                    ))}
+                </div>
 
-                {!loading && filteredEvents.length === 0 && (
-                    <div className="text-center py-20 text-gray-500">
-                        <p className="text-xl">No committees found matching your criteria.</p>
-                        <Button
-                            variant="light"
-                            color="secondary"
-                            className="mt-4"
-                            onClick={() => { setFilter("all"); setSearchQuery(""); }}
-                        >
-                            Clear Filters
-                        </Button>
-                    </div>
-                )}
+                {/* Footer Stats - Optional Context */}
+                <div className="mt-20 border-t border-gray-200 dark:border-gray-800 pt-10 text-center">
+                    <p className="text-gray-500 dark:text-gray-500 text-sm">
+                        Total Projected Footfall: <span className="font-semibold text-gray-900 dark:text-white">10,550 - 21,750</span> Delegates
+                    </p>
+                </div>
             </div>
-        </div >
+        </div>
     );
 }
