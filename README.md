@@ -167,7 +167,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🔗 Links
 
 - [Live Site](https://arsenic-summit.com)
-- [Appwrite Docs](https://appwrite.io/docs)
 - [Next.js Docs](https://nextjs.org/docs)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 
